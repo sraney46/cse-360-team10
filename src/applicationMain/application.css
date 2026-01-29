@@ -1,0 +1,49 @@
+/* ===== GLOBAL STYLES ===== */
+.root {
+    -fx-background-color: #303131;
+    -fx-font-family: "Inter";  /* Default to Regular */
+}
+
+/* ===== LABELS ===== */
+.label {
+    -fx-text-fill: #fff;
+    -fx-font-family: "Inter Bold";  /* Regular weight */
+}
+
+/* Title labels - Medium weight */
+.title-label {
+    -fx-font-size: 32px;
+    -fx-font-family: "Inter SemiBold";  /* Use SemiBold for titles */
+    -fx-text-fill: #007bff;
+}
+
+/* Subtitle labels - Medium weight */
+.subtitle-label {
+    -fx-font-size: 24px;
+    -fx-font-family: "Inter Medium";  /* Use Medium */
+    -fx-text-fill: #495057;
+}
+
+/* ===== BUTTONS ===== */
+.button {
+   	-fx-background-color: #202020;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-family: "Inter Medium";  /* Buttons look better with Medium */
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 4px;
+    -fx-cursor: hand;
+    -fx-alignment: center;  /* ← ADD THIS */
+}
+
+.text-field, .password-field {
+    -fx-background-color: #202020;
+    -fx-border-color: #414952;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-padding: 8px 12px;
+    -fx-font-size: 16px;
+    -fx-text-fill: white;  /* ← ADD THIS */
+}
+

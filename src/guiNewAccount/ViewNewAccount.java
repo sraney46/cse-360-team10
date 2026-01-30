@@ -142,7 +142,7 @@ public class ViewNewAccount {
     			text_Password1, text_Password2, button_UserSetup, button_Quit);    	
 
 		// Set the title for the window, display the page, and wait for the Admin to do something
-		theStage.setTitle("CSE 360 Foundation Code: New User Account Setup");	
+		theStage.setTitle("");	
         theStage.setScene(theNewAccountScene);
 		theStage.show();
 	}

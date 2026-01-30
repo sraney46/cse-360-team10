@@ -127,7 +127,7 @@ public class ViewRole1Home {
 		label_UserDetails.setText("User: " + theUser.getUserName());
 				
 		// Set the title for the window, display the page, and wait for the Admin to do something
-		theStage.setTitle("CSE 360 Foundations: Role1 Home Page");
+		theStage.setTitle("");
 		theStage.setScene(theViewRole1HomeScene);
 		theStage.show();
 	}

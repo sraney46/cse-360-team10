@@ -1,49 +1,43 @@
-/* ===== GLOBAL STYLES ===== */
+
 .root {
-    -fx-background-color: #303131;
-    -fx-font-family: "Inter";  /* Default to Regular */
+    -fx-background-color: #393a41;
+    -fx-font-family: "Montserrat";  
+    -fx-font-size: 24px;
 }
 
-/* ===== LABELS ===== */
 .label {
     -fx-text-fill: #fff;
-    -fx-font-family: "Inter Bold";  /* Regular weight */
+    -fx-font-family: "Montserrat Bold";  
 }
 
-/* Title labels - Medium weight */
-.title-label {
-    -fx-font-size: 32px;
-    -fx-font-family: "Inter SemiBold";  /* Use SemiBold for titles */
-    -fx-text-fill: #007bff;
+
+.sub-label {
+	-fx-font-size: 16px;
+    -fx-font-family: "Montserrat SemiBold";  
 }
 
-/* Subtitle labels - Medium weight */
-.subtitle-label {
-    -fx-font-size: 24px;
-    -fx-font-family: "Inter Medium";  /* Use Medium */
-    -fx-text-fill: #495057;
-}
 
-/* ===== BUTTONS ===== */
 .button {
-   	-fx-background-color: #202020;
+   	-fx-background-color: #5865f2;
     -fx-text-fill: white;
-    -fx-font-size: 16px;
-    -fx-font-family: "Inter Medium";  /* Buttons look better with Medium */
-    -fx-padding: 10px 20px;
-    -fx-background-radius: 4px;
-    -fx-cursor: hand;
-    -fx-alignment: center;  /* ← ADD THIS */
+    -fx-font-size: 14px;
+    -fx-font-family: "Montserrat Medium"; 
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-alignment: center; 
 }
 
-.text-field, .password-field {
-    -fx-background-color: #202020;
+.text-field {
+    -fx-background-color: #35353c;
     -fx-border-color: #414952;
     -fx-border-width: 1px;
-    -fx-border-radius: 4px;
-    -fx-background-radius: 4px;
-    -fx-padding: 8px 12px;
+  	-fx-background-radius: 5px;
+    -fx-border-radius: 5px;
     -fx-font-size: 16px;
-    -fx-text-fill: white;  /* ← ADD THIS */
+    -fx-text-fill: white; 
+}
+
+.text-field:focused {
+    -fx-border-color: #76aff6;
 }
 

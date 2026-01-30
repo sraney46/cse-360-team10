@@ -198,7 +198,7 @@ public class ViewUserUpdate {
     	else label_CurrentEmailAddress.setText(s);
 
 		// Set the title for the window, display the page, and wait for the Admin to do something
-    	theStage.setTitle("CSE 360 Foundation Code: Update User Account Details");
+    	theStage.setTitle("");
         theStage.setScene(theUserUpdateScene);
 		theStage.show();
 	}
@@ -306,7 +306,9 @@ public class ViewUserUpdate {
         
         // Username
         setupLabelUI(label_Username, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 100);
+        label_Username.getStyleClass().add("sub-label");
         setupLabelUI(label_CurrentUsername, "Arial", 18, 260, Pos.BASELINE_LEFT, 200, 100);
+        label_CurrentUsername.getStyleClass().add("sub-label");
         setupButtonUI(button_UpdateUsername, "Dialog", 18, 275, Pos.CENTER, 500, 93);
         button_UpdateUsername.setOnAction((_) -> {
         	result = dialogUpdateUserName.showAndWait();
@@ -349,7 +351,9 @@ public class ViewUserUpdate {
 	       
         // password
         setupLabelUI(label_Password, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 150);
+        label_Password.getStyleClass().add("sub-label");
         setupLabelUI(label_CurrentPassword, "Arial", 18, 260, Pos.BASELINE_LEFT, 200, 150);
+        label_CurrentPassword.getStyleClass().add("sub-label");
         setupButtonUI(button_UpdatePassword, "Dialog", 18, 275, Pos.CENTER, 500, 143);
         button_UpdatePassword.setOnAction((_) -> {
         	result = dialogUpdatePassword.showAndWait();
@@ -401,7 +405,9 @@ public class ViewUserUpdate {
         
         // First Name
         setupLabelUI(label_FirstName, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 200);
+        label_FirstName.getStyleClass().add("sub-label");
         setupLabelUI(label_CurrentFirstName, "Arial", 18, 260, Pos.BASELINE_LEFT, 200, 200);
+        label_CurrentFirstName.getStyleClass().add("sub-label");
         setupButtonUI(button_UpdateFirstName, "Dialog", 18, 275, Pos.CENTER, 500, 193);
         button_UpdateFirstName.setOnAction((_) -> {result = dialogUpdateFirstName.showAndWait();
         	result.ifPresent(_ -> theDatabase.updateFirstName(theUser.getUserName(), result.get()));
@@ -414,7 +420,9 @@ public class ViewUserUpdate {
                
         // Middle Name
         setupLabelUI(label_MiddleName, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 250);
+        label_MiddleName.getStyleClass().add("sub-label");
         setupLabelUI(label_CurrentMiddleName, "Arial", 18, 260, Pos.BASELINE_LEFT, 200, 250);
+        label_CurrentMiddleName.getStyleClass().add("sub-label");
         setupButtonUI(button_UpdateMiddleName, "Dialog", 18, 275, Pos.CENTER, 500, 243);
         button_UpdateMiddleName.setOnAction((_) -> {result = dialogUpdateMiddleName.showAndWait();
     		result.ifPresent(_ -> theDatabase.updateMiddleName(theUser.getUserName(), result.get()));
@@ -427,7 +435,9 @@ public class ViewUserUpdate {
         
         // Last Name
         setupLabelUI(label_LastName, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 300);
+        label_LastName.getStyleClass().add("sub-label");
         setupLabelUI(label_CurrentLastName, "Arial", 18, 260, Pos.BASELINE_LEFT, 200, 300);
+        label_CurrentLastName.getStyleClass().add("sub-label");
         setupButtonUI(button_UpdateLastName, "Dialog", 18, 275, Pos.CENTER, 500, 293);
         button_UpdateLastName.setOnAction((_) -> {result = dialogUpdateLastName.showAndWait();
     		result.ifPresent(_ -> theDatabase.updateLastName(theUser.getUserName(), result.get()));
@@ -441,8 +451,10 @@ public class ViewUserUpdate {
         // Preferred First Name
         setupLabelUI(label_PreferredFirstName, "Arial", 18, 190, Pos.BASELINE_RIGHT, 
         		5, 350);
+        label_PreferredFirstName.getStyleClass().add("sub-label");
         setupLabelUI(label_CurrentPreferredFirstName, "Arial", 18, 260, Pos.BASELINE_LEFT, 
         		200, 350);
+        label_CurrentPreferredFirstName.getStyleClass().add("sub-label");
         setupButtonUI(button_UpdatePreferredFirstName, "Dialog", 18, 275, Pos.CENTER, 500, 343);
         button_UpdatePreferredFirstName.setOnAction((_) -> 
         	{result = dialogUpdatePreferredFirstName.showAndWait();
@@ -457,7 +469,9 @@ public class ViewUserUpdate {
         
         // Email Address
         setupLabelUI(label_EmailAddress, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 400);
+        label_EmailAddress.getStyleClass().add("sub-label");
         setupLabelUI(label_CurrentEmailAddress, "Arial", 18, 260, Pos.BASELINE_LEFT, 200, 400);
+        label_CurrentEmailAddress.getStyleClass().add("sub-label");
         setupButtonUI(button_UpdateEmailAddress, "Dialog", 18, 275, Pos.CENTER, 500, 393);
         button_UpdateEmailAddress.setOnAction((_) -> {result = dialogUpdateEmailAddresss.showAndWait();
     		result.ifPresent(_ -> theDatabase.updateEmailAddress(theUser.getUserName(), result.get()));

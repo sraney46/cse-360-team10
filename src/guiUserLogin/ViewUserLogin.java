@@ -37,31 +37,29 @@ public class ViewUserLogin {
 	 *********************************************************************************************/
 
 	// These are the application values required by the user interface
-
-//	private static double width = applicationMain.FoundationsMain.WINDOW_WIDTH;
-	private static double width = 400;
+	private static double width = applicationMain.FoundationsMain.WINDOW_WIDTH * 0.5;
 	private static double height = applicationMain.FoundationsMain.WINDOW_HEIGHT;
 
-	private static Label label_ApplicationTitle = new Label("Login");
+	private static Label label_ApplicationTitle = new Label("Welcome!");
 
 	// This set is for all subsequent starts of the system
 	//private static Label label_OperationalStartTitle = new Label("Log In or Invited User Account Setup ");
 	
 	//	private static Label label_LogInInsrtuctions = new Label("Enter your user name and password and "+	
 	//			"then click on the LogIn button");
-	private static Label label_Username = new Label("USERNAME");
-	private static Label label_Password = new Label("PASSWORD");
+	private static Label label_Username = new Label("Username");
+	private static Label label_Password = new Label("Password");
 	protected static Alert alertUsernamePasswordError = new Alert(AlertType.INFORMATION);
 
 
 	//	private User user;
 	protected static TextField text_Username = new TextField();
 	protected static PasswordField text_Password = new PasswordField();
-	private static Button button_Login = new Button("Submit");	
+	private static Button button_Login = new Button("Log In");	
 
 //	private static Label label_AccountSetupInsrtuctions = new Label("No account? "+	
 //			"Enter your invitation code and click on the Account Setup button");
-	private static Label label_AccountSetupInsrtuctions = new Label("");
+	private static Label label_AccountSetupInsrtuctions = new Label("Invitation Code");
 	private static TextField text_Invitation = new TextField();
 	private static Button button_SetupAccount = new Button("Setup Account");
 
@@ -96,7 +94,7 @@ public class ViewUserLogin {
 		text_Invitation.setText("");	// Same for the invitation code
 
 		// Set the title for the window, display the page, and wait for the Admin to do something
-		theStage.setTitle("CSE 360 Foundation Code: User Login Page");		
+		theStage.setTitle("");		
 		theStage.setScene(theUserLoginScene);
 		theStage.show();
 	}
@@ -137,24 +135,18 @@ public class ViewUserLogin {
 		setupLabelUI(label_ApplicationTitle, "Arial", 32, width, Pos.CENTER, 0, 10);
 
 		// setupLabelUI(label_OperationalStartTitle, "Arial", 24, width, Pos.CENTER, 0, 60);
-		
-		Line separator = new Line();
-		separator.setStartX(50);
-		separator.setStartY(60);
-		separator.setEndX(350);
-		separator.setEndY(60);
-		separator.setStroke(Color.web("#404141"));
-		separator.setStrokeWidth(1);
 	
 
 		// Existing user log in portion of the page
 
+		label_Username.getStyleClass().add("sub-label");
 		setupLabelUI(label_Username, "Arial", 18, width, Pos.BASELINE_LEFT, 50, 90);
 
 		// Establish the text input operand field for the username
 		setupTextUI(text_Username, "Arial", 18, 300, Pos.BASELINE_LEFT, 50, 120, true);
 		text_Username.setPromptText("");
 		
+		label_Password.getStyleClass().add("sub-label");
 		setupLabelUI(label_Password, "Arial", 18, width, Pos.BASELINE_LEFT, 50, 170);
 
 		// Establish the text input operand field for the password
@@ -162,7 +154,7 @@ public class ViewUserLogin {
 		text_Password.setPromptText("");
 
 		// Set up the Log In button
-		setupButtonUI(button_Login, "Dialog", 18, 100, Pos.BASELINE_LEFT, 250, 255);
+		setupButtonUI(button_Login, "Dialog", 18, 300, Pos.BASELINE_LEFT, 50, 255);
 		button_Login.setOnAction((_) -> {ControllerUserLogin.doLogin(theStage); });
 
 		alertUsernamePasswordError.setTitle("Invalid username/password!");
@@ -170,15 +162,14 @@ public class ViewUserLogin {
 
 
 		// The invitation to setup an account portion of the page
-
-		setupLabelUI(label_AccountSetupInsrtuctions, "Arial", 18, width, Pos.BASELINE_LEFT, 20, 300);
+		label_AccountSetupInsrtuctions.getStyleClass().add("sub-label");
+		setupLabelUI(label_AccountSetupInsrtuctions, "Arial", 18, width, Pos.BASELINE_LEFT, 50, 310);
 
 		// Establish the text input operand field for the password
 		setupTextUI(text_Invitation, "Arial", 18, 300, Pos.BASELINE_LEFT, 50, 340, true);
-		text_Invitation.setPromptText("Enter Invitation Code");
 
 		// Set up the setup button
-		setupButtonUI(button_SetupAccount, "Dialog", 18, 150, Pos.BASELINE_LEFT, 200, 400);
+		setupButtonUI(button_SetupAccount, "Dialog", 18, 300, Pos.BASELINE_LEFT, 50, 400);
 		button_SetupAccount.setOnAction((_) -> {
 			System.out.println("**** Calling doSetupAccount");
 			ControllerUserLogin.doSetupAccount(theStage, text_Invitation.getText());
@@ -191,7 +182,7 @@ public class ViewUserLogin {
 		//		theRootPane.getChildren().clear();
 
 		theRootPane.getChildren().addAll(
-				label_ApplicationTitle, separator,
+				label_ApplicationTitle,
 				label_Username, label_Password, label_AccountSetupInsrtuctions, text_Username,
 				button_Login, text_Password, text_Invitation, button_SetupAccount,
 				button_Quit);

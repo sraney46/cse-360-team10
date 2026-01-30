@@ -48,13 +48,12 @@ public class ViewFirstAdmin {
 	// for the user to specify a username for this account and two copies of the password to be
 	// used (they must match), a button to request that the account be established, and a quit
 	// but to abort the action and stop the application.
-	private static Label label_ApplicationTitle = new Label("Foundation Application Startup Page");
+	private static Label label_ApplicationTitle = new Label("Admin Startup Page");
 	private static Label label_TitleLine1 = 
-			new Label(" You are the first user.  You must be an administrator.");
+			new Label(" You are the first user.");
 	
 	private static Label label_TitleLine2 = 
-			new Label("Enter the Admin's Username, the Password twice, and then click on " + 
-					"Setup Admin Account.");
+			new Label("You must be an administrator.");
 	
 	protected static Label label_PasswordsDoNotMatch = new Label();
 	protected static TextField text_AdminUsername = new TextField();
@@ -106,7 +105,7 @@ public class ViewFirstAdmin {
 		applicationMain.FoundationsMain.activeHomePage = theRole;	// 1: Admin; 2: Role1; 3 Roles2
 
 		// Set the title for the window, display the page, and wait for the Admin to do something
-		theStage.setTitle("CSE 360 Foundation Code: First User Account Setup");	
+		theStage.setTitle("");	
 		theStage.setScene(theFirstAdminScene);
 		theStage.show();
 	}
@@ -156,7 +155,7 @@ public class ViewFirstAdmin {
 		setupLabelUI(label_TitleLine1, "Arial", 24, width, Pos.CENTER, 0, 70);
 
 		// Label to display the welcome message for the first user
-		setupLabelUI(label_TitleLine2, "Arial", 18, width, Pos.CENTER, 0, 130);
+		setupLabelUI(label_TitleLine2, "Arial", 18, width, Pos.CENTER, 0, 100);
 
 		// Establish the text input operand field for the Admin username
 		setupTextUI(text_AdminUsername, "Arial", 18, 300, Pos.BASELINE_LEFT, 50, 160, 

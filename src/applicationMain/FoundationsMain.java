@@ -84,28 +84,28 @@ public class FoundationsMain extends Application {
 	public void start(Stage theStage) {
 		
 		// Load custom fonts FIRST
-		Font font1 = Font.loadFont(
-		    getClass().getResource("/fonts/Inter-Regular.ttf").toExternalForm(),
+		Font.loadFont(
+		    getClass().getResource("/fonts/Montserrat-Black.ttf").toExternalForm(),
 		    14
 		);
-		Font font2 = Font.loadFont(
-		    getClass().getResource("/fonts/Inter-Medium.ttf").toExternalForm(),
+		Font.loadFont(
+		    getClass().getResource("/fonts/Montserrat-Regular.ttf").toExternalForm(),
 		    14
 		);
-		Font font3 = Font.loadFont(
-		    getClass().getResource("/fonts/Inter-SemiBold.ttf").toExternalForm(),
+		Font.loadFont(
+		    getClass().getResource("/fonts/Montserrat-Medium.ttf").toExternalForm(),
 		    14
 		);
-		Font font4 = Font.loadFont(
-		    getClass().getResource("/fonts/Inter-Bold.ttf").toExternalForm(),
+		Font.loadFont(
+		    getClass().getResource("/fonts/Montserrat-SemiBold.ttf").toExternalForm(),
+		    14
+		);
+		Font.loadFont(
+		    getClass().getResource("/fonts/Montserrat-Bold.ttf").toExternalForm(),
 		    14
 		);
 
-		// Check if they loaded
-		System.out.println("Inter Regular: " + (font1 != null ? font1.getFamily() : "FAILED"));
-		System.out.println("Inter Medium: " + (font2 != null ? font2.getFamily() : "FAILED"));
-		System.out.println("Inter SemiBold: " + (font3 != null ? font3.getFamily() : "FAILED"));
-		System.out.println("Inter Bold: " + (font4 != null ? font4.getFamily() : "FAILED"));
+		
 		
 		// Connect to the in-memory database
 		try {

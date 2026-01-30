@@ -182,7 +182,7 @@ public class ViewAdminHome {
 		combobox_SelectRole.getSelectionModel().select(0);
 				
 		// Set the title for the window, display the page, and wait for the Admin to do something
-		theStage.setTitle("CSE 360 Foundation Code: Admin Home Page");
+		theStage.setTitle("");
 		theStage.setScene(theAdminHomeScene);						// Set this page onto the stage
 		theStage.show();											// Display it to the user
 	}
@@ -223,23 +223,27 @@ public class ViewAdminHome {
 			
 		// GUI Area 2
 		setupLabelUI(label_NumberOfInvitations, "Arial", 20, 200, Pos.BASELINE_LEFT, 20, 105);
+		label_NumberOfInvitations.getStyleClass().add("sub-label");
 		label_NumberOfInvitations.setText("Number of outstanding invitations: " + 
 				theDatabase.getNumberOfInvitations());
 	
 		setupLabelUI(label_NumberOfUsers, "Arial", 20, 200, Pos.BASELINE_LEFT, 20, 135);
+		label_NumberOfUsers.getStyleClass().add("sub-label");
 		label_NumberOfUsers.setText("Number of users: " + 
 				theDatabase.getNumberOfUsers());
 	
 		// GUI Area 3
 		setupLabelUI(label_Invitations, "Arial", 20, width, Pos.BASELINE_LEFT, 20, 175);
+		label_Invitations.getStyleClass().add("sub-label");
 	
 		setupLabelUI(label_InvitationEmailAddress, "Arial", 16, width, Pos.BASELINE_LEFT,
 		20, 210);
+		label_InvitationEmailAddress.getStyleClass().add("sub-label");
 	
 		setupTextUI(text_InvitationEmailAddress, "Arial", 16, 360, Pos.BASELINE_LEFT,
-		130, 205, true);
+		150, 205, true);
 	
-		setupComboBoxUI(combobox_SelectRole, "Dialog", 16, 90, 500, 205);
+		setupComboBoxUI(combobox_SelectRole, "Dialog", 16, 90, 520, 205);
 	
 		List<String> list = new ArrayList<String>();	// Create a new list empty list of the
 		for (int i = 0; i < roles.length; i++) {		// roles this code currently supports

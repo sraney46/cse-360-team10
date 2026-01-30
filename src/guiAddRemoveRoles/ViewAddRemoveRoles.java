@@ -192,6 +192,7 @@ public class ViewAddRemoveRoles {
 		
 		// GUI Area 2a
 		setupLabelUI(label_SelectUser, "Arial", 20, 300, Pos.BASELINE_LEFT, 20, 130);
+		label_SelectUser.getStyleClass().add("sub-label");
 		
 		setupComboBoxUI(combobox_SelectUser, "Dialog", 16, 250, 280, 125);
 		List<String> userList = theDatabase.getUserList();	
@@ -204,7 +205,9 @@ public class ViewAddRemoveRoles {
 		
 		// GUI Area 2b
 		setupLabelUI(label_CurrentRoles, "Arial", 16, 300, Pos.BASELINE_LEFT, 50, 170);	
+		label_CurrentRoles.getStyleClass().add("sub-label");
 		setupLabelUI(label_SelectRoleToBeAdded, "Arial", 20, 300, Pos.BASELINE_LEFT, 20, 210);
+		label_SelectRoleToBeAdded.getStyleClass().add("sub-label");
 		setupComboBoxUI(combobox_SelectRoleToAdd, "Dialog", 16, 150, 280, 205);
 		setupButtonUI(button_AddRole, "Dialog", 16, 150, Pos.CENTER, 460, 205);
 		ViewAddRemoveRoles.button_AddRole.setOnAction((_) -> 
@@ -213,6 +216,7 @@ public class ViewAddRemoveRoles {
 		ViewAddRemoveRoles.button_RemoveRole.setOnAction((_) -> 
 			{ControllerAddRemoveRoles.performRemoveRole(); });
 		setupLabelUI(label_SelectRoleToBeRemoved, "Arial", 20, 300, Pos.BASELINE_LEFT, 20, 280);	
+		label_SelectRoleToBeRemoved.getStyleClass().add("sub-label");
 		setupComboBoxUI(combobox_SelectRoleToRemove, "Dialog", 16, 150, 280, 275);	
 		
 		// GUI Area 3		

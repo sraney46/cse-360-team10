@@ -119,7 +119,7 @@ public class ViewMultipleRoleDispatch {
 		combobox_SelectRole.getSelectionModel().select(0);
 		
 		// Set the title for the window, display the page, and wait for the Admin to do something
-		theStage.setTitle("CSE 360 Foundation Code: Multiple Role Dispatch");	
+		theStage.setTitle("");	
 		theStage.setScene(theMultipleRoleDispatchScene);		// Set this page onto the stage
 		theStage.show();										// Display it to the user
 	}
@@ -151,9 +151,11 @@ public class ViewMultipleRoleDispatch {
 		
 		// GUI Area 1
 		setupLabelUI(label_PageTitle, "Arial", 28, width, Pos.CENTER, 0, 5);
+		
 
 		// GUI Area 2
 		setupLabelUI(label_WhichRole, "Arial", 20, 200, Pos.BASELINE_LEFT, 20, 110);
+		label_WhichRole.getStyleClass().add("sub-label");
 
 		setupComboBoxUI(combobox_SelectRole, "Dialog", 16, 100, 305, 105);
 

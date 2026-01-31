@@ -41,3 +41,32 @@
     -fx-border-color: #76aff6;
 }
 
+.infoBox{
+ -fx-background-color: #1a1a1e;
+ -fx-background-radius: 5px;
+ -fx-border-radius: 5px;
+}
+
+.hbox-labels{
+	-fx-font-size: 16px;
+    -fx-font-family: "Montserrat SemiBold";  
+}
+
+.hbox-buttons{
+	-fx-background-color: #242428;
+}
+
+.top-circle {
+    -fx-fill: #747c8c;
+    -fx-stroke: black;
+    -fx-stroke-width: 6px;
+}
+	
+.top-bg{
+	
+	-fx-fill: #747c8c;
+}
+
+.update-user-root{
+	-fx-background-color: #121214;
+}

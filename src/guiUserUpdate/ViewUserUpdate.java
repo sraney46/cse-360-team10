@@ -17,6 +17,13 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ButtonBar;
 import entityClasses.User;
 import guiFirstAdmin.ModelFirstAdmin;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+import javafx.geometry.Insets;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Circle;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 
 /*******
@@ -53,7 +60,7 @@ public class ViewUserUpdate {
 	// These are the application values required by the user interface
 	
 	private static double width = applicationMain.FoundationsMain.WINDOW_WIDTH;
-	private static double height = applicationMain.FoundationsMain.WINDOW_HEIGHT;
+	private static double height = applicationMain.FoundationsMain.WINDOW_HEIGHT * 0.9;
 
 	
 	// These are the widget attributes for the GUI. There are 3 areas for this GUI.
@@ -61,10 +68,12 @@ public class ViewUserUpdate {
 	// Unlike may of the other pages, the GUI on this page is not organized into areas and the user
 	// is not able to logout, return, or quit from this page
 	
+	
+	
 	// These widgets display the purpose of the page and guide the user.
-	private static Label label_ApplicationTitle = new Label("Update a User's Account Details");
+	private static Label label_ApplicationTitle = new Label("");
     private static Label label_Purpose = 
-    		new Label(" Use this page to define or update your account information."); 
+    		new Label(""); 
     
     // These are static output labels and do not change during execution
 	private static Label label_Username = new Label("Username:");
@@ -86,13 +95,13 @@ public class ViewUserUpdate {
 	
 	// These buttons enable the user to edit the various dynamic fields.  The username and the
 	// passwords for a user are currently not editable.
-	private static Button button_UpdateUsername = new Button("Update Username");
-	private static Button button_UpdatePassword = new Button("Update Password");
-	private static Button button_UpdateFirstName = new Button("Update First Name");
-	private static Button button_UpdateMiddleName = new Button("Update Middle Name");
-	private static Button button_UpdateLastName = new Button("Update Last Name");
-	private static Button button_UpdatePreferredFirstName = new Button("Update Preferred First Name");
-	private static Button button_UpdateEmailAddress = new Button("Update Email Address");
+	private static Button button_UpdateUsername = new Button("Edit");
+	private static Button button_UpdatePassword = new Button("Edit");
+	private static Button button_UpdateFirstName = new Button("Edit");
+	private static Button button_UpdateMiddleName = new Button("Edit");
+	private static Button button_UpdateLastName = new Button("Edit");
+	private static Button button_UpdatePreferredFirstName = new Button("Edit");
+	private static Button button_UpdateEmailAddress = new Button("Edit");
 
 	// This button enables the user to finish working on this page and proceed to the user's home
 	// page determined by the user's role at the time of log in.
@@ -220,11 +229,49 @@ public class ViewUserUpdate {
 
 		// Create the Pane for the list of widgets and the Scene for the window
 		theRootPane = new Pane();
+		theRootPane.getStyleClass().add("update-user-root");
 		theUserUpdateScene = new Scene(theRootPane, width, height);
+		
+		// Grey background on top 
+	    Rectangle topBackground = new Rectangle(0, 0, width, height * 0.20);
+	    topBackground.getStyleClass().add("top-bg");
+	    
+	    // Create circle
+	    Circle topLeftCircle = new Circle(75, 125, 45); // x, y, radius
+	    topLeftCircle.getStyleClass().add("top-circle"); 
+	    
+	    // Create image (with transparency)
+	    Image logoImage = new Image(getClass().getResourceAsStream("/images/discord-logo.png"));
+	    ImageView logoImageView = new ImageView(logoImage);
+	    logoImageView.setFitWidth(60);  // Smaller than circle diameter (100)
+	    logoImageView.setFitHeight(60);
+	    logoImageView.setPreserveRatio(true);
+
+	    // Position image in center of circle
+	    logoImageView.setLayoutX(75 - 30); 
+	    logoImageView.setLayoutY(125 - 30);  
+	    
 		
 		theUserUpdateScene.getStylesheets().add(
 		        getClass().getResource("/applicationMain/application.css").toExternalForm()
 	    );
+		
+		// Create a VBox to hold all user information fields
+		VBox infoBox = new VBox(15); 
+		infoBox.setLayoutX(50);  
+		infoBox.setLayoutY(200); 
+		infoBox.setPrefWidth(700);
+		infoBox.setPadding(new Insets(20)); 
+		infoBox.getStyleClass().add("infoBox");
+		
+		button_UpdateUsername.getStyleClass().add("hbox-buttons");
+		button_UpdatePassword.getStyleClass().add("hbox-buttons");
+		button_UpdateFirstName.getStyleClass().add("hbox-buttons");
+		button_UpdateMiddleName.getStyleClass().add("hbox-buttons");
+		button_UpdateLastName.getStyleClass().add("hbox-buttons");
+		button_UpdatePreferredFirstName.getStyleClass().add("hbox-buttons");
+		button_UpdateEmailAddress.getStyleClass().add("hbox-buttons");
+		
 
 		// Initialize the pop-up dialogs to an empty text filed.
 		dialogUpdateUserName = new TextInputDialog("");
@@ -301,15 +348,24 @@ public class ViewUserUpdate {
             return null;
         });
         
+        // Set up the button to proceed to this user's home page
+        setupButtonUI(button_ProceedToUserHomePage, "Dialog", 18, 300, 
+        		Pos.CENTER, width-350, 130);
+        button_ProceedToUserHomePage.setOnAction((_) -> 
+        	{ControllerUserUpdate.goToUserHomePage(theStage, theUser);});
+        
         // Display the titles, values, and update buttons for the various admin account attributes.
         // If the attributes is null or empty, display "<none>".
         
-        // Username
-        setupLabelUI(label_Username, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 100);
-        label_Username.getStyleClass().add("sub-label");
-        setupLabelUI(label_CurrentUsername, "Arial", 18, 260, Pos.BASELINE_LEFT, 200, 100);
-        label_CurrentUsername.getStyleClass().add("sub-label");
-        setupButtonUI(button_UpdateUsername, "Dialog", 18, 275, Pos.CENTER, 500, 93);
+        // Username row
+        HBox usernameRow = new HBox(10); 
+        usernameRow.getStyleClass().add("hbox-labels");
+        usernameRow.setAlignment(Pos.CENTER_LEFT);
+        label_Username.setPrefWidth(190);
+        label_CurrentUsername.setPrefWidth(260);
+        usernameRow.getChildren().addAll(label_Username, label_CurrentUsername, button_UpdateUsername);
+        
+        HBox.setMargin(button_UpdateUsername, new Insets(0, 0, 0, 125));
         button_UpdateUsername.setOnAction((_) -> {
         	result = dialogUpdateUserName.showAndWait();
 	    	result.ifPresent(_ -> {
@@ -348,13 +404,17 @@ public class ViewUserUpdate {
 	    	});
 	    });
         
-	       
-        // password
-        setupLabelUI(label_Password, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 150);
-        label_Password.getStyleClass().add("sub-label");
-        setupLabelUI(label_CurrentPassword, "Arial", 18, 260, Pos.BASELINE_LEFT, 200, 150);
-        label_CurrentPassword.getStyleClass().add("sub-label");
-        setupButtonUI(button_UpdatePassword, "Dialog", 18, 275, Pos.CENTER, 500, 143);
+	    
+        
+    	// Password row
+        HBox passwordRow = new HBox(10);
+        passwordRow.getStyleClass().add("hbox-labels");
+        passwordRow.setAlignment(Pos.CENTER_LEFT);
+        label_Password.setPrefWidth(190);
+        label_CurrentPassword.setPrefWidth(260);
+        passwordRow.getChildren().addAll(label_Password, label_CurrentPassword, button_UpdatePassword);
+
+        HBox.setMargin(button_UpdatePassword, new Insets(0, 0, 0, 125));
         button_UpdatePassword.setOnAction((_) -> {
         	result = dialogUpdatePassword.showAndWait();
 	    	result.ifPresent(_ -> {
@@ -403,12 +463,14 @@ public class ViewUserUpdate {
 	    });
         
         
-        // First Name
-        setupLabelUI(label_FirstName, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 200);
-        label_FirstName.getStyleClass().add("sub-label");
-        setupLabelUI(label_CurrentFirstName, "Arial", 18, 260, Pos.BASELINE_LEFT, 200, 200);
-        label_CurrentFirstName.getStyleClass().add("sub-label");
-        setupButtonUI(button_UpdateFirstName, "Dialog", 18, 275, Pos.CENTER, 500, 193);
+        HBox firstnameRow = new HBox(10); 
+        firstnameRow.getStyleClass().add("hbox-labels");
+        firstnameRow.setAlignment(Pos.CENTER_LEFT);
+        label_FirstName.setPrefWidth(190);
+        label_CurrentFirstName.setPrefWidth(260);
+        firstnameRow.getChildren().addAll(label_FirstName, label_CurrentFirstName, button_UpdateFirstName);
+        
+        HBox.setMargin(button_UpdateFirstName, new Insets(0, 0, 0, 125));
         button_UpdateFirstName.setOnAction((_) -> {result = dialogUpdateFirstName.showAndWait();
         	result.ifPresent(_ -> theDatabase.updateFirstName(theUser.getUserName(), result.get()));
         	theDatabase.getUserAccountDetails(theUser.getUserName());
@@ -416,14 +478,17 @@ public class ViewUserUpdate {
            	theUser.setFirstName(newName);
         	if (newName == null || newName.length() < 1)label_CurrentFirstName.setText("<none>");
         	else label_CurrentFirstName.setText(newName);
-         	});
-               
-        // Middle Name
-        setupLabelUI(label_MiddleName, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 250);
-        label_MiddleName.getStyleClass().add("sub-label");
-        setupLabelUI(label_CurrentMiddleName, "Arial", 18, 260, Pos.BASELINE_LEFT, 200, 250);
-        label_CurrentMiddleName.getStyleClass().add("sub-label");
-        setupButtonUI(button_UpdateMiddleName, "Dialog", 18, 275, Pos.CENTER, 500, 243);
+     	});
+        
+        
+        HBox middlenameRow = new HBox(10); 
+        middlenameRow.getStyleClass().add("hbox-labels");
+        middlenameRow.setAlignment(Pos.CENTER_LEFT);
+        label_MiddleName.setPrefWidth(190);
+        label_CurrentMiddleName.setPrefWidth(260);
+        middlenameRow.getChildren().addAll(label_MiddleName, label_CurrentMiddleName, button_UpdateMiddleName);
+        
+        HBox.setMargin(button_UpdateMiddleName, new Insets(0, 0, 0, 125));
         button_UpdateMiddleName.setOnAction((_) -> {result = dialogUpdateMiddleName.showAndWait();
     		result.ifPresent(_ -> theDatabase.updateMiddleName(theUser.getUserName(), result.get()));
     		theDatabase.getUserAccountDetails(theUser.getUserName());
@@ -431,31 +496,33 @@ public class ViewUserUpdate {
            	theUser.setMiddleName(newName);
         	if (newName == null || newName.length() < 1)label_CurrentMiddleName.setText("<none>");
         	else label_CurrentMiddleName.setText(newName);
-    		});
+		});
+
+        HBox lastnameRow = new HBox(10); 
+        lastnameRow.getStyleClass().add("hbox-labels");
+        lastnameRow.setAlignment(Pos.CENTER_LEFT);
+        label_LastName.setPrefWidth(190);
+        label_CurrentLastName.setPrefWidth(260);
+        lastnameRow.getChildren().addAll(label_LastName, label_CurrentLastName, button_UpdateLastName);
         
-        // Last Name
-        setupLabelUI(label_LastName, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 300);
-        label_LastName.getStyleClass().add("sub-label");
-        setupLabelUI(label_CurrentLastName, "Arial", 18, 260, Pos.BASELINE_LEFT, 200, 300);
-        label_CurrentLastName.getStyleClass().add("sub-label");
-        setupButtonUI(button_UpdateLastName, "Dialog", 18, 275, Pos.CENTER, 500, 293);
+        HBox.setMargin(button_UpdateLastName, new Insets(0, 0, 0, 125));
         button_UpdateLastName.setOnAction((_) -> {result = dialogUpdateLastName.showAndWait();
     		result.ifPresent(_ -> theDatabase.updateLastName(theUser.getUserName(), result.get()));
     		theDatabase.getUserAccountDetails(theUser.getUserName());
     		String newName = theDatabase.getCurrentLastName();
            	theUser.setLastName(newName);
-      	if (newName == null || newName.length() < 1)label_CurrentLastName.setText("<none>");
+           	if (newName == null || newName.length() < 1)label_CurrentLastName.setText("<none>");
         	else label_CurrentLastName.setText(newName);
-    		});
+		});
         
-        // Preferred First Name
-        setupLabelUI(label_PreferredFirstName, "Arial", 18, 190, Pos.BASELINE_RIGHT, 
-        		5, 350);
-        label_PreferredFirstName.getStyleClass().add("sub-label");
-        setupLabelUI(label_CurrentPreferredFirstName, "Arial", 18, 260, Pos.BASELINE_LEFT, 
-        		200, 350);
-        label_CurrentPreferredFirstName.getStyleClass().add("sub-label");
-        setupButtonUI(button_UpdatePreferredFirstName, "Dialog", 18, 275, Pos.CENTER, 500, 343);
+        HBox prefnameRow = new HBox(10); 
+        prefnameRow.getStyleClass().add("hbox-labels");
+        prefnameRow.setAlignment(Pos.CENTER_LEFT);
+        label_PreferredFirstName.setPrefWidth(190);
+        label_CurrentPreferredFirstName.setPrefWidth(260);
+        prefnameRow.getChildren().addAll(label_PreferredFirstName, label_CurrentPreferredFirstName, button_UpdatePreferredFirstName);
+        
+        HBox.setMargin(button_UpdatePreferredFirstName, new Insets(0, 0, 0, 125));
         button_UpdatePreferredFirstName.setOnAction((_) -> 
         	{result = dialogUpdatePreferredFirstName.showAndWait();
     		result.ifPresent(_ -> 
@@ -465,14 +532,16 @@ public class ViewUserUpdate {
            	theUser.setPreferredFirstName(newName);
          	if (newName == null || newName.length() < 1)label_CurrentPreferredFirstName.setText("<none>");
         	else label_CurrentPreferredFirstName.setText(newName);
-     		});
+ 		});
+
+        HBox emailaddRow = new HBox(10);
+        emailaddRow.getStyleClass().add("hbox-labels");
+        emailaddRow.setAlignment(Pos.CENTER_LEFT);
+        label_EmailAddress.setPrefWidth(190);
+        label_CurrentEmailAddress.setPrefWidth(260);
+        emailaddRow.getChildren().addAll(label_EmailAddress, label_CurrentEmailAddress, button_UpdateEmailAddress);
         
-        // Email Address
-        setupLabelUI(label_EmailAddress, "Arial", 18, 190, Pos.BASELINE_RIGHT, 5, 400);
-        label_EmailAddress.getStyleClass().add("sub-label");
-        setupLabelUI(label_CurrentEmailAddress, "Arial", 18, 260, Pos.BASELINE_LEFT, 200, 400);
-        label_CurrentEmailAddress.getStyleClass().add("sub-label");
-        setupButtonUI(button_UpdateEmailAddress, "Dialog", 18, 275, Pos.CENTER, 500, 393);
+        HBox.setMargin(button_UpdateEmailAddress, new Insets(0, 0, 0, 125));
         button_UpdateEmailAddress.setOnAction((_) -> {result = dialogUpdateEmailAddresss.showAndWait();
     		result.ifPresent(_ -> theDatabase.updateEmailAddress(theUser.getUserName(), result.get()));
     		theDatabase.getUserAccountDetails(theUser.getUserName());
@@ -480,25 +549,30 @@ public class ViewUserUpdate {
            	theUser.setEmailAddress(newEmail);
         	if (newEmail == null || newEmail.length() < 1)label_CurrentEmailAddress.setText("<none>");
         	else label_CurrentEmailAddress.setText(newEmail);
- 			});
+		});
         
-        // Set up the button to proceed to this user's home page
-        setupButtonUI(button_ProceedToUserHomePage, "Dialog", 18, 300, 
-        		Pos.CENTER, width/2-150, 450);
-        button_ProceedToUserHomePage.setOnAction((_) -> 
-        	{ControllerUserUpdate.goToUserHomePage(theStage, theUser);});
+   
+        
+        // add info box children widgets
+        infoBox.getChildren().addAll(
+        	    usernameRow,
+        	    passwordRow,
+        	    firstnameRow,
+        	    middlenameRow,
+        	    lastnameRow,
+        	    prefnameRow,
+        	    emailaddRow
+        	);
+        
+      
     	
         // Populate the Pane's list of children widgets
         theRootPane.getChildren().addAll(
         		label_ApplicationTitle, label_Purpose, 
-        		label_Username, label_CurrentUsername, button_UpdateUsername,
-        		label_Password, label_CurrentPassword, button_UpdatePassword,
-        		label_FirstName, label_CurrentFirstName, button_UpdateFirstName,
-        		label_MiddleName, label_CurrentMiddleName, button_UpdateMiddleName,
-        		label_LastName, label_CurrentLastName, button_UpdateLastName,
-        		label_PreferredFirstName, label_CurrentPreferredFirstName,
-        		button_UpdatePreferredFirstName, button_UpdateEmailAddress,
-        		label_EmailAddress, label_CurrentEmailAddress, 
+        		topBackground,
+        		topLeftCircle,
+        		logoImageView,
+        		infoBox,
         		button_ProceedToUserHomePage);
 	}
 	

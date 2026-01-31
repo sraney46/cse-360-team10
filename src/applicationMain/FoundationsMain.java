@@ -104,6 +104,8 @@ public class FoundationsMain extends Application {
 		    getClass().getResource("/fonts/Montserrat-Bold.ttf").toExternalForm(),
 		    14
 		);
+		
+		System.out.println("test discord webook");
 
 		
 		

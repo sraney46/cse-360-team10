@@ -131,7 +131,7 @@ public class ControllerFirstAdmin {
    * the Admin
    * account. It start by trying to establish a new user and placing that user
    * into the
-   * database. If that is successful, we proceed to the UserUpdate page.
+   * database. If that is successful, we proceed to the login page.
    * </p>
    * 
    */
@@ -164,10 +164,8 @@ public class ControllerFirstAdmin {
           System.exit(0);
         }
 
-        // User was established in the database, so navigate to the User Update Page
+        // User was established in the database, so navigate to back to the login Page
         guiUserLogin.ViewUserLogin.displayUserLogin(ViewFirstAdmin.theStage);
-        // guiUserUpdate.ViewUserUpdate.displayUserUpdate(ViewFirstAdmin.theStage,
-        // user);
       } else {
         // The two passwords are NOT the same, so clear the passwords, explain the
         // passwords

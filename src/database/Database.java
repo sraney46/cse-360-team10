@@ -122,7 +122,8 @@ public class Database {
 	    String invitationCodesTable = "CREATE TABLE IF NOT EXISTS InvitationCodes ("
 	            + "code VARCHAR(10) PRIMARY KEY, "
 	    		+ "emailAddress VARCHAR(255), "
-	            + "role VARCHAR(10))";
+	            + "role VARCHAR(10), "
+	            + "expirationTime BIGINT)";
 	    statement.execute(invitationCodesTable);
 	}
 
@@ -391,12 +392,15 @@ public class Database {
 	// Generates a new invitation code and inserts it into the database.
 	public String generateInvitationCode(String emailAddress, String role) {
 	    String code = UUID.randomUUID().toString().substring(0, 6); // Generate a random 6-character code
-	    String query = "INSERT INTO InvitationCodes (code, emailaddress, role) VALUES (?, ?, ?)";
-
+	    String query = "INSERT INTO InvitationCodes (code, emailaddress, role, expirationTime) VALUES (?, ?, ?, ?)";
+	    int secondsDelay = 60*60*12; //Amount to delay timer in seconds
+	    long timeStamp = System.currentTimeMillis() + (secondsDelay * 1000); //Get the current time, and add amount of seconds
+	    
 	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 	        pstmt.setString(1, code);
 	        pstmt.setString(2, emailAddress);
 	        pstmt.setString(3, role);
+	        pstmt.setLong(4, timeStamp);
 	        pstmt.executeUpdate();
 	    } catch (SQLException e) {
 	        e.printStackTrace();
@@ -481,6 +485,31 @@ public class Database {
 	    return "";
 	}
 
+	
+	/*******
+	 * <p> Method: bool validateUserCodeTime(String code) </p>
+	 * 
+	 * <p> Description: Validate the user code's time stamp to check for expiration.</p>
+	 * 
+	 * @param code is the 6 character String invitation code
+	 *  
+	 * @return whether the timestamp for the expiration has past. Expired codes will return false.
+	 * 
+	 */
+	// Obtain the roles associated with an invitation code.
+	public boolean validateUserCodeTime(String code) {
+	    String query = "SELECT * FROM InvitationCodes WHERE code = ?";
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setString(1, code);
+	        ResultSet rs = pstmt.executeQuery();    
+	        if (rs.next()) {	
+	            return rs.getLong("expirationTime") >= System.currentTimeMillis();
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return false;
+	}
 	
 	/*******
 	 * <p> Method: String getEmailAddressUsingCode (String code ) </p>

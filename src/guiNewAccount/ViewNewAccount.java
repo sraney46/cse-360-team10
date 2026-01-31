@@ -80,6 +80,7 @@ public class ViewNewAccount {
     											// and a role for this user
     protected static String emailAddress;		// Established here for use by the controller
     protected static String theRole;			// Established here for use by the controller
+    protected static boolean checkValidTimer;			// Established here for use by the controller
 	public static Scene theNewAccountScene = null;	// Access to the User Update page's GUI Widgets
 	
 
@@ -128,7 +129,10 @@ public class ViewNewAccount {
 		// Fetch the role for this user
 		theRole = theDatabase.getRoleGivenAnInvitationCode(theInvitationCode);
 		
-		if (theRole.length() == 0) {// If there is an issue with the invitation code, display a
+		//Validate the timer on the user code to check for expiration
+		checkValidTimer = theDatabase.validateUserCodeTime(theInvitationCode);
+		
+		if (theRole.length() == 0 || !checkValidTimer) {// If there is an issue with the invitation code, display a
 			alertInvitationCodeIsInvalid.showAndWait();	// dialog box saying that are when it it
 			return;					// acknowledged, return so the proper code can be entered
 		}
@@ -190,7 +194,7 @@ public class ViewNewAccount {
 		
 		// If the invitation code is wrong, this alert dialog will tell the user
 		alertInvitationCodeIsInvalid.setTitle("Invalid Invitation Code");
-		alertInvitationCodeIsInvalid.setHeaderText("The invitation code is not valid.");
+		alertInvitationCodeIsInvalid.setHeaderText("The invitation code is not valid or expired.");
 		alertInvitationCodeIsInvalid.setContentText("Correct the code and try again.");
 		
 		// if the user name is invalid, this alert dialog will tell the user

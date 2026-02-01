@@ -3,6 +3,8 @@ package guiAdminHome;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -10,9 +12,14 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -130,6 +137,9 @@ public class ViewAdminHome {
 
 	private static Scene theAdminHomeScene;		// The shared Scene each invocation populates
 	private static final int theRole = 1;		// Admin: 1; Role1: 2; Role2: 3
+	
+	//User list members
+	protected static TableView<User> usersList = new TableView<>();
 
 	/*-*******************************************************************************************
 
@@ -281,6 +291,10 @@ public class ViewAdminHome {
     
 		setupButtonUI(button_Quit, "Dialog", 18, 250, Pos.CENTER, 300, 540);
 		button_Quit.setOnAction((_) -> {ControllerAdminHome.performQuit(); });
+		
+		//Establish user list in the Admin home
+		setupTableViewUI(usersList, "Dialog", 16, 480, 300, 268, 240);
+		setupUserListData();
 
 		// This is the end of the GUI initialization code
 		
@@ -292,6 +306,7 @@ public class ViewAdminHome {
     		label_Invitations, 
     		label_InvitationEmailAddress, text_InvitationEmailAddress,
     		combobox_SelectRole, button_SendInvitation, line_Separator3,
+    		usersList,
     		button_ManageInvitations,
     		button_SetOnetimePassword,
     		button_DeleteUser,
@@ -390,5 +405,56 @@ public class ViewAdminHome {
 		c.setMinWidth(w);
 		c.setLayoutX(x);
 		c.setLayoutY(y);
+	}
+	
+	/**********
+	 * Private local method to initialize the standard fields for a ListView
+	 * 
+	 * @param c		The ComboBox object to be initialized
+	 * @param ff	The font to be used
+	 * @param f		The size of the font to be used
+	 * @param w		The width of the ComboBox
+	 * @param x		The location from the left edge (x axis)
+	 * @param y		The location from the top (y axis)
+	 */
+	private void setupTableViewUI(TableView <User> t, String ff, double f, double w, double x, double y, double h){
+		t.setStyle("-fx-font: " + f + " " + ff + ";");
+		t.setMinWidth(w);
+		t.setMaxWidth(w);
+		t.setMinHeight(h);
+		t.setMaxHeight(h);
+		t.setLayoutX(x);
+		t.setLayoutY(y);
+	}
+	
+	/**********
+	 * Generate the fields for the user list. Seems TableView is the best way.
+	 * 
+	 * @param userName	The username to get data from
+	 */
+	private void setupUserListData()
+	{
+		//Create a list of User objects for the TableView
+		List<User> allUsers = new ArrayList<>();
+		for(String userName : theDatabase.getUserList()) {
+			User selectUser = theDatabase.getUserAsObject(userName);
+			allUsers.add(selectUser);
+		}
+		
+		//Generate the column of real names
+		TableColumn<User, String> fullNameColumn = new TableColumn<>("Real Name");
+		fullNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty (cellData.getValue().getFullName()));
+		
+		//Generate the column of email
+		TableColumn<User, String> emailColumn = new TableColumn<>("Email");
+		emailColumn.setCellValueFactory(cellData -> new SimpleStringProperty (cellData.getValue().getEmailAddress()));
+		
+		//Generate the column of roles
+		TableColumn<User, String> roleColumn = new TableColumn<>("Roles");
+		roleColumn.setCellValueFactory(cellData -> new SimpleStringProperty (cellData.getValue().getRoleString()));
+
+		//Generate the TableView
+		usersList.setItems(FXCollections.observableArrayList(allUsers));
+		usersList.getColumns().addAll(fullNameColumn,emailColumn,roleColumn);
 	}
 }

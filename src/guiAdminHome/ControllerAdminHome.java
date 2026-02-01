@@ -1,6 +1,7 @@
 package guiAdminHome;
 
 import database.Database;
+import entityClasses.User;
 
 /*******
  * <p> Title: GUIAdminHomePage Class. </p>

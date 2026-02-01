@@ -231,7 +231,8 @@ public class Database {
  */
 	public List<String> getUserList () {
 		List<String> userList = new ArrayList<String>();
-		userList.add("<Select a User>");
+		//Commenting out this line, having this will just cause more problems than it solves
+		//userList.add("<Select a User>");
 		String query = "SELECT userName FROM userDB";
 		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 			ResultSet rs = pstmt.executeQuery();
@@ -911,6 +912,40 @@ public class Database {
 			return true;
 	    } catch (SQLException e) {
 			return false;
+	    }
+	}
+	
+	/*******
+	 * <p> Method: User getUserAsObject(String username) </p>
+	 * 
+	 * <p> Description: Return an instance of a user, particularly one in the list and therefore not the current user</p>
+	 * 
+	 * @param username is the username of the user
+	 * 
+	 * @return a user object
+	 *  
+	 */
+	// get the attributes for a specified user
+	public User getUserAsObject(String username) {
+		User currentUser = new User();
+		String query = "SELECT * FROM userDB WHERE username = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, username);
+	        ResultSet rs = pstmt.executeQuery();			
+			rs.next();
+			currentUser.setUserName(rs.getString(2));
+			currentUser.setPassword(rs.getString(3));
+			currentUser.setFirstName(rs.getString(4));
+			currentUser.setMiddleName(rs.getString(5));
+			currentUser.setLastName(rs.getString(6));
+			currentUser.setPreferredFirstName(rs.getString(7));
+			currentUser.setEmailAddress(rs.getString(8));
+			currentUser.setAdminRole(rs.getBoolean(9));
+			currentUser.setRole1User(rs.getBoolean(10));
+			currentUser.setRole2User(rs.getBoolean(11));
+			return currentUser;
+	    } catch (SQLException e) {
+			return currentUser;
 	    }
 	}
 	

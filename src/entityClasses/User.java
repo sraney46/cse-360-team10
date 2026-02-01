@@ -1,5 +1,8 @@
 package entityClasses;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /*******
  * <p> Title: User Class </p>
  * 
@@ -185,6 +188,17 @@ public class User {
      */
     // Gets the current value of the Student role attribute.
     public String getPreferredFirstName() { return preferredFirstName; }
+    
+    /*****
+     * <p> Method: String getFullame() </p>
+     * 
+     * <p> Description: This getter returns the FullName. </p>
+     * 
+     * @return a String of the MiddleName
+	 *
+     */
+    // Gets the full name of the user
+    public String getFullName() { return firstName + " " + (middleName.length() > 0 ? middleName : " ") + " " + lastName; }
 
     
     /*****
@@ -241,6 +255,23 @@ public class User {
      */
     // Gets the current value of the role2 attribute.
     public boolean getNewRole2() { return role2; }
+    
+    /*****
+     * <p> Method: String getRoleString() </p>
+     * 
+     * <p> Description: This getter returns the string of all the roles. </p>
+     * 
+     * @return a String of "TRUE" or "FALSE" based on state of the attribute
+	 *
+     */
+    // Gets the current value of the role2 attribute.
+    public String getRoleString() { 
+    	List<String> roles = new ArrayList<>();
+    	if(adminRole) roles.add("Admin");
+    	if(role1) roles.add("Role1");
+    	if(role2) roles.add("Role2");
+    	return String.join("|", roles); 
+    }
 
         
     /*****

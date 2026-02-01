@@ -31,6 +31,7 @@ public class User {
     private boolean adminRole;
     private boolean role1;
     private boolean role2;
+    private boolean tempPW;
     
     
     /*****
@@ -62,7 +63,7 @@ public class User {
      */
     // Constructor to initialize a new User object with userName, password, and role.
     public User(String userName, String password, String fn, String mn, String ln, String pfn, 
-    		String ea, boolean r1, boolean r2, boolean r3) {
+    		String ea, boolean r1, boolean r2, boolean r3, boolean tpw) {
         this.userName = userName;
         this.password = password;
         this.firstName = fn;
@@ -73,6 +74,7 @@ public class User {
         this.adminRole = r1;
         this.role1 = r2;
         this.role2 = r3;
+        this.tempPW = tpw;
     }
 
     
@@ -255,6 +257,17 @@ public class User {
      */
     // Gets the current value of the role2 attribute.
     public boolean getNewRole2() { return role2; }
+    
+    /*****
+     * <p> Method: boolean getTemporaryPassword() </p>
+     * 
+     * <p> Description: This getter returns whether the user has a temporary password </p>
+     * 
+     * @return a boolean
+	 *
+     */
+    // Gets the current value of the role2 attribute.
+    public boolean getTemporaryPassword() { return tempPW; }
     
     /*****
      * <p> Method: String getRoleString() </p>

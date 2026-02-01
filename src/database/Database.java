@@ -59,6 +59,7 @@ public class Database {
 	private boolean currentAdminRole;
 	private boolean currentNewRole1;
 	private boolean currentNewRole2;
+	private boolean temporaryPassword;
 
 	/*******
 	 * <p> Method: Database </p>
@@ -115,7 +116,8 @@ public class Database {
 				+ "emailAddress VARCHAR(255), "
 				+ "adminRole BOOL DEFAULT FALSE, "
 				+ "newRole1 BOOL DEFAULT FALSE, "
-				+ "newRole2 BOOL DEFAULT FALSE)";
+				+ "newRole2 BOOL DEFAULT FALSE, "
+				+ "oneTimePW BOOL DEFAULT FALSE)";
 		statement.execute(userTable);
 		
 		// Create the invitation codes table
@@ -183,8 +185,8 @@ public class Database {
  */
 	public void register(User user) throws SQLException {
 		String insertUser = "INSERT INTO userDB (userName, password, firstName, middleName, "
-				+ "lastName, preferredFirstName, emailAddress, adminRole, newRole1, newRole2) "
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				+ "lastName, preferredFirstName, emailAddress, adminRole, newRole1, newRole2, oneTimePW) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		try (PreparedStatement pstmt = connection.prepareStatement(insertUser)) {
 			currentUsername = user.getUserName();
 			pstmt.setString(1, currentUsername);
@@ -215,6 +217,9 @@ public class Database {
 			
 			currentNewRole2 = user.getNewRole2();
 			pstmt.setBoolean(10, currentNewRole2);
+			
+			temporaryPassword = user.getTemporaryPassword();
+			pstmt.setBoolean(11, temporaryPassword);
 			
 			pstmt.executeUpdate();
 		}
@@ -618,6 +623,58 @@ public class Database {
 	}
 	
 
+	
+	/*******
+	 * <p> Method: String generateOneTimePassword(String username) </p>
+	 * 
+	 * <p> Description: Update the password of a user with a one-time, temporary PW.</p>
+	 * 
+	 * @param username is the username of the user
+	 * @param password is the new password of the user
+	 * @return the generated one-time PW
+	 *
+	 *  
+	 */
+	// update the password
+	public String generateOneTimePassword(String username) {
+	    String query = "UPDATE userDB SET passWord = ?, oneTimePW = ? WHERE userName = ?";
+	    String generatedPW = UUID.randomUUID().toString().substring(0, 8); // Generate a random 8-character password
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setString(1, generatedPW);
+	        pstmt.setBoolean(2, true);
+	        pstmt.setString(3, username);
+	        pstmt.executeUpdate();
+	        return generatedPW;
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return "";
+	}
+	
+	/*******
+	 * <p> Method: void clearOneTimePassword(String username) </p>
+	 * 
+	 * <p> Description: Update the password of a user with a one-time, temporary PW.</p>
+	 * 
+	 * @param username is the username of the user
+	 * @param password is the new password of the user
+	 * @return the generated one-time PW
+	 *
+	 *  
+	 */
+	// update the password
+	public void clearOneTimePassword(String username) {
+	    String query = "UPDATE userDB SET passWord = ?, oneTimePW = ? WHERE userName = ?";
+	    String generatedPW = UUID.randomUUID().toString().substring(0, 8); // Generate a random 8-character password
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setString(1, "");
+	        pstmt.setBoolean(2, false);
+	        pstmt.setString(3, username);
+	        pstmt.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
 	
 	/*******
 	 * <p> Method: String getFirstName(String username) </p>
@@ -1125,6 +1182,16 @@ public class Database {
 	 *  
 	 */
 	public boolean getCurrentNewRole2() { return currentNewRole2;};
+	
+	/*******
+	 * <p> Method: boolean getCurrentNewRole2() </p>
+	 * 
+	 * <p> Description: Get the current user's Reviewer role attribute.</p>
+	 * 
+	 * @return true if this user plays a Reviewer role, else false
+	 *  
+	 */
+	public boolean getTemporaryPassword() { return temporaryPassword;};
 
 	
 	/*******

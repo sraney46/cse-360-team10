@@ -112,11 +112,13 @@ public class ControllerAdminHome {
 	 * this function has not yet been implemented. </p>
 	 */
 	protected static void setOnetimePassword () {
-		System.out.println("\n*** WARNING ***: One-Time Password Not Yet Implemented");
-		ViewAdminHome.alertNotImplemented.setTitle("*** WARNING ***");
-		ViewAdminHome.alertNotImplemented.setHeaderText("One-Time Password Issue");
-		ViewAdminHome.alertNotImplemented.setContentText("One-Time Password Not Yet Implemented");
-		ViewAdminHome.alertNotImplemented.showAndWait();
+		String selectedUser = (String) ViewAdminHome.usersList.getSelectionModel().getSelectedItem().getUserName();
+		String generatedPW = theDatabase.generateOneTimePassword(selectedUser);
+		String msg = "Generated one-time password for " + selectedUser;
+		System.out.println(msg + ": " + generatedPW);
+		ViewAdminHome.alertOneTimePassword.setHeaderText(msg);
+		ViewAdminHome.alertOneTimePassword.setContentText(generatedPW);
+		ViewAdminHome.alertOneTimePassword.showAndWait();
 	}
 	
 	/**********

@@ -106,7 +106,12 @@ public class ViewAdminHome {
 	// admin buttons to use to perform other roles.  Many of these buttons are just stubs and an
 	// alert pops up to inform the admin of this fact.
 	protected static Button button_ManageInvitations = new Button("Manage Invitations");
+	
+	//Properties and GUI related to One-time passwords
 	protected static Button button_SetOnetimePassword = new Button("Set a One-Time Password");
+	protected static Alert alertOneTimePassword = new Alert(AlertType.INFORMATION);
+	
+	//Properties and GUI related to deleting passwords
 	protected static Button button_DeleteUser = new Button("Delete a User");
 	protected static Button button_ListUsers = new Button("List All Users");
 	protected static Button button_AddRemoveRoles = new Button("Add/Remove Roles");
@@ -190,6 +195,13 @@ public class ViewAdminHome {
 
 		// Set the role for potential users to the default (No role selected)
 		combobox_SelectRole.getSelectionModel().select(0);
+		
+		// Forcefully clear the user table and refresh it. This may be the only way without restructuring
+		// Every property in this app to an observeable. Which unfortunately we do not have the capital
+		// to do.
+		usersList.getItems().clear();
+		usersList.getColumns().clear();
+		setupUserListData();
 				
 		// Set the title for the window, display the page, and wait for the Admin to do something
 		theStage.setTitle("");
@@ -274,7 +286,8 @@ public class ViewAdminHome {
 	
 		setupButtonUI(button_SetOnetimePassword, "Dialog", 16, 250, Pos.CENTER, 20, 320);
 		button_SetOnetimePassword.setOnAction((_) -> 
-			{ControllerAdminHome.setOnetimePassword(); });
+			{ControllerAdminHome.setOnetimePassword(); });		
+		alertOneTimePassword.setTitle("One-time password generated");
 
 		setupButtonUI(button_DeleteUser, "Dialog", 16, 250, Pos.CENTER, 20, 370);
 		button_DeleteUser.setOnAction((_) -> {ControllerAdminHome.deleteUser(); });
@@ -293,8 +306,30 @@ public class ViewAdminHome {
 		button_Quit.setOnAction((_) -> {ControllerAdminHome.performQuit(); });
 		
 		//Establish user list in the Admin home
-		setupTableViewUI(usersList, "Dialog", 16, 480, 300, 268, 240);
-		setupUserListData();
+		setupTableViewUI(usersList, "Dialog", 12, 480, 300, 268, 240);
+		
+		usersList.getSelectionModel().selectedItemProperty().addListener((selection) -> {
+		    if (selection != null) {
+		    	String user = usersList.getSelectionModel().getSelectedItem().getUserName();
+		    	User selectUser = null;
+		    	if(!user.isEmpty()) selectUser = theDatabase.getUserAsObject(user);
+		    	
+		    	if(selectUser != null) {
+		    		if(selectUser.getAdminRole() && !user.equals(theUser.getUserName())) {
+		    			button_DeleteUser.setVisible(false);
+		    			button_SetOnetimePassword.setVisible(false);
+		    		}
+		    		else if(selectUser.getAdminRole() && user.equals(theUser.getUserName())){
+		    			button_DeleteUser.setVisible(true);
+		    			button_SetOnetimePassword.setVisible(false);
+		    		}
+		    		else {
+		    			button_DeleteUser.setVisible(true);
+		    			button_SetOnetimePassword.setVisible(true);
+		    		}
+		    	}
+		    }
+		});
 
 		// This is the end of the GUI initialization code
 		
@@ -432,29 +467,39 @@ public class ViewAdminHome {
 	 * 
 	 * @param userName	The username to get data from
 	 */
-	private void setupUserListData()
+	private static void setupUserListData()
 	{
 		//Create a list of User objects for the TableView
 		List<User> allUsers = new ArrayList<>();
-		for(String userName : theDatabase.getUserList()) {
+		for(String userName : FXCollections.observableArrayList(theDatabase.getUserList())) {
 			User selectUser = theDatabase.getUserAsObject(userName);
 			allUsers.add(selectUser);
 		}
 		
 		//Generate the column of real names
+		TableColumn<User, String> userNameColumn = new TableColumn<>("Username");
+		userNameColumn.setMinWidth(120);
+		userNameColumn.setMaxWidth(120);
+		userNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty (cellData.getValue().getUserName()));
+		
+		//Generate the column of real names
 		TableColumn<User, String> fullNameColumn = new TableColumn<>("Real Name");
+		fullNameColumn.setPrefWidth(180);
 		fullNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty (cellData.getValue().getFullName()));
 		
 		//Generate the column of email
 		TableColumn<User, String> emailColumn = new TableColumn<>("Email");
+		emailColumn.setPrefWidth(240);
 		emailColumn.setCellValueFactory(cellData -> new SimpleStringProperty (cellData.getValue().getEmailAddress()));
 		
 		//Generate the column of roles
 		TableColumn<User, String> roleColumn = new TableColumn<>("Roles");
+		roleColumn.setMinWidth(120);
+		roleColumn.setMaxWidth(120);
 		roleColumn.setCellValueFactory(cellData -> new SimpleStringProperty (cellData.getValue().getRoleString()));
 
 		//Generate the TableView
 		usersList.setItems(FXCollections.observableArrayList(allUsers));
-		usersList.getColumns().addAll(fullNameColumn,emailColumn,roleColumn);
+		usersList.getColumns().addAll(userNameColumn,fullNameColumn,emailColumn,roleColumn);
 	}
 }

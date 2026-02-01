@@ -1,9 +1,11 @@
 package guiAddRemoveRoles;
 
 import database.Database;
+import guiUserLogin.ViewUserLogin;
 import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
+import entityClasses.User;
 
 /*******
  * <p> Title: ControllerAddRemoveRoles Class. </p>
@@ -208,6 +210,13 @@ public class ControllerAddRemoveRoles {
 	 */
 	protected static void performAddRole() {
 		
+		//Display error if the user is an admin and they are not the current user
+		if(theDatabase.getAdminRole(ViewAddRemoveRoles.theSelectedUser) && !ViewAddRemoveRoles.theUser.getUserName().equals(ViewAddRemoveRoles.theSelectedUser)) {
+			ViewAddRemoveRoles.alertCannotModifyAdmin.setContentText(ViewAddRemoveRoles.theSelectedUser + " is also an admin and therefore can only modify their own roles.");
+			ViewAddRemoveRoles.alertCannotModifyAdmin.showAndWait();
+			return;
+		}
+		
 		// Determine which item in the ComboBox list was selected
 		ViewAddRemoveRoles.theAddRole =
 				(String) ViewAddRemoveRoles.combobox_SelectRoleToAdd.getValue();
@@ -236,6 +245,13 @@ public class ControllerAddRemoveRoles {
 	 * 
 	 */
 	protected static void performRemoveRole() {
+		
+		//Display error if the user is an admin and they are not the current user
+		if(theDatabase.getAdminRole(ViewAddRemoveRoles.theSelectedUser) && !ViewAddRemoveRoles.theUser.getUserName().equals(ViewAddRemoveRoles.theSelectedUser)) {
+			ViewAddRemoveRoles.alertCannotModifyAdmin.setContentText(ViewAddRemoveRoles.theSelectedUser + " is also an admin and therefore can only modify their own roles.");
+			ViewAddRemoveRoles.alertCannotModifyAdmin.showAndWait();
+			return;
+		}
 		
 		// Determine which item in the ComboBox list was selected
 		ViewAddRemoveRoles.theRemoveRole = (String) ViewAddRemoveRoles.

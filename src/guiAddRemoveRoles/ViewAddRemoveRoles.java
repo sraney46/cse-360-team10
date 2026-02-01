@@ -6,9 +6,11 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
@@ -101,6 +103,9 @@ public class ViewAddRemoveRoles {
 	protected static String theSelectedUser = "";	// The user whose roles are being updated
 	protected static String theAddRole = "";		// The role being added
 	protected static String theRemoveRole = "";		// The roles being removed
+	
+	//Errors and other information related to admin protection
+	protected static Alert alertCannotModifyAdmin = new Alert(AlertType.INFORMATION);
 
 
 
@@ -228,6 +233,10 @@ public class ViewAddRemoveRoles {
     
 		setupButtonUI(button_Quit, "Dialog", 18, 210, Pos.CENTER, 570, 540);
 		button_Quit.setOnAction((_) -> {ControllerAddRemoveRoles.performQuit(); });
+		
+		//Finally, let's handle the error messages if the user tries to modify another admin
+		alertCannotModifyAdmin.setTitle("This user's roles cannot be modified!");
+		alertCannotModifyAdmin.setHeaderText(null);
 		
 		// This is the end of the GUI Widgets for the page
 		

@@ -1073,6 +1073,88 @@ public class Database {
 	}
 	
 	
+	/*******
+	 * <p> Method: String getAdminRole(String username) </p>
+	 * 
+	 * <p> Description: Get whether the user is an admin.</p>
+	 * 
+	 * @param username is the username of the user
+	 * 
+	 * @return boolean of admin role
+	 *  
+	 */
+	// get the email address
+	public boolean getAdminRole(String username) {
+		String query = "SELECT emailAddress FROM userDB WHERE userName = ? AND adminRole = TRUE";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, username);
+	        ResultSet rs = pstmt.executeQuery();
+	        
+	        if (rs.next()) {
+	            return true; // Return the email address if user exists
+	        }
+			
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+		return false;
+	}
+	
+	/*******
+	 * <p> Method: String getRole1(String username) </p>
+	 * 
+	 * <p> Description: Get whether the user has Role1.</p>
+	 * 
+	 * @param username is the username of the user
+	 * 
+	 * @return boolean of Role1
+	 *  
+	 */
+	// get the email address
+	public boolean getRole1(String username) {
+		String query = "SELECT emailAddress FROM userDB WHERE userName = ? AND newRole1 = TRUE";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, username);
+	        ResultSet rs = pstmt.executeQuery();
+	        
+	        if (rs.next()) {
+	            return true; // Return the email address if user exists
+	        }
+			
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+		return false;
+	}
+	
+	/*******
+	 * <p> Method: String getRole2(String username) </p>
+	 * 
+	 * <p> Description: Get whether the user has Role1.</p>
+	 * 
+	 * @param username is the username of the user
+	 * 
+	 * @return boolean of Role2
+	 *  
+	 */
+	// get the email address
+	public boolean getRole2(String username) {
+		String query = "SELECT emailAddress FROM userDB WHERE userName = ? AND newRole2 = TRUE";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, username);
+	        ResultSet rs = pstmt.executeQuery();
+	        
+	        if (rs.next()) {
+	            return true; // Return the email address if user exists
+	        }
+			
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+		return false;
+	}
+	
+	
 	// Attribute getters for the current user
 	/*******
 	 * <p> Method: String getCurrentUsername() </p>

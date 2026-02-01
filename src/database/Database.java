@@ -250,6 +250,31 @@ public class Database {
 //		System.out.println(userList);
 		return userList;
 	}
+	
+	/*******
+	 *  <p> Method: List getUserListAdmin() </p>
+	 *  
+	 *  <P> Description: Generate an List of Strings, one for each admin user in the database,
+	 *  starting with "<Select User>" at the start of the list. </p>
+	 *  
+	 *  @return a list of userNames found in the database.
+	 */
+		public List<String> getUserListAdmin () {
+			List<String> userList = new ArrayList<String>();
+			//Commenting out this line, having this will just cause more problems than it solves
+			//userList.add("<Select a User>");
+			String query = "SELECT userName FROM userDB WHERE adminRole = TRUE";
+			try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+				ResultSet rs = pstmt.executeQuery();
+				while (rs.next()) {
+					userList.add(rs.getString("userName"));
+				}
+			} catch (SQLException e) {
+		        return null;
+		    }
+//			System.out.println(userList);
+			return userList;
+		}
 
 /*******
  * <p> Method: boolean loginAdmin(User user) </p>
@@ -1003,6 +1028,27 @@ public class Database {
 			return currentUser;
 	    } catch (SQLException e) {
 			return currentUser;
+	    }
+	}
+	
+	/*******
+	 * <p> Method: void deleteUser(String username) </p>
+	 * 
+	 * <p> Description: Delete the specified user.</p>
+	 * 
+	 * @param username is the username of the user
+	 *  
+	 * @param lastName is the new last name for the user
+	 *  
+	 */
+	// update the last name
+	public void deleteUser(String username) {
+	    String query = "DELETE FROM userDB WHERE username = ?";
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setString(1, username);
+	        pstmt.executeUpdate();
+	    } catch (SQLException e) {
+	        e.printStackTrace();
 	    }
 	}
 	

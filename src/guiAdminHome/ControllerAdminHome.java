@@ -1,7 +1,10 @@
 package guiAdminHome;
 
+import java.util.Optional;
+
 import database.Database;
 import entityClasses.User;
+import javafx.scene.control.ButtonType;
 
 /*******
  * <p> Title: GUIAdminHomePage Class. </p>
@@ -130,11 +133,23 @@ public class ControllerAdminHome {
 	 * this function has not yet been implemented. </p>
 	 */
 	protected static void deleteUser() {
+		String selectedUser = (String) ViewAdminHome.usersList.getSelectionModel().getSelectedItem().getUserName();
 		System.out.println("\n*** WARNING ***: Delete User Not Yet Implemented");
-		ViewAdminHome.alertNotImplemented.setTitle("*** WARNING ***");
-		ViewAdminHome.alertNotImplemented.setHeaderText("Delete User Issue");
-		ViewAdminHome.alertNotImplemented.setContentText("Delete User Not Yet Implemented");
-		ViewAdminHome.alertNotImplemented.showAndWait();
+		ViewAdminHome.alertDeleteUser.setHeaderText("Are you sure you want to delete user " + selectedUser + "?");
+		ViewAdminHome.alertDeleteUser.setContentText("This action cannot be undone");
+		Optional<ButtonType> result = ViewAdminHome.alertDeleteUser.showAndWait();
+		
+		//Check if the user confirmed or not. If they did, delete the user from the database, otherwise, do nothing
+		if (result.get() == ButtonType.OK) {
+		    theDatabase.deleteUser(selectedUser);
+		    
+		    //Sign out the user if they deleted their own account
+		    if(selectedUser.equals(ViewAdminHome.theUser.getUserName()))
+				performLogout();
+		    
+		    ViewAdminHome.refreshUsersList();
+		}
+		else return;
 	}
 	
 	/**********

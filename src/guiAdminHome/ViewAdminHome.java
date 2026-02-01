@@ -10,6 +10,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -111,8 +112,11 @@ public class ViewAdminHome {
 	protected static Button button_SetOnetimePassword = new Button("Set a One-Time Password");
 	protected static Alert alertOneTimePassword = new Alert(AlertType.INFORMATION);
 	
-	//Properties and GUI related to deleting passwords
+	//Properties and GUI related to deleting accounts
 	protected static Button button_DeleteUser = new Button("Delete a User");
+	protected static Alert alertDeleteUser = new Alert(AlertType.WARNING,"",ButtonType.OK,ButtonType.CANCEL);
+
+	//To-do, remove this button and reorganize the UI flow
 	protected static Button button_ListUsers = new Button("List All Users");
 	protected static Button button_AddRemoveRoles = new Button("Add/Remove Roles");
 	protected static Alert alertNotImplemented = new Alert(AlertType.INFORMATION);
@@ -195,14 +199,10 @@ public class ViewAdminHome {
 
 		// Set the role for potential users to the default (No role selected)
 		combobox_SelectRole.getSelectionModel().select(0);
+			
+		//Update the users list, here
+		refreshUsersList();
 		
-		// Forcefully clear the user table and refresh it. This may be the only way without restructuring
-		// Every property in this app to an observeable. Which unfortunately we do not have the capital
-		// to do.
-		usersList.getItems().clear();
-		usersList.getColumns().clear();
-		setupUserListData();
-				
 		// Set the title for the window, display the page, and wait for the Admin to do something
 		theStage.setTitle("");
 		theStage.setScene(theAdminHomeScene);						// Set this page onto the stage
@@ -291,6 +291,7 @@ public class ViewAdminHome {
 
 		setupButtonUI(button_DeleteUser, "Dialog", 16, 250, Pos.CENTER, 20, 370);
 		button_DeleteUser.setOnAction((_) -> {ControllerAdminHome.deleteUser(); });
+		alertDeleteUser.setTitle("Confirm");
 
 		setupButtonUI(button_ListUsers, "Dialog", 16, 250, Pos.CENTER, 20, 420);
 		button_ListUsers.setOnAction((_) -> {ControllerAdminHome.listUsers(); });
@@ -312,15 +313,23 @@ public class ViewAdminHome {
 		    if (selection != null) {
 		    	String user = usersList.getSelectionModel().getSelectedItem().getUserName();
 		    	User selectUser = null;
+		    	List<String> adminsAmount = theDatabase.getUserListAdmin();	
 		    	if(!user.isEmpty()) selectUser = theDatabase.getUserAsObject(user);
 		    	
+		    	// Check if a user is selected. If so and this user is an admin, and they are
+		    	// an admin, allow the one-time password button, but disallow deletion/
+		    	// If the selected user is the same as the current one, only allow the delete button
+		    	// If there is more than 1 admin. Otherwise, just reveal both buttons
 		    	if(selectUser != null) {
 		    		if(selectUser.getAdminRole() && !user.equals(theUser.getUserName())) {
 		    			button_DeleteUser.setVisible(false);
-		    			button_SetOnetimePassword.setVisible(false);
+		    			button_SetOnetimePassword.setVisible(true);
 		    		}
 		    		else if(selectUser.getAdminRole() && user.equals(theUser.getUserName())){
-		    			button_DeleteUser.setVisible(true);
+		    			if(adminsAmount.size() > 1) 
+		    				button_DeleteUser.setVisible(true);
+		    			else 
+		    				button_DeleteUser.setVisible(false);
 		    			button_SetOnetimePassword.setVisible(false);
 		    		}
 		    		else {
@@ -463,6 +472,23 @@ public class ViewAdminHome {
 	}
 	
 	/**********
+	 * It seems I will need to manually refresh the user's table here, since the refresh method
+	 * doesn't cut it, and I'd have to make everything observeable. That could be a huge can of
+	 * worms.
+	 * 
+	 * @param userName	The username to get data from
+	 */
+	public static void refreshUsersList()
+	{
+		// Forcefully clear the user table and refresh it. This may be the only way without restructuring
+		// Every property in this app to an observeable. Which unfortunately we do not have the capital
+		// to do.
+		usersList.getItems().clear();
+		usersList.getColumns().clear();
+		setupUserListData();
+	}
+	
+	/**********
 	 * Generate the fields for the user list. Seems TableView is the best way.
 	 * 
 	 * @param userName	The username to get data from
@@ -501,5 +527,7 @@ public class ViewAdminHome {
 		//Generate the TableView
 		usersList.setItems(FXCollections.observableArrayList(allUsers));
 		usersList.getColumns().addAll(userNameColumn,fullNameColumn,emailColumn,roleColumn);
+		
+		usersList.getSelectionModel().selectFirst();
 	}
 }

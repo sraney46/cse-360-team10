@@ -85,7 +85,7 @@
 
 .custom-scroll .scroll-bar .thumb {
     -fx-background-color: derive(#888888, 20%);
-    -fx-background-radius: 999em;   /* pill shape */
+    -fx-background-radius: 999em;   
     -fx-background-insets: 3;
 }
 

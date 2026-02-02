@@ -226,6 +226,90 @@ public class Database {
 		
 	}
 	
+	public void populateDatabaseWithTestUsers(User currentUser) {
+	    try {
+	        // Drop everything to start fresh
+	        statement.execute("DROP ALL OBJECTS");
+	        System.out.println("All objects dropped.");
+
+	        // Recreate tables
+	        createTables();
+	        System.out.println("Tables recreated.");
+
+	        // Insert test users
+	        String sql = "INSERT INTO userDB "
+	                   + "(userName, password, firstName, middleName, lastName, preferredFirstName, emailAddress, "
+	                   + "adminRole, newRole1, newRole2, oneTimePW) "
+	                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+	        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+	            for (int i = 1; i <= 25; i++) {
+	                String username;
+	                String password;
+	                String firstName;
+	                String middleName;
+	                String lastName;
+	                String preferredFirstName;
+	                String email;
+	                boolean isAdmin;
+	                boolean role1;
+	                boolean role2;
+	                boolean oneTimePw;
+
+	                if (i == 1) {
+	                    // Use the current user's data for the first entry
+	                    username = currentUser.getUserName();
+	                    password = currentUser.getPassword();
+	                    firstName = currentUser.getFirstName() != null ? currentUser.getFirstName() : "";
+	                    middleName = currentUser.getMiddleName() != null ? currentUser.getMiddleName() : "";
+	                    lastName = currentUser.getLastName() != null ? currentUser.getLastName() : "";
+	                    preferredFirstName = currentUser.getPreferredFirstName() != null ? currentUser.getPreferredFirstName() : "";
+	                    email = currentUser.getEmailAddress() != null ? currentUser.getEmailAddress() : "";
+	                    isAdmin = currentUser.getAdminRole();
+	                    role1 = currentUser.getNewRole1();
+	                    role2 = currentUser.getNewRole2();
+	                    oneTimePw = false;
+	                } else {
+	                    // Generate test users starting from user2
+	                    username = "user" + i;
+	                    password = "1234";
+	                    firstName = "TestFirst" + i;
+	                    middleName = "";
+	                    lastName = "";
+	                    preferredFirstName = "";
+	                    email = "user" + i + "@example.com";
+
+	                    isAdmin = (i % 5 == 0);  // Every 5th user is admin
+	                    role1 = !isAdmin && (i % 2 == 0);
+	                    role2 = !isAdmin && !role1;
+	                    oneTimePw = false;
+	                }
+
+	                pstmt.setString(1, username);
+	                pstmt.setString(2, password);
+	                pstmt.setString(3, firstName);
+	                pstmt.setString(4, middleName);
+	                pstmt.setString(5, lastName);
+	                pstmt.setString(6, preferredFirstName);
+	                pstmt.setString(7, email);
+	                pstmt.setBoolean(8, isAdmin);
+	                pstmt.setBoolean(9, role1);
+	                pstmt.setBoolean(10, role2);
+	                pstmt.setBoolean(11, oneTimePw);
+
+	                pstmt.addBatch();
+	            }
+
+	            pstmt.executeBatch();
+	            System.out.println("Inserted 25 test users into userDB successfully.");
+	            System.out.println("First user preserved: " + currentUser.getUserName());
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
+	
 /*******
  *  <p> Method: List getUserList() </p>
  *  

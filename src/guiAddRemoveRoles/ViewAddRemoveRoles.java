@@ -30,6 +30,8 @@ import javafx.animation.Timeline;
 import javafx.animation.KeyFrame;
 import javafx.util.Duration;
 import javafx.scene.control.ListCell; 
+import java.util.Optional;
+import javafx.scene.control.ButtonType;
 
 
 
@@ -106,6 +108,8 @@ public class ViewAddRemoveRoles {
 	
 	//Errors and other information related to admin protection
 	protected static Alert alertCannotModifyAdmin = new Alert(AlertType.INFORMATION);
+	// Warning for populate database button 
+	protected static Alert alertPopulateDatabase = new Alert(AlertType.CONFIRMATION);
 
 
 
@@ -195,8 +199,16 @@ public class ViewAddRemoveRoles {
 		setupButtonUI(button_PopulateDatebase, "Dialog", 18, 170, Pos.CENTER, 310, 45);
 		button_PopulateDatebase.setOnAction((_) -> 
 			{	
-				theDatabase.populateDatabaseWithTestUsers(theUser); 
-				refreshUserList();
+				// Show the alert and wait for user response
+			    Optional<ButtonType> result = alertPopulateDatabase.showAndWait();
+			    if (result.isPresent() && result.get() == ButtonType.OK) {
+			        // User pressed OK, proceed
+			        theDatabase.populateDatabaseWithTestUsers(theUser);
+			        refreshUserList();
+			    } else {
+			        // User cancelled, do nothing
+			        System.out.println("Database population cancelled by user.");
+			    }
 			});
 	
 		
@@ -270,6 +282,10 @@ public class ViewAddRemoveRoles {
 		// error messages if an admin user tries to modify another admin
 		alertCannotModifyAdmin.setTitle("This user's roles cannot be modified!");
 		alertCannotModifyAdmin.setHeaderText(null);
+		
+		alertPopulateDatabase.setTitle("Confirm Database Population");
+		alertPopulateDatabase.setHeaderText("This action will keep the current user data\nbut delete all other users in the database.");
+		alertPopulateDatabase.setContentText("Press OK to continue or Cancel to abort.");
 		
 	
 		theRootPane.getChildren().addAll(

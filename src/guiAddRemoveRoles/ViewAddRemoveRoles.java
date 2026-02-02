@@ -284,7 +284,7 @@ public class ViewAddRemoveRoles {
 		alertCannotModifyAdmin.setHeaderText(null);
 		
 		alertPopulateDatabase.setTitle("Confirm Database Population");
-		alertPopulateDatabase.setHeaderText("This action will keep the current user data\nbut delete all other users in the database.");
+		alertPopulateDatabase.setHeaderText("This action will keep the current user data\nbut delete all other users in the database.\nEach user account password will be initialized to \"1234\".");
 		alertPopulateDatabase.setContentText("Press OK to continue or Cancel to abort.");
 		
 	
@@ -329,6 +329,7 @@ public class ViewAddRemoveRoles {
 	    HBox userRow = new HBox(4);
 	    userRow.setAlignment(Pos.CENTER_LEFT);
 	    userRow.setMinHeight(50);
+	    userRow.setMaxHeight(50);
 	    userRow.setStyle("-fx-padding: 12 16; -fx-background-color: #000; -fx-background-radius: 15px;");
 	    userRow.prefWidthProperty().bind(userListBox.widthProperty().subtract(24));
 	    

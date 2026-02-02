@@ -64,7 +64,7 @@ public class ViewAdminHome {
 	
 	// These are the application values required by the user interface
 	
-	private static double width = applicationMain.FoundationsMain.WINDOW_WIDTH;
+	private static double width = applicationMain.FoundationsMain.WINDOW_WIDTH + 200;
 	private static double height = applicationMain.FoundationsMain.WINDOW_HEIGHT;
 
 	
@@ -239,7 +239,7 @@ public class ViewAdminHome {
 		label_UserDetails.setText("User: " + theUser.getUserName());
 		setupLabelUI(label_UserDetails, "Arial", 20, width, Pos.BASELINE_LEFT, 20, 55);
 		
-		setupButtonUI(button_UpdateThisUser, "Dialog", 18, 170, Pos.CENTER, 610, 45);
+		setupButtonUI(button_UpdateThisUser, "Dialog", 18, 170, Pos.CENTER, 800, 45);
 		button_UpdateThisUser.setOnAction((_) -> 
 				{ViewUserUpdate.displayUserUpdate(theStage, theUser);});
 			
@@ -266,6 +266,7 @@ public class ViewAdminHome {
 		150, 205, true);
 	
 		setupComboBoxUI(combobox_SelectRole, "Dialog", 16, 90, 520, 205);
+		combobox_SelectRole.getStyleClass().add("default-combo-box");
 	
 		List<String> list = new ArrayList<String>();	// Create a new list empty list of the
 		for (int i = 0; i < roles.length; i++) {		// roles this code currently supports
@@ -276,7 +277,7 @@ public class ViewAdminHome {
 		alertEmailSent.setTitle("Invitation");
 		alertEmailSent.setHeaderText("Invitation was sent");
 
-		setupButtonUI(button_SendInvitation, "Dialog", 16, 150, Pos.CENTER, 630, 205);
+		setupButtonUI(button_SendInvitation, "Dialog", 18, 170, Pos.CENTER, 800, 205);
 		button_SendInvitation.setOnAction((_) -> {ControllerAdminHome.performInvitation(); });
 	
 		// GUI Area 4
@@ -295,6 +296,9 @@ public class ViewAdminHome {
 
 		setupButtonUI(button_ListUsers, "Dialog", 16, 250, Pos.CENTER, 20, 420);
 		button_ListUsers.setOnAction((_) -> {ControllerAdminHome.listUsers(); });
+		
+		button_ListUsers.setVisible(false);
+		button_ListUsers.setManaged(false);
 
 		setupButtonUI(button_AddRemoveRoles, "Dialog", 16, 250, Pos.CENTER, 20, 470);
 		button_AddRemoveRoles.setOnAction((_) -> {ControllerAdminHome.addRemoveRoles(); });
@@ -303,45 +307,67 @@ public class ViewAdminHome {
 		setupButtonUI(button_Logout, "Dialog", 18, 250, Pos.CENTER, 20, 540);
 		button_Logout.setOnAction((_) -> {ControllerAdminHome.performLogout(); });
     
-		setupButtonUI(button_Quit, "Dialog", 18, 250, Pos.CENTER, 300, 540);
+		setupButtonUI(button_Quit, "Dialog", 18, 170, Pos.CENTER, 800, 540);
 		button_Quit.setOnAction((_) -> {ControllerAdminHome.performQuit(); });
 		
 		//Establish user list in the Admin home
-		setupTableViewUI(usersList, "Dialog", 12, 480, 300, 268, 240);
-		
+		setupTableViewUI(usersList, "Dialog", 12, 680, 300, 268, 240);
+		usersList.getStyleClass().add("userlist-adminhomepage");
+
 		usersList.getSelectionModel().selectedItemProperty().addListener((selection) -> {
-			
-			// null check to prevent NullPointerException when the table has no selection
-			User selected = usersList.getSelectionModel().getSelectedItem();
-		    if (selected == null) return;  // <-- prevents the NPE
-			
+
+		    // null check to prevent NullPointerException when the table has no selection
+		    User selected = usersList.getSelectionModel().getSelectedItem();
+		    if (selected == null) {
+		        // No selection - disable both buttons
+		        button_DeleteUser.setDisable(true);
+		        button_DeleteUser.setStyle("-fx-opacity: 0.5;"); // Gray out
+		        button_SetOnetimePassword.setDisable(true);
+		        button_SetOnetimePassword.setStyle("-fx-opacity: 0.5;"); // Gray out
+		        return;
+		    }
+
 		    if (selection != null) {
-		    	String user = usersList.getSelectionModel().getSelectedItem().getUserName();
-		    	User selectUser = null;
-		    	List<String> adminsAmount = theDatabase.getUserListAdmin();	
-		    	if(!user.isEmpty()) selectUser = theDatabase.getUserAsObject(user);
-		    	
-		    	// Check if a user is selected. If so and this user is an admin, and they are
-		    	// an admin, allow the one-time password button, but disallow deletion/
-		    	// If the selected user is the same as the current one, only allow the delete button
-		    	// If there is more than 1 admin. Otherwise, just reveal both buttons
-		    	if(selectUser != null) {
-		    		if(selectUser.getAdminRole() && !user.equals(theUser.getUserName())) {
-		    			button_DeleteUser.setVisible(false);
-		    			button_SetOnetimePassword.setVisible(true);
-		    		}
-		    		else if(selectUser.getAdminRole() && user.equals(theUser.getUserName())){
-		    			if(adminsAmount.size() > 1) 
-		    				button_DeleteUser.setVisible(true);
-		    			else 
-		    				button_DeleteUser.setVisible(false);
-		    			button_SetOnetimePassword.setVisible(false);
-		    		}
-		    		else {
-		    			button_DeleteUser.setVisible(true);
-		    			button_SetOnetimePassword.setVisible(true);
-		    		}
-		    	}
+		        String user = usersList.getSelectionModel().getSelectedItem().getUserName();
+		        User selectUser = null;
+		        List<String> adminsAmount = theDatabase.getUserListAdmin();
+		        if(!user.isEmpty()) selectUser = theDatabase.getUserAsObject(user);
+
+		        if(selectUser != null) {
+		            // Check if selected user is an admin and NOT the current user
+		            if(selectUser.getAdminRole() && !user.equals(theUser.getUserName())) {
+		                // Cannot delete other admins
+		                button_DeleteUser.setDisable(true);
+		                button_DeleteUser.setStyle("-fx-background-color: #dc3545; -fx-opacity: 0.5;"); // Red & grayed
+		                
+		                // Can send OTP to other admins
+		                button_SetOnetimePassword.setDisable(false);
+		                button_SetOnetimePassword.setStyle(""); // Reset to default style
+		            }
+		            // Check if selected user IS the current user
+		            else if(selectUser.getAdminRole() && user.equals(theUser.getUserName())){
+		                // Can delete self only if there's more than 1 admin
+		                if(adminsAmount.size() > 1) {
+		                    button_DeleteUser.setDisable(false);
+		                    button_DeleteUser.setStyle(""); // Reset to default
+		                } else {
+		                    button_DeleteUser.setDisable(true);
+		                    button_DeleteUser.setStyle("-fx-background-color: #dc3545; -fx-opacity: 0.5;"); // Red & grayed
+		                }
+		                
+		                // Cannot send OTP to yourself
+		                button_SetOnetimePassword.setDisable(true);
+		                button_SetOnetimePassword.setStyle("-fx-background-color: #dc3545; -fx-opacity: 0.5;"); // Red & grayed
+		            }
+		            // Selected user is NOT an admin
+		            else {
+		                // Can do both actions
+		                button_DeleteUser.setDisable(false);
+		                button_DeleteUser.setStyle(""); // Reset to default
+		                button_SetOnetimePassword.setDisable(false);
+		                button_SetOnetimePassword.setStyle(""); // Reset to default
+		            }
+		        }
 		    }
 		});
 
@@ -515,18 +541,18 @@ public class ViewAdminHome {
 		
 		//Generate the column of real names
 		TableColumn<User, String> fullNameColumn = new TableColumn<>("Real Name");
-		fullNameColumn.setPrefWidth(180);
+		fullNameColumn.setPrefWidth(150);
 		fullNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty (cellData.getValue().getFullName()));
 		
 		//Generate the column of email
 		TableColumn<User, String> emailColumn = new TableColumn<>("Email");
-		emailColumn.setPrefWidth(240);
+		emailColumn.setPrefWidth(220);
 		emailColumn.setCellValueFactory(cellData -> new SimpleStringProperty (cellData.getValue().getEmailAddress()));
 		
 		//Generate the column of roles
 		TableColumn<User, String> roleColumn = new TableColumn<>("Roles");
-		roleColumn.setMinWidth(120);
-		roleColumn.setMaxWidth(120);
+		roleColumn.setMinWidth(190);
+		roleColumn.setMaxWidth(190);
 		roleColumn.setCellValueFactory(cellData -> new SimpleStringProperty (cellData.getValue().getRoleString()));
 
 		//Generate the TableView

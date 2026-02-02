@@ -58,12 +58,12 @@ public class ControllerAddRemoveRoles {
 	 * easily accessible values without needing to do a query. </p>
 	 * 
 	 */
-	protected static void doSelectUser() {
-		ViewAddRemoveRoles.theSelectedUser = 
-				(String) ViewAddRemoveRoles.combobox_SelectUser.getValue();
-		theDatabase.getUserAccountDetails(ViewAddRemoveRoles.theSelectedUser);
-		setupSelectedUser();
-	}
+//	protected static void doSelectUser() {
+//		ViewAddRemoveRoles.theSelectedUser = 
+//				(String) ViewAddRemoveRoles.combobox_SelectUser.getValue();
+//		theDatabase.getUserAccountDetails(ViewAddRemoveRoles.theSelectedUser);
+//		setupSelectedUser();
+//	}
 	
 	
 	/**********
@@ -73,47 +73,49 @@ public class ControllerAddRemoveRoles {
 	 * the appropriate list of widgets in the Pane to show the proper set of current values. </p>
 	 * 
 	 */
-	protected static void repaintTheWindow() {
-		// Clear what had been displayed
-		ViewAddRemoveRoles.theRootPane.getChildren().clear();
-		
-		// Defermine which of the two views to show to the user
-		if (ViewAddRemoveRoles.theSelectedUser.compareTo("<Select a User>") == 0) {
-			// Only show the request to select a user to be updated and the ComboBox
-			ViewAddRemoveRoles.theRootPane.getChildren().addAll(
-					ViewAddRemoveRoles.label_PageTitle, ViewAddRemoveRoles.label_UserDetails, 
-					ViewAddRemoveRoles.button_UpdateThisUser, ViewAddRemoveRoles.line_Separator1,
-					ViewAddRemoveRoles.label_SelectUser, ViewAddRemoveRoles.combobox_SelectUser, 
-					ViewAddRemoveRoles.line_Separator4, ViewAddRemoveRoles.button_Return,
-					ViewAddRemoveRoles.button_Logout, ViewAddRemoveRoles.button_Quit);
-		}
-		else {
-			// Show all the fields as there is a selected user (as opposed to the prompt)
-			ViewAddRemoveRoles.theRootPane.getChildren().addAll(
-					ViewAddRemoveRoles.label_PageTitle, ViewAddRemoveRoles.label_UserDetails,
-					ViewAddRemoveRoles.button_UpdateThisUser, ViewAddRemoveRoles.line_Separator1,
-					ViewAddRemoveRoles.label_SelectUser,
-					ViewAddRemoveRoles.combobox_SelectUser, 
-					ViewAddRemoveRoles.label_CurrentRoles,
-					ViewAddRemoveRoles.label_SelectRoleToBeAdded,
-					ViewAddRemoveRoles.combobox_SelectRoleToAdd,
-					ViewAddRemoveRoles.button_AddRole,
-					ViewAddRemoveRoles.label_SelectRoleToBeRemoved,
-					ViewAddRemoveRoles.combobox_SelectRoleToRemove,
-					ViewAddRemoveRoles.button_RemoveRole,
-					ViewAddRemoveRoles.line_Separator4, 
-					ViewAddRemoveRoles.button_Return,
-					ViewAddRemoveRoles.button_Logout,
-					ViewAddRemoveRoles.button_Quit);
-		}
-		
-		// Add the list of widgets to the stage and show it
-		
-		// Set the title for the window
-		ViewAddRemoveRoles.theStage.setTitle("");
-		ViewAddRemoveRoles.theStage.setScene(ViewAddRemoveRoles.theAddRemoveRolesScene);
-		ViewAddRemoveRoles.theStage.show();
-	}
+//	protected static void repaintTheWindow() {
+//		// Clear what had been displayed
+//		ViewAddRemoveRoles.theRootPane.getChildren().clear();
+//		
+//		// Defermine which of the two views to show to the user
+//		if (ViewAddRemoveRoles.theSelectedUser.compareTo("<Select a User>") == 0) {
+//			// Only show the request to select a user to be updated and the ComboBox
+//			ViewAddRemoveRoles.theRootPane.getChildren().addAll(
+//					ViewAddRemoveRoles.label_PageTitle, ViewAddRemoveRoles.label_UserDetails, 
+//					ViewAddRemoveRoles.scrollPane,
+//					ViewAddRemoveRoles.button_UpdateThisUser, ViewAddRemoveRoles.line_Separator1,
+////					ViewAddRemoveRoles.label_SelectUser, ViewAddRemoveRoles.combobox_SelectUser, 
+//					ViewAddRemoveRoles.line_Separator4, ViewAddRemoveRoles.button_Return,
+//					ViewAddRemoveRoles.button_Logout, ViewAddRemoveRoles.button_Quit);
+//		}
+//		else {
+//			// Show all the fields as there is a selected user (as opposed to the prompt)
+//			ViewAddRemoveRoles.theRootPane.getChildren().addAll(
+//					ViewAddRemoveRoles.label_PageTitle, ViewAddRemoveRoles.label_UserDetails,
+//					ViewAddRemoveRoles.button_UpdateThisUser, ViewAddRemoveRoles.line_Separator1,
+//					ViewAddRemoveRoles.scrollPane,
+////					ViewAddRemoveRoles.label_SelectUser,
+////					ViewAddRemoveRoles.combobox_SelectUser, 
+////					ViewAddRemoveRoles.label_CurrentRoles,
+////					ViewAddRemoveRoles.label_SelectRoleToBeAdded,
+////					ViewAddRemoveRoles.combobox_SelectRoleToAdd,
+////					ViewAddRemoveRoles.button_AddRole,
+////					ViewAddRemoveRoles.label_SelectRoleToBeRemoved,
+////					ViewAddRemoveRoles.combobox_SelectRoleToRemove,
+////					ViewAddRemoveRoles.button_RemoveRole,
+//					ViewAddRemoveRoles.line_Separator4, 
+//					ViewAddRemoveRoles.button_Return,
+//					ViewAddRemoveRoles.button_Logout,
+//					ViewAddRemoveRoles.button_Quit);
+//		}
+//		
+//		// Add the list of widgets to the stage and show it
+//		
+//		// Set the title for the window
+//		ViewAddRemoveRoles.theStage.setTitle("");
+//		ViewAddRemoveRoles.theStage.setScene(ViewAddRemoveRoles.theAddRemoveRolesScene);
+//		ViewAddRemoveRoles.theStage.show();
+//	}
 	
 	
 	/**********
@@ -123,83 +125,83 @@ public class ControllerAddRemoveRoles {
 	 * based on which user has been selected and any actions that the admin takes. </p>
 	 * 
 	 */
-	private static void setupSelectedUser() {
-		System.out.println("*** Entering setupSelectedUser");
-		
-		// Create the list of roles that could be added for the currently selected user (e.g., Do
-		// not show a role to add that the user already has!)
-		ViewAddRemoveRoles.addList.clear();
-		ViewAddRemoveRoles.addList.add("<Select a role>");
-		if (!theDatabase.getCurrentAdminRole())
-			ViewAddRemoveRoles.addList.add("Admin");
-		if (!theDatabase.getCurrentNewRole1())
-			ViewAddRemoveRoles.addList.add("Role1");
-		if (!theDatabase.getCurrentNewRole2())
-			ViewAddRemoveRoles.addList.add("Role2");
-
-		// Create the list of roles that could be removed for the currently selected user (e.g., Do
-		// not show a role to remove that the user does not have!)
-		ViewAddRemoveRoles.removeList.clear();
-		ViewAddRemoveRoles.removeList.add("<Select a role>");
-		if (theDatabase.getCurrentAdminRole())
-			ViewAddRemoveRoles.removeList.add("Admin");
-		if (theDatabase.getCurrentNewRole1())
-			ViewAddRemoveRoles.removeList.add("Role1");
-		if (theDatabase.getCurrentNewRole2())
-			ViewAddRemoveRoles.removeList.add("Role2");
-		
-		// Create the list or roles that the user currently has with proper use of a comma between
-		// items
-		boolean notTheFirst = false;
-		String theCurrentRoles = "";
-		
-		// Admin role - It can only be at the head of a list
-		if (theDatabase.getCurrentAdminRole()) {
-			theCurrentRoles += "Admin";
-			notTheFirst = true;
-		}
-		
-		// Roles 1 - It could be at the head of the list or later in the list
-		if (theDatabase.getCurrentNewRole1()) {
-			if (notTheFirst)
-				theCurrentRoles += ", Role1"; 
-			else {
-				theCurrentRoles += "Role1";
-				notTheFirst = true;
-			}
-		}
-
-		// Roles 2 - It could be at the head of the list or later in the list
-		if (theDatabase.getCurrentNewRole2()) {
-			if (notTheFirst)
-				theCurrentRoles += ", Role2"; 
-			else {
-				theCurrentRoles += "Role2";
-				notTheFirst = true;
-			}
-		}
-
-		// Given the above actions, populate the related widgets with the new values
-		ViewAddRemoveRoles.label_CurrentRoles.setText("This user's current roles: " + 
-				theCurrentRoles);		
-		ViewAddRemoveRoles.setupComboBoxUI(ViewAddRemoveRoles.combobox_SelectRoleToAdd, "Dialog",
-				16, 150, 280, 205);
-		ViewAddRemoveRoles.combobox_SelectRoleToAdd.setItems(FXCollections.
-				observableArrayList(ViewAddRemoveRoles.addList));
-		ViewAddRemoveRoles.combobox_SelectRoleToAdd.getSelectionModel().clearAndSelect(0);		
-		ViewAddRemoveRoles.setupButtonUI(ViewAddRemoveRoles.button_AddRole, "Dialog", 16, 150, 
-				Pos.CENTER, 460, 205);
-		ViewAddRemoveRoles.setupComboBoxUI(ViewAddRemoveRoles.combobox_SelectRoleToRemove, "Dialog",
-				16, 150, 280, 275);
-		ViewAddRemoveRoles.combobox_SelectRoleToRemove.setItems(FXCollections.
-				observableArrayList(ViewAddRemoveRoles.removeList));
-		ViewAddRemoveRoles.combobox_SelectRoleToRemove.getSelectionModel().select(0);
-
-		// Repaint the window showing this new values
-		repaintTheWindow();
-
-	}
-	
+//	private static void setupSelectedUser() {
+//		System.out.println("*** Entering setupSelectedUser");
+//		
+//		// Create the list of roles that could be added for the currently selected user (e.g., Do
+//		// not show a role to add that the user already has!)
+//		ViewAddRemoveRoles.addList.clear();
+//		ViewAddRemoveRoles.addList.add("<Select a role>");
+//		if (!theDatabase.getCurrentAdminRole())
+//			ViewAddRemoveRoles.addList.add("Admin");
+//		if (!theDatabase.getCurrentNewRole1())
+//			ViewAddRemoveRoles.addList.add("Role1");
+//		if (!theDatabase.getCurrentNewRole2())
+//			ViewAddRemoveRoles.addList.add("Role2");
+//
+//		// Create the list of roles that could be removed for the currently selected user (e.g., Do
+//		// not show a role to remove that the user does not have!)
+//		ViewAddRemoveRoles.removeList.clear();
+//		ViewAddRemoveRoles.removeList.add("<Select a role>");
+//		if (theDatabase.getCurrentAdminRole())
+//			ViewAddRemoveRoles.removeList.add("Admin");
+//		if (theDatabase.getCurrentNewRole1())
+//			ViewAddRemoveRoles.removeList.add("Role1");
+//		if (theDatabase.getCurrentNewRole2())
+//			ViewAddRemoveRoles.removeList.add("Role2");
+//		
+//		// Create the list or roles that the user currently has with proper use of a comma between
+//		// items
+//		boolean notTheFirst = false;
+//		String theCurrentRoles = "";
+//		
+//		// Admin role - It can only be at the head of a list
+//		if (theDatabase.getCurrentAdminRole()) {
+//			theCurrentRoles += "Admin";
+//			notTheFirst = true;
+//		}
+//		
+//		// Roles 1 - It could be at the head of the list or later in the list
+//		if (theDatabase.getCurrentNewRole1()) {
+//			if (notTheFirst)
+//				theCurrentRoles += ", Role1"; 
+//			else {
+//				theCurrentRoles += "Role1";
+//				notTheFirst = true;
+//			}
+//		}
+//
+//		// Roles 2 - It could be at the head of the list or later in the list
+//		if (theDatabase.getCurrentNewRole2()) {
+//			if (notTheFirst)
+//				theCurrentRoles += ", Role2"; 
+//			else {
+//				theCurrentRoles += "Role2";
+//				notTheFirst = true;
+//			}
+//		}
+//
+//		// Given the above actions, populate the related widgets with the new values
+//		ViewAddRemoveRoles.label_CurrentRoles.setText("This user's current roles: " + 
+//				theCurrentRoles);		
+//		ViewAddRemoveRoles.setupComboBoxUI(ViewAddRemoveRoles.combobox_SelectRoleToAdd, "Dialog",
+//				16, 150, 280, 205);
+//		ViewAddRemoveRoles.combobox_SelectRoleToAdd.setItems(FXCollections.
+//				observableArrayList(ViewAddRemoveRoles.addList));
+//		ViewAddRemoveRoles.combobox_SelectRoleToAdd.getSelectionModel().clearAndSelect(0);		
+//		ViewAddRemoveRoles.setupButtonUI(ViewAddRemoveRoles.button_AddRole, "Dialog", 16, 150, 
+//				Pos.CENTER, 460, 205);
+//		ViewAddRemoveRoles.setupComboBoxUI(ViewAddRemoveRoles.combobox_SelectRoleToRemove, "Dialog",
+//				16, 150, 280, 275);
+//		ViewAddRemoveRoles.combobox_SelectRoleToRemove.setItems(FXCollections.
+//				observableArrayList(ViewAddRemoveRoles.removeList));
+//		ViewAddRemoveRoles.combobox_SelectRoleToRemove.getSelectionModel().select(0);
+//
+//		// Repaint the window showing this new values
+//		repaintTheWindow();
+//
+//	}
+//	
 	
 	/**********
 	 * <p> Method: performAddRole() </p>
@@ -208,33 +210,53 @@ public class ControllerAddRemoveRoles {
 	 * list. </p>
 	 * 
 	 */
-	protected static void performAddRole() {
-		
-		//Display error if the user is an admin and they are not the current user
-		if(theDatabase.getAdminRole(ViewAddRemoveRoles.theSelectedUser) && !ViewAddRemoveRoles.theUser.getUserName().equals(ViewAddRemoveRoles.theSelectedUser)) {
-			ViewAddRemoveRoles.alertCannotModifyAdmin.setContentText(ViewAddRemoveRoles.theSelectedUser + " is also an admin and therefore can only modify their own roles.");
-			ViewAddRemoveRoles.alertCannotModifyAdmin.showAndWait();
-			return;
-		}
-		
-		// Determine which item in the ComboBox list was selected
-		ViewAddRemoveRoles.theAddRole =
-				(String) ViewAddRemoveRoles.combobox_SelectRoleToAdd.getValue();
-		
-		// If the selection is the list header (e.g., "<Select a role>") don't do anything
-		if (ViewAddRemoveRoles.theAddRole.compareTo("<Select a role>") != 0) {
-			
-			// If an actual role was selected, update the database entry for that user for the role
-			if (theDatabase.updateUserRole(ViewAddRemoveRoles.theSelectedUser,
-					ViewAddRemoveRoles.theAddRole, "true") ) {
-				ViewAddRemoveRoles.combobox_SelectRoleToAdd = new ComboBox <String>();
-				ViewAddRemoveRoles.combobox_SelectRoleToAdd.setItems(FXCollections.
-					observableArrayList(ViewAddRemoveRoles.addList));
-				ViewAddRemoveRoles.combobox_SelectRoleToAdd.getSelectionModel().clearAndSelect(0);		
-				setupSelectedUser();
-			}
-		}
-	}
+//	protected static void performAddRole() {
+//		
+//		//Display error if the user is an admin and they are not the current user
+//		if(theDatabase.getAdminRole(ViewAddRemoveRoles.theSelectedUser) && !ViewAddRemoveRoles.theUser.getUserName().equals(ViewAddRemoveRoles.theSelectedUser)) {
+//			ViewAddRemoveRoles.alertCannotModifyAdmin.setContentText(ViewAddRemoveRoles.theSelectedUser + " is also an admin and therefore can only modify their own roles.");
+//			ViewAddRemoveRoles.alertCannotModifyAdmin.showAndWait();
+//			return;
+//		}
+//		
+//		// Determine which item in the ComboBox list was selected
+//		ViewAddRemoveRoles.theAddRole =
+//				(String) ViewAddRemoveRoles.combobox_SelectRoleToAdd.getValue();
+//		
+//		// If the selection is the list header (e.g., "<Select a role>") don't do anything
+//		if (ViewAddRemoveRoles.theAddRole.compareTo("<Select a role>") != 0) {
+//			
+//			// If an actual role was selected, update the database entry for that user for the role
+//			if (theDatabase.updateUserRole(ViewAddRemoveRoles.theSelectedUser,
+//					ViewAddRemoveRoles.theAddRole, "true") ) {
+//				ViewAddRemoveRoles.combobox_SelectRoleToAdd = new ComboBox <String>();
+//				ViewAddRemoveRoles.combobox_SelectRoleToAdd.setItems(FXCollections.
+//					observableArrayList(ViewAddRemoveRoles.addList));
+//				ViewAddRemoveRoles.combobox_SelectRoleToAdd.getSelectionModel().clearAndSelect(0);		
+//				setupSelectedUser();
+//			}
+//		}
+//	}
+//	protected static void performAddRole() {
+//		
+//		// Determine which item in the ComboBox list was selected
+//		ViewAddRemoveRoles.theAddRole =
+//				(String) ViewAddRemoveRoles.combobox_SelectRoleToAdd.getValue();
+//		
+//		// If the selection is the list header (e.g., "<Select a role>") don't do anything
+//		if (ViewAddRemoveRoles.theAddRole.compareTo("<Select a role>") != 0) {
+//			
+//			// If an actual role was selected, update the database entry for that user for the role
+//			if (theDatabase.updateUserRole(ViewAddRemoveRoles.theSelectedUser,
+//					ViewAddRemoveRoles.theAddRole, "true") ) {
+//				ViewAddRemoveRoles.combobox_SelectRoleToAdd = new ComboBox <String>();
+//				ViewAddRemoveRoles.combobox_SelectRoleToAdd.setItems(FXCollections.
+//					observableArrayList(ViewAddRemoveRoles.addList));
+//				ViewAddRemoveRoles.combobox_SelectRoleToAdd.getSelectionModel().clearAndSelect(0);		
+//				setupSelectedUser();
+//			}
+//		}
+//	}
 	
 	
 	/**********
@@ -244,35 +266,57 @@ public class ControllerAddRemoveRoles {
 	 * select list. </p>
 	 * 
 	 */
-	protected static void performRemoveRole() {
-		
-		//Display error if the user is an admin and they are not the current user
-		if(theDatabase.getAdminRole(ViewAddRemoveRoles.theSelectedUser) && !ViewAddRemoveRoles.theUser.getUserName().equals(ViewAddRemoveRoles.theSelectedUser)) {
-			ViewAddRemoveRoles.alertCannotModifyAdmin.setContentText(ViewAddRemoveRoles.theSelectedUser + " is also an admin and therefore can only modify their own roles.");
-			ViewAddRemoveRoles.alertCannotModifyAdmin.showAndWait();
-			return;
-		}
-		
-		// Determine which item in the ComboBox list was selected
-		ViewAddRemoveRoles.theRemoveRole = (String) ViewAddRemoveRoles.
-				combobox_SelectRoleToRemove.getValue();
-		
-		// If the selection is the list header (e.g., "<Select a role>") don't do anything
-		if (ViewAddRemoveRoles.theRemoveRole.compareTo("<Select a role>") != 0) {
-			
-			// If an actual role was selected, update the database entry for that user for the role
-			if (theDatabase.updateUserRole(ViewAddRemoveRoles.theSelectedUser, 
-					ViewAddRemoveRoles.theRemoveRole, "false") ) {
-				ViewAddRemoveRoles.combobox_SelectRoleToRemove = new ComboBox <String>();
-				ViewAddRemoveRoles.combobox_SelectRoleToRemove.setItems(FXCollections.
-					observableArrayList(ViewAddRemoveRoles.addList));
-				ViewAddRemoveRoles.combobox_SelectRoleToRemove.getSelectionModel().
-					clearAndSelect(0);		
-				setupSelectedUser();
-			}				
-		}
-	}
+//	protected static void performRemoveRole() {
+//		
+//		//Display error if the user is an admin and they are not the current user
+//		if(theDatabase.getAdminRole(ViewAddRemoveRoles.theSelectedUser) && !ViewAddRemoveRoles.theUser.getUserName().equals(ViewAddRemoveRoles.theSelectedUser)) {
+//			ViewAddRemoveRoles.alertCannotModifyAdmin.setContentText(ViewAddRemoveRoles.theSelectedUser + " is also an admin and therefore can only modify their own roles.");
+//			ViewAddRemoveRoles.alertCannotModifyAdmin.showAndWait();
+//			return;
+//		}
+//		
+//		// Determine which item in the ComboBox list was selected
+//		ViewAddRemoveRoles.theRemoveRole = (String) ViewAddRemoveRoles.
+//				combobox_SelectRoleToRemove.getValue();
+//		
+//		// If the selection is the list header (e.g., "<Select a role>") don't do anything
+//		if (ViewAddRemoveRoles.theRemoveRole.compareTo("<Select a role>") != 0) {
+//			
+//			// If an actual role was selected, update the database entry for that user for the role
+//			if (theDatabase.updateUserRole(ViewAddRemoveRoles.theSelectedUser, 
+//					ViewAddRemoveRoles.theRemoveRole, "false") ) {
+//				ViewAddRemoveRoles.combobox_SelectRoleToRemove = new ComboBox <String>();
+//				ViewAddRemoveRoles.combobox_SelectRoleToRemove.setItems(FXCollections.
+//					observableArrayList(ViewAddRemoveRoles.addList));
+//				ViewAddRemoveRoles.combobox_SelectRoleToRemove.getSelectionModel().
+//					clearAndSelect(0);		
+//				setupSelectedUser();
+//			}				
+//		}
+//	}
 	
+//	protected static void performRemoveRole() {
+//		
+//		// Determine which item in the ComboBox list was selected
+//		ViewAddRemoveRoles.theRemoveRole = (String) ViewAddRemoveRoles.
+//				combobox_SelectRoleToRemove.getValue();
+//		
+//		// If the selection is the list header (e.g., "<Select a role>") don't do anything
+//		if (ViewAddRemoveRoles.theRemoveRole.compareTo("<Select a role>") != 0) {
+//			
+//			// If an actual role was selected, update the database entry for that user for the role
+//			if (theDatabase.updateUserRole(ViewAddRemoveRoles.theSelectedUser, 
+//					ViewAddRemoveRoles.theRemoveRole, "false") ) {
+//				ViewAddRemoveRoles.combobox_SelectRoleToRemove = new ComboBox <String>();
+//				ViewAddRemoveRoles.combobox_SelectRoleToRemove.setItems(FXCollections.
+//					observableArrayList(ViewAddRemoveRoles.addList));
+//				ViewAddRemoveRoles.combobox_SelectRoleToRemove.getSelectionModel().
+//					clearAndSelect(0);		
+//				setupSelectedUser();
+//			}				
+//		}
+//	}
+//	
 	
 	/**********
 	 * <p> Method: performReturn() </p>

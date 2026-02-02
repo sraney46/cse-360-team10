@@ -2,6 +2,7 @@ package guiAddRemoveRoles;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
@@ -14,9 +15,23 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+import javafx.scene.control.ScrollPane;
 import javafx.stage.Stage;
 import database.Database;
 import entityClasses.User;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.geometry.Insets;
+import javafx.animation.Timeline;
+import javafx.animation.KeyFrame;
+import javafx.util.Duration;
+import javafx.scene.control.ListCell; 
+
+
 
 /*******
  * <p> Title: GUIAddRemoveRolesPage Class. </p>
@@ -56,26 +71,29 @@ public class ViewAddRemoveRoles {
 	// This is a separator and it is used to partition the GUI for various tasks
 	protected static Line line_Separator1 = new Line(20, 95, width-20, 95);
 	
-	// When no user has been selected, only Area 2a is shown.  If a user in the ComboBox in Area 1a
-	// has been specified, then Area 2b is made visible.
+	protected static ScrollPane scrollPane;
+	protected static VBox userListBox;
 	
-	// Area 2a: This allows the admin to select a user of the system as the first step in adding or
-	// removing a role.  The act of selecting a user causes the change is the GUI.  The Admin does
-	// not need to push a button to make this happen.
-	protected static Label label_SelectUser = new Label("Select a user to be updated:");
-	protected static ComboBox <String> combobox_SelectUser = new ComboBox <String>();
-	
-	// Area 2b: When a user has been selected these widgets are shown and can be used
-	protected static List<String> addList = new ArrayList<String>();
-	protected static Button button_AddRole = new Button("Add This Role");
-	protected static List<String> removeList = new ArrayList<String>();
-	protected static Button button_RemoveRole = new Button("Remove This Role");
-	protected static Label label_CurrentRoles = new Label("This user's current roles:");
-	protected static Label label_SelectRoleToBeAdded = new Label("Select a role to be added:");
-	protected static ComboBox <String> combobox_SelectRoleToAdd = new ComboBox <String>();	
-	protected static Label label_SelectRoleToBeRemoved = new Label("Select a role to be removed:");
-	protected static ComboBox <String> combobox_SelectRoleToRemove = new ComboBox <String>();
-		
+//	// When no user has been selected, only Area 2a is shown.  If a user in the ComboBox in Area 1a
+//	// has been specified, then Area 2b is made visible.
+//	
+//	// Area 2a: This allows the admin to select a user of the system as the first step in adding or
+//	// removing a role.  The act of selecting a user causes the change is the GUI.  The Admin does
+//	// not need to push a button to make this happen.
+//	protected static Label label_SelectUser = new Label("Select a user to be updated:");
+//	protected static ComboBox <String> combobox_SelectUser = new ComboBox <String>();
+//	
+//	// Area 2b: When a user has been selected these widgets are shown and can be used
+//	protected static List<String> addList = new ArrayList<String>();
+//	protected static Button button_AddRole = new Button("Add This Role");
+//	protected static List<String> removeList = new ArrayList<String>();
+//	protected static Button button_RemoveRole = new Button("Remove This Role");
+//	protected static Label label_CurrentRoles = new Label("This user's current roles:");
+//	protected static Label label_SelectRoleToBeAdded = new Label("Select a role to be added:");
+//	protected static ComboBox <String> combobox_SelectRoleToAdd = new ComboBox <String>();	
+//	protected static Label label_SelectRoleToBeRemoved = new Label("Select a role to be removed:");
+//	protected static ComboBox <String> combobox_SelectRoleToRemove = new ComboBox <String>();
+//		
 	// This is a separator and it is used to partition the GUI for various tasks
 	protected static Line line_Separator4 = new Line(20, 525, width-20,525);
 	
@@ -147,15 +165,18 @@ public class ViewAddRemoveRoles {
 		if (theView == null) theView = new ViewAddRemoveRoles();
 		
 		// Default to no user selected
-		combobox_SelectUser.getSelectionModel().select(0);
+//		combobox_SelectUser.getSelectionModel().select(0);
 		
 		// Populate the dynamic aspects of the GUI with the data from the user and the current
 		// state of the system.  This page is different from the others.  Since there are two 
 		// modes (1: user has not been selected, and 2: user has been selected) there are two
 		// lists of widgets to be displayed.  For this reason, we have implemented the following 
 		// two controller methods to deal with this dynamic aspect.
-		ControllerAddRemoveRoles.repaintTheWindow();
-		ControllerAddRemoveRoles.doSelectUser();
+//		ControllerAddRemoveRoles.repaintTheWindow();
+//		ControllerAddRemoveRoles.doSelectUser();
+		ViewAddRemoveRoles.theStage.setTitle("");
+		ViewAddRemoveRoles.theStage.setScene(theAddRemoveRolesScene);
+		ViewAddRemoveRoles.theStage.show();
 	}
 
 	
@@ -194,35 +215,64 @@ public class ViewAddRemoveRoles {
 		setupButtonUI(button_UpdateThisUser, "Dialog", 18, 170, Pos.CENTER, 610, 45);
 		button_UpdateThisUser.setOnAction((_) -> 
 			{guiUserUpdate.ViewUserUpdate.displayUserUpdate(theStage, theUser); });
+	
 		
-		// GUI Area 2a
-		setupLabelUI(label_SelectUser, "Arial", 20, 300, Pos.BASELINE_LEFT, 20, 130);
-		label_SelectUser.getStyleClass().add("sub-label");
+		// GUI Area 2
+		userListBox = new VBox(8);                          
+		userListBox.setPadding(new Insets(20));
+		userListBox.setStyle("-fx-background-color: transparent;");  
+		userListBox.setFillWidth(true);
+
+		scrollPane = new ScrollPane(userListBox);
+		scrollPane.setFitToWidth(true);                     
+		scrollPane.setFitToHeight(false);                  
+		scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+		scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+		scrollPane.setStyle(
+		    "-fx-background-color: #000000;" +             
+		    "-fx-background-radius: 15px;" +              
+		    "-fx-border-radius: 15px;" 
+		);
+
+		// Make the viewport transparent so corners show properly
+		scrollPane.viewportBoundsProperty().addListener((_) -> {
+		    scrollPane.lookup(".viewport").setStyle(
+		        "-fx-background-color: transparent;" +
+		        "-fx-background-radius: 15px;"
+		    );
+		});
 		
-		setupComboBoxUI(combobox_SelectUser, "Dialog", 16, 250, 280, 125);
-		List<String> userList = theDatabase.getUserList();	
-		combobox_SelectUser.setItems(FXCollections.observableArrayList(userList));
-		combobox_SelectUser.getSelectionModel().select(0);
-		combobox_SelectUser.getSelectionModel().selectedItemProperty()
-    	.addListener((@SuppressWarnings("unused") ObservableValue<? extends String> observable, 
-    		@SuppressWarnings("unused") String oldvalue, 
-    		@SuppressWarnings("unused") String newValue) -> {ControllerAddRemoveRoles.doSelectUser();});
+	
+		scrollPane.setLayoutX(50);
+		scrollPane.setLayoutY(125); 
+
+		scrollPane.setPrefWidth(700);   
+		scrollPane.setPrefHeight(375);  
+
+		scrollPane.getStyleClass().add("custom-scroll");
 		
-		// GUI Area 2b
-		setupLabelUI(label_CurrentRoles, "Arial", 16, 300, Pos.BASELINE_LEFT, 50, 170);	
-		label_CurrentRoles.getStyleClass().add("sub-label");
-		setupLabelUI(label_SelectRoleToBeAdded, "Arial", 20, 300, Pos.BASELINE_LEFT, 20, 210);
-		label_SelectRoleToBeAdded.getStyleClass().add("sub-label");
-		setupComboBoxUI(combobox_SelectRoleToAdd, "Dialog", 16, 150, 280, 205);
-		setupButtonUI(button_AddRole, "Dialog", 16, 150, Pos.CENTER, 460, 205);
-		ViewAddRemoveRoles.button_AddRole.setOnAction((_) -> 
-			{ControllerAddRemoveRoles.performAddRole(); });
-		setupButtonUI(button_RemoveRole, "Dialog", 16, 150, Pos.CENTER, 460, 275);			
-		ViewAddRemoveRoles.button_RemoveRole.setOnAction((_) -> 
-			{ControllerAddRemoveRoles.performRemoveRole(); });
-		setupLabelUI(label_SelectRoleToBeRemoved, "Arial", 20, 300, Pos.BASELINE_LEFT, 20, 280);	
-		label_SelectRoleToBeRemoved.getStyleClass().add("sub-label");
-		setupComboBoxUI(combobox_SelectRoleToRemove, "Dialog", 16, 150, 280, 275);	
+		List<String> allUsernames = theDatabase.getUserList();
+		
+		
+		for (String username : allUsernames) {
+			
+			theDatabase.getUserAccountDetails(username);
+			    
+		    User user = new User();
+		    user.setUserName(username);
+		    user.setAdminRole(theDatabase.getCurrentAdminRole());
+		    user.setRole1User(theDatabase.getCurrentNewRole1());
+		    user.setRole2User(theDatabase.getCurrentNewRole2());
+		   
+		    
+		    HBox userRow = createUserRow(user);
+		    
+		    userListBox.getChildren().add(userRow);
+	
+		   
+		}
+		
 		
 		// GUI Area 3		
 		setupButtonUI(button_Return, "Dialog", 18, 210, Pos.CENTER, 20, 540);
@@ -243,13 +293,386 @@ public class ViewAddRemoveRoles {
 		// Due to the very dynamic nature of this page, setting the widget into the Root Pane has 
 		// has been delegated to the repaintTheWindow and doSelectUser controller methods.
 		// Don't follow this pattern if formatting of the page does not change dynamically.
+	
+		theRootPane.getChildren().addAll(
+				label_PageTitle, label_UserDetails,
+				button_UpdateThisUser, line_Separator1,
+				scrollPane,
+				line_Separator4, 
+				button_Return,
+				button_Logout,
+				button_Quit);
 	}	
 
 	/*-*******************************************************************************************
 
 	Helper methods used to minimizes the number of lines of code needed above
 	
-	*/
+		/**********
+	 * <p> Method: createUserRow(User user) </p>
+	 * 
+	 * <p> Description: Creates and configures a single user row as an HBox for display in the user management list. 
+	 * This method assembles all visual components for one user entry, including:
+	 * username label, roles label, optional action feedback badge, spacer, action area (with role add/remove ComboBoxes,
+	 * confirm and cancel buttons), and a menu button for role management actions.
+	 * </p>
+	 * 
+	 * <p>The row is styled with a dark background, rounded corners, and responsive width binding to the parent list container.
+	 * ComboBoxes are initially hidden and only shown when the user selects "Add Role..." or "Remove Role..." from the menu.
+	 * A custom ListCell is applied to ensure the prompt text ("Select") reliably reappears after selections and resets.
+	 * </p>
+	 * 
+	 * <p>Event handlers are attached to handle role addition/removal, database updates, UI refresh, and visual feedback
+	 * via a persistent colored badge (green for add, red for remove).</p>
+	 * 
+	 * @param user the User object whose username, roles, and role flags (adminRole, newRole1, newRole2) 
+	 *             are used to populate and update this row
+	 * @return the fully configured HBox representing one user row, ready to be added to a list or container
+	 */
+
+	protected static HBox createUserRow(User user) {
+	    HBox userRow = new HBox(4);
+	    userRow.setAlignment(Pos.CENTER_LEFT);
+	    userRow.setMinHeight(52);
+	    userRow.setStyle("-fx-padding: 12 16; -fx-background-color: #000; -fx-background-radius: 15px;");
+	    userRow.prefWidthProperty().bind(userListBox.widthProperty().subtract(24));
+	    
+	    // Username
+	    Label usernameLabel = new Label(user.getUserName());
+	    usernameLabel.setStyle("-fx-font-family: Montserrat SemiBold; -fx-font-size: 14px; -fx-text-fill: #fff;");
+	    usernameLabel.setMinWidth(150);
+	    usernameLabel.setMaxWidth(150);
+	    
+	    // Roles
+	    Label rolesLabel = new Label(user.getRoles());
+	    rolesLabel.setStyle("-fx-font-family: Montserrat SemiBold; -fx-font-size: 14px; -fx-text-fill: #fff;");
+	    rolesLabel.setMinWidth(150);
+	    rolesLabel.setMaxWidth(200);
+	    rolesLabel.setTranslateX(-30);         // ← small pull left, try -6 or -8 if needed
+	    
+	    // Spacer to push menu button to the right
+	    Region spacer = new Region();
+	    HBox.setHgrow(spacer, Priority.SOMETIMES);
+	    
+	    // Action area (initially empty and invisible)
+	    HBox actionArea = new HBox(8);
+	    actionArea.setAlignment(Pos.CENTER_RIGHT);
+	    actionArea.setPrefWidth(0);  // Start with 0 width
+	    
+	    // Add role combo (initially hidden)
+	    ComboBox<String> addCombo = new ComboBox<>();
+	    addCombo.setVisible(false);
+	    addCombo.setManaged(false);
+	    addCombo.setPrefWidth(75);
+	    addCombo.setMinWidth(75);   
+	    addCombo.getStyleClass().add("role-combo-box");
+	  
+
+	    // Remove role combo (initially hidden)
+	    ComboBox<String> removeCombo = new ComboBox<>();
+	    removeCombo.setVisible(false);
+	    removeCombo.setManaged(false);
+	    removeCombo.setPrefWidth(75);
+	    removeCombo.setMinWidth(75);  
+	    removeCombo.getStyleClass().add("role-combo-box");
+	   
+	    addCombo.setTranslateX(-10);     // move the Add combo a bit to the left
+	    removeCombo.setTranslateX(-10);  // move the Remove combo a bit to the left
+	    
+	    addCombo.setPromptText("Select");
+	    removeCombo.setPromptText("Select");
+	    
+	    addCombo.setButtonCell(new ListCell<String>() {
+	        @Override
+	        protected void updateItem(String item, boolean empty) {
+	            super.updateItem(item, empty);
+	            if (empty || item == null) {
+	                setText(addCombo.getPromptText());
+	            } else {
+	                setText(item);
+	            }
+	        }
+	    });
+
+	    // Same for removeCombo
+	    removeCombo.setButtonCell(new ListCell<String>() {
+	        @Override
+	        protected void updateItem(String item, boolean empty) {
+	            super.updateItem(item, empty);
+	            if (empty || item == null) {
+	                setText(removeCombo.getPromptText());
+	            } else {
+	                setText(item);
+	            }
+	        }
+	    });
+
+	    HBox.setHgrow(addCombo,    Priority.SOMETIMES);   // ← change from NEVER
+	    HBox.setHgrow(removeCombo, Priority.SOMETIMES);
+	    
+	    // Confirm button (initially hidden)
+	    Button confirmBtn = new Button("✓");
+	    confirmBtn.setVisible(false);
+	    confirmBtn.setManaged(false);
+	    confirmBtn.setPrefWidth(35);
+	    confirmBtn.setStyle("-fx-background-color: #28a745; -fx-text-fill: white; " +
+	                        "-fx-font-size: 16px; -fx-font-family: 'Arial Unicode MS', 'Segoe UI Symbol';");
+	    
+	    // Cancel button (initially hidden)
+	    Button cancelBtn = new Button("✕");
+	    cancelBtn.setVisible(false);
+	    cancelBtn.setManaged(false);
+	    cancelBtn.setPrefWidth(35);
+	    cancelBtn.setStyle("-fx-background-color: #dc3545; -fx-text-fill: white; -fx-font-size: 16px;");
+	    
+	    actionArea.getChildren().addAll(addCombo, removeCombo, confirmBtn, cancelBtn);
+	    
+	    // Menu button
+	    MenuButton menuButton = new MenuButton("\u22EE"); // vertical ellipsis
+	    menuButton.setFont(Font.font("Segoe UI Symbol", 30));
+	    menuButton.setStyle(
+	        "-fx-background-color: #000;" +
+	        "-fx-text-fill: #fff;" +
+	        "-fx-cursor: hand;" +
+	        "-fx-padding: 0 8;"
+	    );
+	    menuButton.setMinWidth(40);
+	    menuButton.getStyleClass().add("custom-menu-button");
+	    
+	    MenuItem addRoleItem = new MenuItem("Add Role...");
+	    MenuItem removeRoleItem = new MenuItem("Remove Role...");
+	    
+	    // Dynamically show/hide menu items before menu is shown
+	    menuButton.setOnShowing(event -> {
+	        // Clear previous menu items
+	        menuButton.getItems().clear();
+
+	        // Check which roles the user currently has
+	        boolean hasAdmin = user.getAdminRole();
+	        boolean hasRole1 = user.getNewRole1();
+	        boolean hasRole2 = user.getNewRole2();
+
+	        // Count how many roles the user has
+	        int roleCount = 0;
+	        if (hasAdmin) roleCount++;
+	        if (hasRole1) roleCount++;
+	        if (hasRole2) roleCount++;
+
+	        // Only show "Add Role..." if user does not have all roles
+	        if (roleCount < 3) {
+	            menuButton.getItems().add(addRoleItem);
+	        }
+
+	        // Only show "Remove Role..." if user has more than one role
+	        if (roleCount > 1) {
+	            menuButton.getItems().add(removeRoleItem);
+	        }
+	    });
+	    
+	    Label roleActionLabel = new Label();
+	    roleActionLabel.setVisible(false);
+	    roleActionLabel.setManaged(false);
+	    roleActionLabel.setStyle(
+	        "-fx-background-color: #2d2d2d;" +
+	        "-fx-text-fill: #fff;" +
+	        "-fx-padding: 0 10;" +
+	        "-fx-background-radius: 999;" +
+	        "-fx-font-size: 12px;"
+	    );
+	    
+	    // When "Add Role" clicked
+	    addRoleItem.setOnAction(_ -> {
+	        // Populate add combo with available roles
+	        addCombo.getItems().clear();
+	        if (!user.getAdminRole()) addCombo.getItems().add("Admin");
+	        if (!user.getNewRole1()) addCombo.getItems().add("Role1");
+	        if (!user.getNewRole2()) addCombo.getItems().add("Role2");
+	        
+	        if (addCombo.getItems().isEmpty()) {
+	            // No roles to add - could show a message here
+	            return;
+	        }
+	        
+	    
+	        
+	        // Show add combo and buttons
+	        addCombo.setVisible(true);
+	        addCombo.setManaged(true);
+	        removeCombo.setVisible(false);
+	        removeCombo.setManaged(false);
+	        confirmBtn.setVisible(true);
+	        confirmBtn.setManaged(true);
+	        cancelBtn.setVisible(true);
+	        cancelBtn.setManaged(true);
+	        menuButton.setVisible(false);
+	        menuButton.setManaged(false);
+	    });
+	    
+	    // When "Remove Role" clicked
+	    removeRoleItem.setOnAction(_ -> {
+	        // Populate remove combo with current roles
+	        removeCombo.getItems().clear();
+	        if (user.getAdminRole()) removeCombo.getItems().add("Admin");
+	        if (user.getNewRole1()) removeCombo.getItems().add("Role1");
+	        if (user.getNewRole2()) removeCombo.getItems().add("Role2");
+	        
+	        if (removeCombo.getItems().isEmpty()) {
+	            // No roles to remove - could show a message here
+	            return;
+	        }
+	        
+	       
+	        
+	        // Show remove combo and buttons
+	        removeCombo.setVisible(true);
+	        removeCombo.setManaged(true);
+	        addCombo.setVisible(false);
+	        addCombo.setManaged(false);
+	        confirmBtn.setVisible(true);
+	        confirmBtn.setManaged(true);
+	        cancelBtn.setVisible(true);
+	        cancelBtn.setManaged(true);
+	        menuButton.setVisible(false);
+	        menuButton.setManaged(false);
+	    });
+	    
+	    confirmBtn.setOnAction(_ -> {
+	    	
+	    	
+	    	if (user.getAdminRole() && !user.getUserName().equals(theUser.getUserName())) {
+	            alertCannotModifyAdmin.setContentText("You cannot modify the roles of another admin!");
+	            alertCannotModifyAdmin.showAndWait();
+	            return; // stop further processing
+	        }
+	    	
+	    	
+	    	
+	        if (addCombo.isVisible() && addCombo.getValue() != null) {
+
+	            String roleToAdd = addCombo.getValue();
+	            theDatabase.updateUserRole(user.getUserName(), roleToAdd, "true");
+	            
+
+	            if (roleToAdd.equals("Admin")) user.setAdminRole(true);
+	            else if (roleToAdd.equals("Role1")) user.setRole1User(true);
+	            else if (roleToAdd.equals("Role2")) user.setRole2User(true);
+
+	            rolesLabel.setText(user.getRoles());
+
+	            // Show badge – THIS WAS MISSING
+	            roleActionLabel.setText("Added: " + roleToAdd);
+	            roleActionLabel.setStyle(
+	                "-fx-background-color: #28a745;" +   // green for added
+	                "-fx-text-fill: white;" +
+	                "-fx-padding: 4 10;" +
+	                "-fx-background-radius: 999;" +
+	                "-fx-font-size: 10px;"
+	            );
+	            roleActionLabel.setVisible(true);
+	            roleActionLabel.setManaged(true);
+
+	            // Reset combo...
+	            addCombo.setValue(null);
+	            addCombo.getSelectionModel().clearSelection();
+	            addCombo.setPromptText("Select");
+	            addCombo.setStyle(addCombo.getStyle());
+	            addCombo.requestLayout();
+
+	        } else if (removeCombo.isVisible() && removeCombo.getValue() != null) {
+
+	            String roleToRemove = removeCombo.getValue();
+	            theDatabase.updateUserRole(user.getUserName(), roleToRemove, "false");
+
+	            if (roleToRemove.equals("Admin")) user.setAdminRole(false);
+	            else if (roleToRemove.equals("Role1")) user.setRole1User(false);
+	            else if (roleToRemove.equals("Role2")) user.setRole2User(false);
+
+	            rolesLabel.setText(user.getRoles());
+
+	            // Show badge – THIS WAS MISSING
+	            roleActionLabel.setText("Removed: " + roleToRemove);
+	            roleActionLabel.setStyle(
+	                "-fx-background-color: #dc3545;" +   // red for removed
+	                "-fx-text-fill: white;" +
+	                "-fx-padding: 4 10;" +
+	                "-fx-background-radius: 999;" +
+	                "-fx-font-size: 10px;"
+	            );
+	            roleActionLabel.setVisible(true);
+	            roleActionLabel.setManaged(true);
+
+	            // Reset...
+	            removeCombo.setValue(null);
+	            removeCombo.getSelectionModel().clearSelection();
+	            removeCombo.setPromptText("Select");
+	            removeCombo.setStyle(removeCombo.getStyle());
+	            removeCombo.requestLayout();
+	        }
+
+	        hideActionControls(addCombo, removeCombo, confirmBtn, cancelBtn, menuButton);
+	    });
+	    
+	    // Cancel button action
+	    cancelBtn.setOnAction(_ -> {
+	    	addCombo.setValue(null);
+	        addCombo.getSelectionModel().clearSelection();
+	        addCombo.setPromptText("Select");
+	        addCombo.requestLayout();
+
+	        removeCombo.setValue(null);
+	        removeCombo.getSelectionModel().clearSelection();
+	        removeCombo.setPromptText("Select");
+	        removeCombo.requestLayout();
+	    	
+	        hideActionControls(addCombo, removeCombo, confirmBtn, cancelBtn, menuButton);
+	    });
+	    
+	    menuButton.getItems().addAll(addRoleItem, removeRoleItem);
+	    
+	    // Updated order: labels, spacer, action area, menu button
+	    userRow.getChildren().addAll(usernameLabel, rolesLabel, roleActionLabel, spacer, actionArea, menuButton);
+	    
+	    return userRow;
+	}
+	
+	/**********
+	 * <p> Method: hideActionControls(ComboBox<String> addCombo, ComboBox<String> removeCombo, 
+	 * Button confirmBtn, Button cancelBtn, MenuButton menuButton) </p>
+	 * 
+	 * <p> Description: Hides the action-related controls in a user row and restores the visibility 
+	 * of the menu button. This method is called after confirming or canceling a role add/remove operation 
+	 * (or on cancel) to clean up the UI by removing the ComboBoxes, confirm button, and cancel button 
+	 * from view, while making the ellipsis menu button visible again for future actions. 
+	 * </p>
+	 * 
+	 * <p>It also resets both ComboBoxes by clearing their selected value (setValue(null)) so that 
+	 * the prompt text ("Select") can reappear correctly the next time they are shown. 
+	 * This helps prevent the known JavaFX behavior where the prompt text fails to display after 
+	 * previous selections.</p>
+	 * 
+	 * @param addCombo    the ComboBox used for adding a new role (initially hidden)
+	 * @param removeCombo the ComboBox used for removing an existing role (initially hidden)
+	 * @param confirmBtn  the confirmation button (✓) that applies the role change
+	 * @param cancelBtn   the cancel button (✕) that discards the operation
+	 * @param menuButton  the vertical ellipsis MenuButton that opens the add/remove options
+	 */
+
+	private static void hideActionControls(ComboBox<String> addCombo, ComboBox<String> removeCombo, 
+	                                       Button confirmBtn, Button cancelBtn, MenuButton menuButton) {
+	    addCombo.setVisible(false);
+	    addCombo.setManaged(false);
+	    removeCombo.setVisible(false);
+	    removeCombo.setManaged(false);
+	    confirmBtn.setVisible(false);
+	    confirmBtn.setManaged(false);
+	    cancelBtn.setVisible(false);
+	    cancelBtn.setManaged(false);
+	    menuButton.setVisible(true);
+	    menuButton.setManaged(true);
+	    
+	    addCombo.setValue(null);
+	    removeCombo.setValue(null);
+	}
 
 	/**********
 	 * Private local method to initialize the standard fields for a label

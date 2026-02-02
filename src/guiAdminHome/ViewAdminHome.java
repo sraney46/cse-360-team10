@@ -310,6 +310,11 @@ public class ViewAdminHome {
 		setupTableViewUI(usersList, "Dialog", 12, 480, 300, 268, 240);
 		
 		usersList.getSelectionModel().selectedItemProperty().addListener((selection) -> {
+			
+			// null check to prevent NullPointerException when the table has no selection
+			User selected = usersList.getSelectionModel().getSelectedItem();
+		    if (selected == null) return;  // <-- prevents the NPE
+			
 		    if (selection != null) {
 		    	String user = usersList.getSelectionModel().getSelectedItem().getUserName();
 		    	User selectUser = null;

@@ -1,5 +1,6 @@
 package entityClasses;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -284,6 +285,36 @@ public class User {
     	if(role1) roles.add("Role1");
     	if(role2) roles.add("Role2");
     	return String.join("|", roles); 
+    }
+
+    /**
+     * <p> Method: String getRoles() </p>
+     *
+     * <p> Description: This method returns a formatted string of all roles 
+     * assigned to the user. Multiple roles are comma-separated. </p>
+     *
+     * @return a String containing all assigned roles (e.g., "Admin, Role1" or "Role2")
+     */
+    public String getRoles() {
+        List<String> roles = new ArrayList<>();
+        
+        if (getAdminRole()) {
+            roles.add("Admin");
+        }
+        if (getNewRole1()) {
+            roles.add("Role1");
+        }
+        if (getNewRole2()) {
+            roles.add("Role2");
+        }
+        
+        // If no roles assigned
+        if (roles.isEmpty()) {
+            return "No Roles";
+        }
+        
+        // Join roles with comma and space
+        return String.join(", ", roles);
     }
 
         

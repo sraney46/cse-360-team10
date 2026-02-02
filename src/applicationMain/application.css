@@ -70,3 +70,132 @@
 .update-user-root{
 	-fx-background-color: #121214;
 }
+
+.custom-scroll .scroll-bar:vertical,
+.custom-scroll .scroll-bar:horizontal {
+    -fx-background-color: transparent;
+    -fx-opacity: 0.0;
+    transition: opacity 0.25s ease;
+}
+
+.custom-scroll:hover .scroll-bar:vertical,
+.custom-scroll:hover .scroll-bar:horizontal {
+    -fx-opacity: 0.85;
+}
+
+.custom-scroll .scroll-bar .thumb {
+    -fx-background-color: derive(#888888, 20%);
+    -fx-background-radius: 999em;   /* pill shape */
+    -fx-background-insets: 3;
+}
+
+.custom-scroll .scroll-bar .thumb:hover {
+    -fx-background-color: #666666;
+}
+
+
+.menu-button .context-menu {
+    -fx-background-color: #000000;           
+    -fx-background-radius: 6;
+    -fx-border-color: #444444;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 12, 0, 0, 6);
+}
+
+
+.menu-item {
+    -fx-background-color: transparent;       
+    -fx-padding: 8 20 8 16;
+    -fx-font-size: 14px;
+}
+
+.menu-item:hover,
+.menu-item:focused {
+    -fx-background-color: #333333;           
+}
+
+.custom-menu-button .arrow {
+    -fx-background-color: transparent;
+    -fx-shape: "";
+    -fx-padding: 0;
+    -fx-max-width: 0;
+    -fx-max-height: 0;
+}
+
+
+.role-combo-box {
+    -fx-background-color: #000;
+    -fx-border-color: #000;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-padding: 0; 
+}
+
+
+.role-combo-box .text {
+    -fx-fill: #fff;
+    -fx-font-family: 'Montserrat SemiBold';
+    -fx-font-size: 14px;
+    -fx-alignment: CENTER_LEFT;
+        -fx-padding: 0 0 0 0; 
+    -fx-max-width: none;     
+    -fx-overrun: visible;    
+}
+
+
+.role-combo-box .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-pref-width: 0;
+    -fx-min-width: 0;
+    -fx-max-width: 0;
+}
+
+.role-combo-box .arrow {
+    -fx-background-color: transparent;
+    -fx-shape: "";
+    -fx-padding: 0;
+    -fx-pref-width: 0;
+    -fx-min-width: 0;
+    -fx-max-width: 0;
+    -fx-max-height: 0;
+}
+
+.role-combo-box .list-view {
+    -fx-background-color: #000;
+    -fx-border-color: #444;
+    -fx-padding: 0;
+     -fx-pref-width: 74px;
+    -fx-min-width:  74px;
+    -fx-max-width:  74px;  
+    -fx-max-height:  80px;     
+    -fx-scroll-bar-policy: none;           
+}
+
+
+.role-combo-box .combo-box-popup > .list-view .scroll-bar:vertical,
+.role-combo-box .combo-box-popup > .list-view .scroll-bar:horizontal {
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    visibility: hidden;
+}
+
+.role-combo-box .list-cell {
+    -fx-background-color: #000;
+    -fx-text-fill: #fff;
+    -fx-font-family: 'Montserrat SemiBold';
+    -fx-font-size: 14px;
+}
+
+
+.role-combo-box .list-cell:hover {
+    -fx-background-color: #333;
+}
+
+
+.role-combo-box .list-cell:selected {
+    -fx-background-color: #444;
+    -fx-text-fill: #fff;
+}

@@ -106,9 +106,6 @@ public class FoundationsMain extends Application {
 		);
 		
 		
-
-		
-		
 		// Connect to the in-memory database
 		try {
 			// Connect to the database

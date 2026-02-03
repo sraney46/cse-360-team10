@@ -51,6 +51,7 @@ import guiUserUpdate.ViewUserUpdate;
  * @author Lynn Robert Carter
  * 
  * @version 1.00		2025-08-17 Initial version
+ * @version 1.01		2026-02-02 UI Design Refresh
  *  
  */
 
@@ -314,6 +315,9 @@ public class ViewAdminHome {
 		setupTableViewUI(usersList, "Dialog", 12, 680, 300, 268, 240);
 		usersList.getStyleClass().add("userlist-adminhomepage");
 
+		// Determine whether the "Delete User" and "One-Time Password" actions should be
+		// enabled or disabled based on the selected user, the user's role (admin vs non-admin),
+		// and whether the selected user is the currently logged-in user.
 		usersList.getSelectionModel().selectedItemProperty().addListener((selection) -> {
 
 		    // null check to prevent NullPointerException when the table has no selection

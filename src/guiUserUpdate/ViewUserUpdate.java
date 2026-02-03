@@ -46,6 +46,7 @@ import javafx.scene.image.ImageView;
  * @author Lynn Robert Carter
  * 
  * @version 1.01		2025-08-19 Initial version plus new internal documentation
+ * @version 1.02		2026-01-30 UI Design Refresh
  *  
  */
 
@@ -182,9 +183,22 @@ public class ViewUserUpdate {
     	if (s == null || s.length() < 1)label_CurrentUsername.setText("<none>");
     	else label_CurrentUsername.setText(s);
 		
-		s = theUser.getPassword();
+		s = theUser.getPassword();	
     	if (s == null || s.length() < 1)label_CurrentPassword.setText("<none>");
-    	else label_CurrentPassword.setText(s);
+    	else {
+    		
+    		// coding logic to hide password 
+    		// creates a string with character length of the password
+    		// each character is a '*'
+    		String hidePassword = "";
+           	
+           	for (int i = 0; i < s.length(); i++) {
+           		hidePassword = hidePassword.concat("*");
+           	}
+           	
+           	label_CurrentPassword.setText(hidePassword);
+    		//label_CurrentPassword.setText(s);
+    	}
     	
 		s = theUser.getFirstName();
     	if (s == null || s.length() < 1)label_CurrentFirstName.setText("<none>");
@@ -454,7 +468,14 @@ public class ViewUserUpdate {
 	        	
 	        	theDatabase.updatePassword(theUser.getUserName(), password1);
 		       	theUser.setPassword(password1);
-		       	label_CurrentPassword.setText(password1);
+		       	
+		       	String hidePassword = "";
+		       	
+		       	for (int i = 0; i < password1.length(); i++) {
+		       		hidePassword = hidePassword.concat("*");
+		       	}
+		       	
+		       	label_CurrentPassword.setText(hidePassword);
 		    	
 		    	passwordField.clear();
 		        confirmField.clear();

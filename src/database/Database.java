@@ -226,6 +226,19 @@ public class Database {
 		
 	}
 	
+	/*******
+	 *  <p> Method: void populateDatabaseWithTestUsers(User currentUser) </p>
+	 *  
+	 *  <p> Description: Clears the existing database by dropping all objects, recreates
+	 *  the required tables, and populates the user database with a predefined set of
+	 *  test users. The first user inserted preserves the provided current user's
+	 *  credentials and role assignments, while the remaining users are auto-generated
+	 *  with default values and varying role combinations for testing purposes. </p>
+	 *  
+	 *  @param currentUser the currently authenticated user whose account information
+	 *  is preserved as the first entry in the newly populated user database.
+	 */
+	
 	public void populateDatabaseWithTestUsers(User currentUser) {
 	    try {
 	        // Drop everything to start fresh

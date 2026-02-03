@@ -203,67 +203,65 @@
 
 .userlist-adminhomepage {
     
-    -fx-background-color: transparent;  /* instead of #000 */
+    -fx-background-color: transparent;  
     -fx-background-radius: 15px;
     -fx-border-radius: 15px;
-    -fx-border-color: transparent;  /* Add this */
+    -fx-border-color: transparent;  
 }
 
-/* Table rows */
+
 .userlist-adminhomepage .table-row-cell {
     -fx-background-color: #000;
     -fx-padding: 12 16;
     -fx-border-color: transparent;
 }
 
-/* Table rows on hover */
 .userlist-adminhomepage .table-row-cell:hover {
     -fx-background-color: #1a1a1a;
 }
 
-/* Selected row */
+
 .userlist-adminhomepage .table-row-cell:selected {
     -fx-background-color: #2a2a2a;
 }
 
-/* Table cell text */
+
 .userlist-adminhomepage .table-cell {
     -fx-text-fill: #fff;
     -fx-font-family: 'Montserrat Regular';
     -fx-font-size: 11px;
     -fx-alignment: center-left;
-    -fx-border-color: transparent;  /* Add this */
+    -fx-border-color: transparent;  
 }
 
-/* Column headers */
+
 .userlist-adminhomepage .column-header {
     -fx-background-color: #000;
     -fx-text-fill: #fff;
     -fx-font-family: 'Montserrat Regular';
     -fx-font-size: 12px;
     -fx-alignment: center-left;
-    -fx-border-color: transparent;  /* Changed from #444 */
+    -fx-border-color: transparent;  
 }
 
-/* Column header label (the actual text) */
+
 .userlist-adminhomepage .column-header .label {
     -fx-alignment: center-left;
-    -fx-padding: 0 0 0 15;   /* top right bottom left */
+    -fx-padding: 0 0 0 15;  
 }
 
 
-/* Remove table lines */
+
 .userlist-adminhomepage .table-row-cell .table-cell {
     -fx-border-width: 0;
-    -fx-border-color: transparent;  /* Add this */
+    -fx-border-color: transparent;  
 }
 
-/* Transparent viewport background */
+
 .userlist-adminhomepage .virtual-flow .clipped-container .sheet .table-row-cell .table-cell {
     -fx-background-color: transparent;
 }
 
-/* Hide horizontal scrollbar completely */
 .userlist-adminhomepage .scroll-bar:horizontal {
     -fx-pref-height: 0;
     -fx-max-height: 0;
@@ -271,7 +269,7 @@
     -fx-opacity: 0;
 }
 
-/* Scrollbar styling to match */
+
 .userlist-adminhomepage .scroll-bar:vertical {
     -fx-background-color: #000;
 }
@@ -285,65 +283,64 @@
     -fx-background-color: #1a1a1a;
 }
 
-/* Base combo box style */
+
 .default-combo-box {
-    -fx-background-color: #000;         /* black background */
-    -fx-border-color: transparent;      /* no border */
+    -fx-background-color: #000;         
+    -fx-border-color: transparent;     
     -fx-border-radius: 5px;
     -fx-background-radius: 5px;
-    -fx-padding: 0 5 0 5;               /* optional padding inside */
+    -fx-padding: 0 5 0 5;               
 }
 
-/* Text inside the combo box */
+
 .default-combo-box .text {
-    -fx-fill: #fff;                     /* white text */
+    -fx-fill: #fff;                     
     -fx-font-family: 'Montserrat Regular';
     -fx-font-size: 12px;
     -fx-alignment: center-left;
 }
 
-/* Arrow button background (dropdown triangle) */
+
 .default-combo-box .arrow-button {
-    -fx-background-color: #000;         /* match background */
+    -fx-background-color: #000;         
     -fx-padding: 0;
     -fx-padding: 0 10 0 0;    
 }
 
-/* The arrow triangle itself */
+
 .default-combo-box .arrow {
     -fx-fill: #fff;     
-               /* triangle color = white */
+      
 }
 
-/* Dropdown list */
+
 .default-combo-box .list-view {
-    -fx-background-color: #000;         /* black background */
-    -fx-border-color: #444;             /* subtle border */
-    -fx-padding: 0;          /* default dropdown width */
+    -fx-background-color: #000;        
+    -fx-border-color: #444;             
+    -fx-padding: 0;          
     -fx-min-width: 90px;
     -fx-max-width: 90px;
-    -fx-max-height: 120px;              /* optional max height */
+    -fx-max-height: 120px;             
 }
 
-/* List cells */
+
 .default-combo-box .list-cell {
-    -fx-background-color: #000;         /* default bg */
-    -fx-text-fill: #fff;                /* default text */
+    -fx-background-color: #000;         
+    -fx-text-fill: #fff;                
     -fx-font-family: 'Montserrat Regular';
     -fx-font-size: 12px;
 }
 
-/* Hovered list cell matches table hover */
+
 .default-combo-box .list-cell:hover {
     -fx-background-color: #1a1a1a;
 }
 
-/* Selected cell matches table selected row */
 .default-combo-box .list-cell:selected {
     -fx-text-fill: #fff;
 }
 
-/* Hide scrollbars but allow scrolling */
+
 .default-combo-box .combo-box-popup > .list-view .scroll-bar:vertical,
 .default-combo-box .combo-box-popup > .list-view .scroll-bar:horizontal {
     -fx-opacity: 0;

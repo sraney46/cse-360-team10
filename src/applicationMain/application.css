@@ -25,6 +25,7 @@
     -fx-background-radius: 5px;
     -fx-border-radius: 5px;
     -fx-alignment: center; 
+    -fx-cursor: hand;
 }
 
 .text-field {
@@ -198,4 +199,152 @@
 .role-combo-box .list-cell:selected {
     -fx-background-color: #444;
     -fx-text-fill: #fff;
+}
+
+.userlist-adminhomepage {
+    
+    -fx-background-color: transparent;  
+    -fx-background-radius: 15px;
+    -fx-border-radius: 15px;
+    -fx-border-color: transparent;  
+}
+
+
+.userlist-adminhomepage .table-row-cell {
+    -fx-background-color: #000;
+    -fx-padding: 12 16;
+    -fx-border-color: transparent;
+}
+
+.userlist-adminhomepage .table-row-cell:hover {
+    -fx-background-color: #1a1a1a;
+}
+
+
+.userlist-adminhomepage .table-row-cell:selected {
+    -fx-background-color: #2a2a2a;
+}
+
+
+.userlist-adminhomepage .table-cell {
+    -fx-text-fill: #fff;
+    -fx-font-family: 'Montserrat Regular';
+    -fx-font-size: 11px;
+    -fx-alignment: center-left;
+    -fx-border-color: transparent;  
+}
+
+
+.userlist-adminhomepage .column-header {
+    -fx-background-color: #000;
+    -fx-text-fill: #fff;
+    -fx-font-family: 'Montserrat Regular';
+    -fx-font-size: 12px;
+    -fx-alignment: center-left;
+    -fx-border-color: transparent;  
+}
+
+
+.userlist-adminhomepage .column-header .label {
+    -fx-alignment: center-left;
+    -fx-padding: 0 0 0 15;  
+}
+
+
+
+.userlist-adminhomepage .table-row-cell .table-cell {
+    -fx-border-width: 0;
+    -fx-border-color: transparent;  
+}
+
+
+.userlist-adminhomepage .virtual-flow .clipped-container .sheet .table-row-cell .table-cell {
+    -fx-background-color: transparent;
+}
+
+.userlist-adminhomepage .scroll-bar:horizontal {
+    -fx-pref-height: 0;
+    -fx-max-height: 0;
+    -fx-min-height: 0;
+    -fx-opacity: 0;
+}
+
+
+.userlist-adminhomepage .scroll-bar:vertical {
+    -fx-background-color: #000;
+}
+
+.userlist-adminhomepage .scroll-bar:vertical .thumb {
+    -fx-background-color: #444;
+    -fx-background-radius: 5px;
+}
+
+.userlist-adminhomepage .scroll-bar:vertical .track {
+    -fx-background-color: #1a1a1a;
+}
+
+
+.default-combo-box {
+    -fx-background-color: #000;         
+    -fx-border-color: transparent;     
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-padding: 0 5 0 5;               
+}
+
+
+.default-combo-box .text {
+    -fx-fill: #fff;                     
+    -fx-font-family: 'Montserrat Regular';
+    -fx-font-size: 12px;
+    -fx-alignment: center-left;
+}
+
+
+.default-combo-box .arrow-button {
+    -fx-background-color: #000;         
+    -fx-padding: 0;
+    -fx-padding: 0 10 0 0;    
+}
+
+
+.default-combo-box .arrow {
+    -fx-fill: #fff;     
+      
+}
+
+
+.default-combo-box .list-view {
+    -fx-background-color: #000;        
+    -fx-border-color: #444;             
+    -fx-padding: 0;          
+    -fx-min-width: 90px;
+    -fx-max-width: 90px;
+    -fx-max-height: 120px;             
+}
+
+
+.default-combo-box .list-cell {
+    -fx-background-color: #000;         
+    -fx-text-fill: #fff;                
+    -fx-font-family: 'Montserrat Regular';
+    -fx-font-size: 12px;
+}
+
+
+.default-combo-box .list-cell:hover {
+    -fx-background-color: #1a1a1a;
+}
+
+.default-combo-box .list-cell:selected {
+    -fx-text-fill: #fff;
+}
+
+
+.default-combo-box .combo-box-popup > .list-view .scroll-bar:vertical,
+.default-combo-box .combo-box-popup > .list-view .scroll-bar:horizontal {
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    visibility: hidden;
 }

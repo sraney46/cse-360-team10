@@ -876,7 +876,7 @@ public class Database {
    */
   // update the password
   public void clearOneTimePassword(String username) {
-    String query = "UPDATE userDB SET OTP = ?, isOneTimePW = ? WHERE userName = ?";
+    String query = "UPDATE userDB SET OTP = ?, isoneTimePW = ? WHERE userName = ?";
     String generatedPW = UUID.randomUUID().toString().substring(0, 8); // Generate a random 8-character password
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
       pstmt.setString(1, "");

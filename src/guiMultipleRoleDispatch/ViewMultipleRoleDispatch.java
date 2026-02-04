@@ -25,6 +25,7 @@ import entityClasses.User;
  * @author Lynn Robert Carter
  * 
  * @version 1.00		2025-08-20 Initial version
+ * @version 1.02		2026-02-03 UI Design Refresh
  *  
  */
 
@@ -105,18 +106,20 @@ public class ViewMultipleRoleDispatch {
 		setupLabelUI(label_UserDetails, "Arial", 20, width, Pos.CENTER, 0, 50);
 
 		label_UserDetails.setText("User: " + theUser.getUserName());
-		setupLabelUI(label_UserDetails, "Arial", 20, width, Pos.BASELINE_LEFT, 20, 55);			
+		setupLabelUI(label_UserDetails, "Arial", 20, width, Pos.BASELINE_LEFT, 20, 55);		
+		
+		combobox_SelectRole.setPromptText("Select Role");
 
 		System.out.println("*** Getting multiple role details for user: " + theUser.getUserName());
 		list = new ArrayList<String>();
-		list.add("<Select a role>");
+		
 		if (theDatabase.getCurrentAdminRole()) list.add("Admin");
 		if (theDatabase.getCurrentNewRole1()) list.add("Role1");
 		if (theDatabase.getCurrentNewRole2()) list.add("Role2");
 		combobox_SelectRole.setItems(FXCollections.observableArrayList(list));
+		
+	
 
-		// Populate the dynamic aspects of the GUI with the data from the user and the current
-		combobox_SelectRole.getSelectionModel().select(0);
 		
 		// Set the title for the window, display the page, and wait for the Admin to do something
 		theStage.setTitle("");	
@@ -158,6 +161,26 @@ public class ViewMultipleRoleDispatch {
 		label_WhichRole.getStyleClass().add("sub-label");
 
 		setupComboBoxUI(combobox_SelectRole, "Dialog", 16, 100, 305, 105);
+		combobox_SelectRole.getStyleClass().add("default-combo-box");
+		
+		
+		
+		// Initially disable and style the button as red/grayed
+		button_PerformRole.setDisable(true);
+		button_PerformRole.setStyle("-fx-background-color: #dc3545; -fx-opacity: 0.5;");
+
+		// Listen for selection changes
+		combobox_SelectRole.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+		    if (newVal != null) {
+		        // Role selected - enable button
+		        button_PerformRole.setDisable(false);
+		        button_PerformRole.setStyle(""); // Reset to default style
+		    } else {
+		        // No role selected - disable button
+		        button_PerformRole.setDisable(true);
+		        button_PerformRole.setStyle("-fx-background-color: #dc3545; -fx-opacity: 0.5;");
+		    }
+		});
 
 		setupButtonUI(button_PerformRole, "Dialog", 16, 100, Pos.CENTER, 495, 105);
 		button_PerformRole.setOnAction((_) -> 

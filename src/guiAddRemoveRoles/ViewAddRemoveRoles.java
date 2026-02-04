@@ -45,6 +45,7 @@ import javafx.scene.control.ButtonType;
  * @author Lynn Robert Carter
  * 
  * @version 1.00		2025-08-20 Initial version
+ * @version 1.01		2026-02-01 UI Design Refresh
  *  
  */
 
@@ -57,7 +58,6 @@ public class ViewAddRemoveRoles {
 	*/
 	
 	// These are the application values required by the user interface
-	
 	private static double width = applicationMain.FoundationsMain.WINDOW_WIDTH;
 	private static double height = applicationMain.FoundationsMain.WINDOW_HEIGHT;
 
@@ -74,7 +74,8 @@ public class ViewAddRemoveRoles {
 	// This is a separator and it is used to partition the GUI for various tasks
 	protected static Line line_Separator1 = new Line(20, 95, width-20, 95);
 	
-	
+	// GUI Area 2: This section has a scroll pane setup for each user in the database. 
+	// users will interact with the menus here to add or delete roles
 	protected static ScrollPane scrollPane;
 	protected static VBox userListBox;
 	
@@ -284,7 +285,7 @@ public class ViewAddRemoveRoles {
 		alertCannotModifyAdmin.setHeaderText(null);
 		
 		alertPopulateDatabase.setTitle("Confirm Database Population");
-		alertPopulateDatabase.setHeaderText("This action will keep the current user data\nbut delete all other users in the database.");
+		alertPopulateDatabase.setHeaderText("This action will keep the current user data\nbut delete all other users in the database.\nEach user account password will be initialized to \"1234\".");
 		alertPopulateDatabase.setContentText("Press OK to continue or Cancel to abort.");
 		
 	
@@ -329,6 +330,7 @@ public class ViewAddRemoveRoles {
 	    HBox userRow = new HBox(4);
 	    userRow.setAlignment(Pos.CENTER_LEFT);
 	    userRow.setMinHeight(50);
+	    userRow.setMaxHeight(50);
 	    userRow.setStyle("-fx-padding: 12 16; -fx-background-color: #000; -fx-background-radius: 15px;");
 	    userRow.prefWidthProperty().bind(userListBox.widthProperty().subtract(24));
 	    
@@ -379,7 +381,7 @@ public class ViewAddRemoveRoles {
 	    
 	    
 	    // These overides ensure "Select" is added as the 
-	    // default value for the combos one repeated uses. 
+	    // default value for the combos on repeated uses. 
 	    addCombo.setButtonCell(new ListCell<String>() {
 	        @Override
 	        protected void updateItem(String item, boolean empty) {

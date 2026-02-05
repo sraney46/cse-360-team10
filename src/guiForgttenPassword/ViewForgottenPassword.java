@@ -49,8 +49,8 @@ public class ViewForgottenPassword {
 
   // These are the application values required by the user interface
 
-  private static double width = applicationMain.FoundationsMain.WINDOW_WIDTH;
-  private static double height = applicationMain.FoundationsMain.WINDOW_HEIGHT;
+  private static double width = applicationMain.FoundationsMain.WINDOW_WIDTH * 0.5;
+  private static double height = applicationMain.FoundationsMain.WINDOW_HEIGHT * 0.75;
 
   // This is a simple GUI login Page, very similar to the FirstAdmin login page.
   // The only real
@@ -58,7 +58,7 @@ public class ViewForgottenPassword {
   // to send the
   // invitation to the potential user.
   private static Label label_ApplicationTitle = new Label("Foundation Application Account Setup Page");
-  protected static Label label_NewUserCreation = new Label(" Change Password");
+  protected static Label label_NewUserCreation = new Label("Change Password");
   protected static PasswordField text_Password1 = new PasswordField();
   protected static PasswordField text_Password2 = new PasswordField();
   protected static Button button_UserSetup = new Button("Change Password");
@@ -187,14 +187,14 @@ public class ViewForgottenPassword {
         getClass().getResource("/applicationMain/application.css").toExternalForm());
 
     // Label to display the welcome message for the new user
-    setupLabelUI(label_NewUserCreation, "Arial", 32, width, Pos.CENTER, 0, 10);
+    setupLabelUI(label_NewUserCreation, "Arial", 32, width, Pos.CENTER, 0, 50);
 
     // Establish the text input operand field for the password
-    setupTextUI(text_Password1, "Arial", 18, 300, Pos.CENTER, 50, 210, true);
+    setupTextUI(text_Password1, "Arial", 18, 300, Pos.CENTER, 50, 175, true);
     text_Password1.setPromptText("Enter the Password");
 
     // Establish the text input operand field to confirm the password
-    setupTextUI(text_Password2, "Arial", 18, 300, Pos.CENTER, 50, 260, true);
+    setupTextUI(text_Password2, "Arial", 18, 300, Pos.CENTER, 50, 225, true);
     text_Password2.setPromptText("Enter the Password Again");
 
     // Set up the account creation and login

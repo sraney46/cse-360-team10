@@ -123,7 +123,8 @@ public class ControllerUserLogin {
         theDatabase.getCurrentNewRole1(), theDatabase.getCurrentNewRole2(), theDatabase.isTemporaryPassword());
 
     if (theDatabase.getCurrentOTP() != null && password.equals(theDatabase.getCurrentOTP())) {
-      guiForgttenPassword.ViewForgottenPassword.displayNewAccount(theStage, user);
+      guiForgttenPassword.ViewForgottenPassword.displayForgotPass(theStage, user);
+
       return;
     }
 

@@ -18,24 +18,25 @@ import guiUserLogin.ViewUserLogin;
 
 /*******
  * <p>
- * Title: ViewNewAccount Class.
+ * Title: ViewForgottenPassword Class.
  * </p>
  * 
  * <p>
- * Description: The ViewNewAccount Page is used to enable a potential user with
- * an invitation
- * code to establish an account after they have specified an invitation code on
+ * Description: The ViewForgottenPassword Page is used to enable a potential
+ * user with
+ * an One Time Password
+ * to change thier password after they have specified the one time password on
  * the standard login
  * page.
  * </p>
  * 
  * <p>
- * Copyright: Lynn Robert Carter © 2025
+ * Copyright: Jonathan Stark © 2026
  * </p>
  * 
- * @author Lynn Robert Carter
+ * @author Jonathan Stark
  * 
- * @version 1.00 2025-08-19 Initial version
+ * @version 1.00 2026-02-05 Initial version
  * 
  */
 
@@ -52,19 +53,20 @@ public class ViewForgottenPassword {
   private static double width = applicationMain.FoundationsMain.WINDOW_WIDTH * 0.5;
   private static double height = applicationMain.FoundationsMain.WINDOW_HEIGHT * 0.75;
 
-  // This is a simple GUI login Page, very similar to the FirstAdmin login page.
+  // This is a simple GUI password change Page, very similar to the pages
+  // throughout the program.
   // The only real
-  // difference is in this case we also know an email address, since it was used
-  // to send the
-  // invitation to the potential user.
-  private static Label label_ApplicationTitle = new Label("Foundation Application Account Setup Page");
-  protected static Label label_NewUserCreation = new Label("Change Password");
+  // difference is in this case we also know the user, since it was are
+  // referencing the user
+  // from the login
+  protected static Label label_PasswordChange = new Label("Change Password");
   protected static PasswordField text_Password1 = new PasswordField();
   protected static PasswordField text_Password2 = new PasswordField();
-  protected static Button button_UserSetup = new Button("Change Password");
-  protected static TextField text_Invitation = new TextField();
+  protected static Button button_ChangePassword = new Button("Change Password");
   // This alert is used should the user enter two passwords that do not match
-  protected static Alert alertUsernamePasswordError = new Alert(AlertType.INFORMATION);
+  // Another alert is used when the password change was successful
+  protected static Alert alertPasswordError = new Alert(AlertType.INFORMATION);
+  protected static Alert success = new Alert(AlertType.INFORMATION);
 
   protected static Button button_Quit = new Button("Quit");
 
@@ -79,12 +81,7 @@ public class ViewForgottenPassword {
   private static Pane theRootPane; // The Pane that holds all the GUI widgets
   protected static User theUser; // The current logged in User
 
-  protected static String theInvitationCode; // The invitation code links to an email address
-                                             // and a role for this user
-  protected static String emailAddress; // Established here for use by the controller
-  protected static String theRole; // Established here for use by the controller
-  protected static boolean checkValidTimer; // Established here for use by the controller
-  public static Scene theNewAccountScene = null; // Access to the User Update page's GUI Widgets
+  public static Scene theForgottenPassScene = null; // Access to the User Update page's GUI Widgets
 
   /*-********************************************************************************************
   
@@ -121,9 +118,10 @@ public class ViewForgottenPassword {
    * @param ic specifies the user's invitation code for this GUI and it's methods
    * 
    */
-  public static void displayNewAccount(Stage ps,User user) {
-    // This is the only way some component of the system can cause a New User
-    // Account page to
+  public static void displayForgotPass(Stage ps, User user) {
+    // This is the only way some component of the system can cause a Forgotten
+    // Password
+    // page to
     // appear. The first time, the class is created and initialized. Every
     // subsequent call it
     // is reused with only the elements that differ being initialized.
@@ -131,63 +129,48 @@ public class ViewForgottenPassword {
     // Establish the references to the GUI and the current user
     theStage = ps; // Save the reference to the Stage for the rest of this package
     theRootPane = new Pane();
-    theUser=user;
+    theUser = user;
     if (theView == null)
       theView = new ViewForgottenPassword();
 
-    text_Password1.setText(""); // appear for a new user
+    text_Password1.setText("");
     text_Password2.setText("");
-
-    // Fetch the role for this user
-
-    // Validate the timer on the user code to check for expiration
-    // checkValidTimer = theDatabase.validateUserCodeTime(theInvitationCode);
-
-    // if (theRole.length() == 0 || !checkValidTimer) {// If there is an issue with
-    // the invitation code, display a
-    // alertInvitationCodeIsInvalid.showAndWait(); // dialog box saying that are
-    // when it it
-    // return; // acknowledged, return so the proper code can be entered
-    // }
 
     // Place all of the established GUI elements into the pane
     theRootPane.getChildren().clear();
-    theRootPane.getChildren().addAll(label_NewUserCreation,
-        text_Password1, text_Password2, button_UserSetup, button_Quit);
+    theRootPane.getChildren().addAll(text_Password1, text_Password2, button_ChangePassword, button_Quit);
 
     // Set the title for the window, display the page, and wait for the Admin to do
     // something
     theStage.setTitle("");
-    theStage.setScene(theNewAccountScene);
+    theStage.setScene(theForgottenPassScene);
     theStage.show();
   }
 
   /**********
    * <p>
-   * Constructor: ViewNewAccount()
+   * Constructor: ViewForgottenPassword()
    * </p>
    * 
    * <p>
-   * Description: This constructor is called just once, the first time a new
-   * account needs to
-   * be created. It establishes all of the common GUI widgets for the page so they
+   * Description: This constructor is called just once, the first time a Password
+   * needs to be
+   * changed. It establishes all of the common GUI widgets for the page so they
    * are only
    * created once and reused when needed.
    * 
-   * The do
+   * 
    * 
    */
   private ViewForgottenPassword() {
 
     // Create the Pane for the list of widgets and the Scene for the window
     theRootPane = new Pane();
-    theNewAccountScene = new Scene(theRootPane, width, height);
+    theForgottenPassScene = new Scene(theRootPane, width, height);
 
-    theNewAccountScene.getStylesheets().add(
+    // Styles the page.
+    theForgottenPassScene.getStylesheets().add(
         getClass().getResource("/applicationMain/application.css").toExternalForm());
-
-    // Label to display the welcome message for the new user
-    setupLabelUI(label_NewUserCreation, "Arial", 32, width, Pos.CENTER, 0, 50);
 
     // Establish the text input operand field for the password
     setupTextUI(text_Password1, "Arial", 18, 300, Pos.CENTER, 50, 175, true);
@@ -197,9 +180,9 @@ public class ViewForgottenPassword {
     setupTextUI(text_Password2, "Arial", 18, 300, Pos.CENTER, 50, 225, true);
     text_Password2.setPromptText("Enter the Password Again");
 
-    // Set up the account creation and login
-    setupButtonUI(button_UserSetup, "Dialog", 18, 100, Pos.CENTER, 200, 310);
-    button_UserSetup.setOnAction((_) -> {
+    // Makes the password change
+    setupButtonUI(button_ChangePassword, "Dialog", 18, 100, Pos.CENTER, 200, 310);
+    button_ChangePassword.setOnAction((_) -> {
       ControllerForgottenPassword.doChangePassword();
     });
 
@@ -208,7 +191,7 @@ public class ViewForgottenPassword {
       ControllerForgottenPassword.performQuit();
     });
 
-    theRootPane.getChildren().addAll(label_NewUserCreation, text_Password1, text_Password2, button_UserSetup);
+    theRootPane.getChildren().addAll(text_Password1, text_Password2, button_ChangePassword);
   } /*-********************************************************************************************
   
   Helper methods to reduce code length

@@ -15,9 +15,6 @@ import java.util.Optional;
 
 public class ControllerForgottenPassword {
 
-  private static Alert alertPasswordError = new Alert(AlertType.INFORMATION);
-  private static Alert success = new Alert(AlertType.INFORMATION);
-
   /*-********************************************************************************************
   
   The User Interface Actions for this page
@@ -42,21 +39,21 @@ public class ControllerForgottenPassword {
     String username = ViewForgottenPassword.theUser.getUserName();
 
     if (!password_1.equals(password_2)) {
-      alertPasswordError.setContentText("Passwords do not match. Try again.");
-      alertPasswordError.showAndWait();
+      ViewForgottenPassword.alertPasswordError.setContentText("Passwords do not match. Try again.");
+      ViewForgottenPassword.alertPasswordError.showAndWait();
       return;
     }
     if (password_1.isEmpty() || password_2.isEmpty()) {
-      alertPasswordError.setContentText("Passwords can not be empty. Try again.");
-      alertPasswordError.showAndWait();
+      ViewForgottenPassword.alertPasswordError.setContentText("Passwords can not be empty. Try again.");
+      ViewForgottenPassword.alertPasswordError.showAndWait();
       return;
 
     } else {
       theDatabase.updatePassword(username, password_1);
       ViewForgottenPassword.theUser.setPassword(password_1);
       theDatabase.clearOneTimePassword(username);
-      success.setContentText("Your password has been changed.");
-      Optional<ButtonType> result = success.showAndWait();
+      ViewForgottenPassword.success.setContentText("Your password has been changed.");
+      Optional<ButtonType> result = ViewForgottenPassword.success.showAndWait();
       if (result.isPresent() && result.get() == ButtonType.OK) {
         guiUserLogin.ViewUserLogin.displayUserLogin(ViewForgottenPassword.theStage);
       }

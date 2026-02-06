@@ -1,5 +1,8 @@
 package guiUserLogin;
 
+import validation.PasswordValidator;
+import validation.ValidationResult;
+
 import database.Database;
 import entityClasses.User;
 import javafx.stage.Stage;
@@ -86,6 +89,15 @@ public class ControllerUserLogin {
     theStage = ts;
     String username = ViewUserLogin.text_Username.getText();
     String password = ViewUserLogin.text_Password.getText();
+    PasswordValidator validator = new PasswordValidator();
+    ValidationResult result = validator.validate(password);
+
+    if (!result.isValid()) {
+        ViewUserLogin.alertUsernamePasswordError.setContentText(result.getMessage());
+        ViewUserLogin.alertUsernamePasswordError.showAndWait();
+        return;
+    }
+
     boolean loginResult = false;
 
     // Fetch the user and verify the username

@@ -288,7 +288,7 @@ public class Database {
 	          } else {
 	            // Generate test users starting from user2
 	            username = "user" + i;
-	            password = "1234";
+	            password = "Password123!";
 	            otp = "";  // Set OTP to empty string for all test users
 	            firstName = "TestFirst" + i;
 	            middleName = "";

@@ -6,6 +6,8 @@ import entityClasses.User;
 import guiUserLogin.ViewUserLogin;
 import guiUserUpdate.ViewUserUpdate;
 import javafx.stage.Stage;
+import validation.PasswordValidator;
+import validation.ValidationResult;
 
 /*******
  * <p>
@@ -144,39 +146,53 @@ public class ControllerFirstAdmin {
       ViewFirstAdmin.label_PasswordsDoNotMatch.setText(
           checkUser + "\nThe username is invalid. Please try again!");
     }
+    
     // Make sure password boxes are not empty
     else if (adminPassword1.compareTo("") == 0) {
       ViewFirstAdmin.label_PasswordsDoNotMatch.setText(
           "Please Enter a password");
     } else {
-      // Make sure the two passwords are the same
-      if (adminPassword1.compareTo(adminPassword2) == 0) {
-        // Create the passwords and proceed to the user home page
-        User user = new User(adminUsername, adminPassword1, "", "", "", "", "", "", true, false,
-            false, false);
-        try {
-          // Create a new User object with admin role and register in the database
-          theDatabase.register(user);
-        } catch (SQLException e) {
-          System.err.println("*** ERROR *** Database error trying to register a user: " +
-              e.getMessage());
-          e.printStackTrace();
-          System.exit(0);
-        }
+    	
+	// check password fulfills requirements
+	PasswordValidator validator = new PasswordValidator();
+    ValidationResult result = validator.validate(adminPassword1);
 
-        // User was established in the database, so navigate to back to the login Page
-        guiUserLogin.ViewUserLogin.displayUserLogin(ViewFirstAdmin.theStage);
-      } else {
-        // The two passwords are NOT the same, so clear the passwords, explain the
-        // passwords
-        // must be the same, and clear the message as soon as the first character is
-        // typed.
-        ViewFirstAdmin.text_AdminPassword1.setText("");
-        ViewFirstAdmin.text_AdminPassword2.setText("");
-        ViewFirstAdmin.label_PasswordsDoNotMatch.setText(
-            "The two passwords must match. Please try again!");
-      }
+    if (!result.isValid()) {
+    	ViewFirstAdmin.text_AdminPassword1.setText("");
+    	ViewFirstAdmin.text_AdminPassword2.setText("");
+        ViewFirstAdmin.alertUsernamePasswordError.setContentText(result.getMessage());
+        ViewFirstAdmin.alertUsernamePasswordError.showAndWait();
+        return;
     }
+    	
+	  // Make sure the two passwords are the same
+	  if (adminPassword1.compareTo(adminPassword2) == 0) {
+	    // Create the passwords and proceed to the user home page
+	    User user = new User(adminUsername, adminPassword1, "", "", "", "", "", "", true, false,
+	        false, false);
+	    try {
+	      // Create a new User object with admin role and register in the database
+	      theDatabase.register(user);
+	    } catch (SQLException e) {
+	      System.err.println("*** ERROR *** Database error trying to register a user: " +
+	          e.getMessage());
+	      e.printStackTrace();
+	      System.exit(0);
+	    }
+	
+	    // User was established in the database, so navigate to back to the login Page
+	    guiUserLogin.ViewUserLogin.displayUserLogin(ViewFirstAdmin.theStage);
+	  } else {
+	    // The two passwords are NOT the same, so clear the passwords, explain the
+	    // passwords
+	    // must be the same, and clear the message as soon as the first character is
+	    // typed.
+	    ViewFirstAdmin.text_AdminPassword1.setText("");
+	    ViewFirstAdmin.text_AdminPassword2.setText("");
+	    ViewFirstAdmin.label_PasswordsDoNotMatch.setText(
+	        "The two passwords must match. Please try again!");
+	  }
+	}
 
   }
 

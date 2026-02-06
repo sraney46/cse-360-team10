@@ -285,7 +285,7 @@ public class ViewAddRemoveRoles {
 		alertCannotModifyAdmin.setHeaderText(null);
 		
 		alertPopulateDatabase.setTitle("Confirm Database Population");
-		alertPopulateDatabase.setHeaderText("This action will keep the current user data\nbut delete all other users in the database.\nEach user account password will be initialized to \"1234\".");
+		alertPopulateDatabase.setHeaderText("This action will keep the current user data\nbut delete all other users in the database.\nEach user account password will be initialized to \"Password123!\".");
 		alertPopulateDatabase.setContentText("Press OK to continue or Cancel to abort.");
 		
 	

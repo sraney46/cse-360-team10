@@ -416,9 +416,9 @@ public class User {
     if (adminRole)
       roles.add("Admin");
     if (role1)
-      roles.add("Role1");
+      roles.add("Staff");
     if (role2)
-      roles.add("Role2");
+      roles.add("Student");
     return String.join("|", roles);
   }
 
@@ -429,10 +429,10 @@ public class User {
       roles.add("Admin");
     }
     if (getNewRole1()) {
-      roles.add("Role1");
+      roles.add("Staff");
     }
     if (getNewRole2()) {
-      roles.add("Role2");
+      roles.add("Student");
     }
 
     // If no roles assigned

@@ -157,7 +157,7 @@ public class ViewRole2Home {
 		// Populate the window with the title and other common widgets and set their static state
 		
 		// GUI Area 1
-		label_PageTitle.setText("Role2 Home Page");
+		label_PageTitle.setText("Student Home Page");
 		setupLabelUI(label_PageTitle, "Arial", 28, width, Pos.CENTER, 0, 5);
 
 		label_UserDetails.setText("User: " + theUser.getUserName());

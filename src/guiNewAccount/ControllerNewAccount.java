@@ -5,6 +5,9 @@ import java.sql.SQLException;
 import database.Database;
 import entityClasses.User;
 import guiFirstAdmin.ModelFirstAdmin;
+import guiFirstAdmin.ViewFirstAdmin;
+import validation.PasswordValidator;
+import validation.ValidationResult;
 
 /*******
  * <p>
@@ -103,6 +106,27 @@ public class ControllerNewAccount {
       ViewNewAccount.alertUserNameIsInvalid.setHeaderText(checkUser + "\nUser name is invalid.");
       ViewNewAccount.alertUserNameIsInvalid.showAndWait();
     } else {
+    	
+    	// Make sure password boxes are not empty
+//        if (ViewNewAccount.text_Password1.getText().compareTo("") == 0) {
+//        	ViewNewAccount.alertUsernamePasswordError.setHeaderText("Please Enter a password");
+//        	ViewNewAccount.alertUserNameIsInvalid.showAndWait();
+//        } 
+        
+        	
+    	// check password fulfills requirements
+    	PasswordValidator validator = new PasswordValidator();
+        ValidationResult result = validator.validate(password);
+
+        if (!result.isValid()) {
+        	ViewNewAccount.text_Password1.setText("");
+        	ViewNewAccount.text_Password2.setText("");
+        	ViewNewAccount.alertUsernamePasswordError.setContentText(result.getMessage());
+        	ViewNewAccount.alertUsernamePasswordError.showAndWait();
+            return;
+        }
+    	
+    	
       // Make sure the two passwords are the same.
       if (ViewNewAccount.text_Password1.getText().compareTo(ViewNewAccount.text_Password2.getText()) == 0) {
 
@@ -112,10 +136,10 @@ public class ControllerNewAccount {
         if (ViewNewAccount.theRole.compareTo("Admin") == 0) {
           roleCode = 1;
           user = new User(username, password, "", "", "", "", "", "", true, false, false, false);
-        } else if (ViewNewAccount.theRole.compareTo("Role1") == 0) {
+        } else if (ViewNewAccount.theRole.compareTo("Staff") == 0) {
           roleCode = 2;
           user = new User(username, password, "", "", "", "", "", "", false, true, false, false);
-        } else if (ViewNewAccount.theRole.compareTo("Role2") == 0) {
+        } else if (ViewNewAccount.theRole.compareTo("Student") == 0) {
           roleCode = 3;
           user = new User(username, password, "", "", "", "", "", "", false, false, true, false);
         } else {

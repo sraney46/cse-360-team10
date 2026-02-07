@@ -487,8 +487,8 @@ public class ViewAddRemoveRoles {
 	        // Populate add combo with available roles
 	        addCombo.getItems().clear();
 	        if (!user.getAdminRole()) addCombo.getItems().add("Admin");
-	        if (!user.getNewRole1()) addCombo.getItems().add("Role1");
-	        if (!user.getNewRole2()) addCombo.getItems().add("Role2");
+	        if (!user.getNewRole1()) addCombo.getItems().add("Staff");
+	        if (!user.getNewRole2()) addCombo.getItems().add("Student");
 	        
 	 
 	        // Show add combo and buttons
@@ -509,8 +509,8 @@ public class ViewAddRemoveRoles {
 	        // Populate remove combo with current roles
 	        removeCombo.getItems().clear();
 	        if (user.getAdminRole()) removeCombo.getItems().add("Admin");
-	        if (user.getNewRole1()) removeCombo.getItems().add("Role1");
-	        if (user.getNewRole2()) removeCombo.getItems().add("Role2");
+	        if (user.getNewRole1()) removeCombo.getItems().add("Staff");
+	        if (user.getNewRole2()) removeCombo.getItems().add("Student");
 	        
 	     
 	        // Show remove combo and buttons
@@ -543,8 +543,8 @@ public class ViewAddRemoveRoles {
 	            
 
 	            if (roleToAdd.equals("Admin")) user.setAdminRole(true);
-	            else if (roleToAdd.equals("Role1")) user.setRole1User(true);
-	            else if (roleToAdd.equals("Role2")) user.setRole2User(true);
+	            else if (roleToAdd.equals("Staff")) user.setRole1User(true);
+	            else if (roleToAdd.equals("Student")) user.setRole2User(true);
 
 	            rolesLabel.setText(user.getRoles());
 
@@ -573,8 +573,8 @@ public class ViewAddRemoveRoles {
 	            theDatabase.updateUserRole(user.getUserName(), roleToRemove, "false");
 
 	            if (roleToRemove.equals("Admin")) user.setAdminRole(false);
-	            else if (roleToRemove.equals("Role1")) user.setRole1User(false);
-	            else if (roleToRemove.equals("Role2")) user.setRole2User(false);
+	            else if (roleToRemove.equals("Staff")) user.setRole1User(false);
+	            else if (roleToRemove.equals("Student")) user.setRole2User(false);
 
 	            rolesLabel.setText(user.getRoles());
 

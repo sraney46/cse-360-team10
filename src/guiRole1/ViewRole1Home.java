@@ -4,6 +4,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
@@ -52,8 +53,9 @@ public class ViewRole1Home {
 	// This is a separator and it is used to partition the GUI for various tasks
 	protected static Line line_Separator1 = new Line(20, 95, width-20, 95);
 
-	// GUI ARea 2: This is a stub, so there are no widgets here.  For an actual role page, this are
-	// would contain the widgets needed for the user to play the assigned role.
+	// GUI Area 2: Staff Announcements
+	protected static Label label_AnnouncementsTitle = new Label("Announcements");
+	protected static TextArea textArea_Announcements = new TextArea();
 	
 	
 	
@@ -167,9 +169,42 @@ public class ViewRole1Home {
 		setupButtonUI(button_UpdateThisUser, "Dialog", 18, 170, Pos.CENTER, 610, 45);
 		button_UpdateThisUser.setOnAction((_) -> {ControllerRole1Home.performUpdate(); });
 		
-		// GUI Area 2
-		
-			// This is a stub, so this area is empty
+		// GUI Area 2: Staff Announcements
+		setupLabelUI(label_AnnouncementsTitle, "Arial", 22, width-40, Pos.CENTER, 20, 120);
+				
+		// Setup the announcements text area with rounded black box styling
+		textArea_Announcements.setText(
+				"\n"+
+				"New faculty orientation: February 15th at 10:00 AM\n\n" +
+				"Department meeting scheduled for February 20th\n\n" +
+				"Submit grade reports by end of month\n\n" +
+				"Professional development workshop available online\n\n" +
+				"Updated curriculum guidelines now available in portal"
+		);
+		textArea_Announcements.setLayoutX(50);
+		textArea_Announcements.setLayoutY(160);
+		textArea_Announcements.setPrefWidth(700);
+		textArea_Announcements.setPrefHeight(330);
+		textArea_Announcements.setEditable(false);
+		textArea_Announcements.setWrapText(true);
+		textArea_Announcements.setFont(Font.font("Arial", 22)); 
+
+		textArea_Announcements.setStyle(
+				"-fx-control-inner-background: #000000; " +
+				"-fx-background-color: #000000; " +
+				"-fx-text-fill: #FFFFFF; " +
+				"-fx-font-fill: #FFFFFF; " +
+				"-fx-background-radius: 15; " +
+				"-fx-border-radius: 15; " +
+				"-fx-background-insets: 0; " +
+				"-fx-padding: 10; " +
+				"-fx-text-alignment: center; " +
+				"-fx-alignment: center; " +
+				"-fx-focus-color: transparent; " +           // Hides focus border
+				"-fx-faint-focus-color: transparent; " +     // Hides faint focus
+				"-fx-border-color: transparent; " +          // Makes border transparent
+				"-fx-border-width: 0;"                       // Sets border width to 0
+		);
 		
 		
 		// GUI Area 3
@@ -184,6 +219,7 @@ public class ViewRole1Home {
 		// Place all of the widget items into the Root Pane's list of children
          theRootPane.getChildren().addAll(
 			label_PageTitle, label_UserDetails, button_UpdateThisUser, line_Separator1,
+			label_AnnouncementsTitle, textArea_Announcements,
 	        line_Separator4, button_Logout, button_Quit);
 }
 	

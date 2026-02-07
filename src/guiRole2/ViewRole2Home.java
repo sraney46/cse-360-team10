@@ -4,6 +4,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
@@ -53,8 +54,9 @@ public class ViewRole2Home {
 	// This is a separator and it is used to partition the GUI for various tasks
 	protected static Line line_Separator1 = new Line(20, 95, width-20, 95);
 
-	// GUI ARea 2: This is a stub, so there are no widgets here.  For an actual role page, this are
-	// would contain the widgets needed for the user to play the assigned role.
+	protected static Label label_CourseCatalog = new Label("Course Catalog");
+	protected static TextArea textArea_CourseCatalog = new TextArea();
+	
 	
 	
 	
@@ -166,9 +168,50 @@ public class ViewRole2Home {
 		setupButtonUI(button_UpdateThisUser, "Dialog", 18, 170, Pos.CENTER, 610, 45);
 		button_UpdateThisUser.setOnAction((_) -> {ControllerRole2Home.performUpdate(); });
 		
-		// GUI Area 2
-		
-			// This is a stub, so this area is empty
+		// GUI Area 2: Staff Announcements
+		setupLabelUI(label_CourseCatalog, "Arial", 22, width-40, Pos.CENTER, 20, 120);
+				
+		// Setup the announcements text area with rounded black box styling
+		textArea_CourseCatalog.setText(
+				"CSE 360 - Introduction to Software Engineering\n" +
+				"Credits: 3 | Instructor: Dr. Carter\n\n" +
+				
+				"MAT 343 - Applied Linear Algebra\n" +
+				"Credits: 3 | Instructor: Dr. Johnson\n\n" +
+				
+				"CSE 310 - Data Structures and Algorithms\n" +
+				"Credits: 3 | Instructor: Dr. Smith\n\n" +
+				
+				"ENG 302 - Technical Writing\n" +
+				"Credits: 3 | Instructor: Prof. Williams\n\n" +
+				
+				"PHI 101 - Introduction to Philosophy\n" +
+				"Credits: 3 | Instructor: Dr. Anderson"
+		);
+		textArea_CourseCatalog.setLayoutX(50);
+		textArea_CourseCatalog.setLayoutY(160);
+		textArea_CourseCatalog.setPrefWidth(700);
+		textArea_CourseCatalog.setPrefHeight(330);
+		textArea_CourseCatalog.setEditable(false);
+		textArea_CourseCatalog.setWrapText(true);
+		textArea_CourseCatalog.setFont(Font.font("Arial", 16)); 
+
+		textArea_CourseCatalog.setStyle(
+				"-fx-control-inner-background: #000000; " +
+				"-fx-background-color: #000000; " +
+				"-fx-text-fill: #FFFFFF; " +
+				"-fx-font-fill: #FFFFFF; " +
+				"-fx-background-radius: 15; " +
+				"-fx-border-radius: 15; " +
+				"-fx-background-insets: 0; " +
+				"-fx-padding: 10; " +
+				"-fx-text-alignment: center; " +
+				"-fx-alignment: center; " +
+				"-fx-focus-color: transparent; " +           // Hides focus border
+				"-fx-faint-focus-color: transparent; " +     // Hides faint focus
+				"-fx-border-color: transparent; " +          // Makes border transparent
+				"-fx-border-width: 0;"                       // Sets border width to 0
+		);
 		
 		
 		// GUI Area 3
@@ -183,6 +226,7 @@ public class ViewRole2Home {
 		// Place all of the widget items into the Root Pane's list of children
         theRootPane.getChildren().addAll(
 			label_PageTitle, label_UserDetails, button_UpdateThisUser, line_Separator1,
+			label_CourseCatalog, textArea_CourseCatalog,
 	        line_Separator4, button_Logout, button_Quit);
 	}
 	

@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import entityClasses.User;
@@ -850,7 +851,8 @@ public class Database {
   // update the password
   public String generateOneTimePassword(String username) {
     String query = "UPDATE userDB SET OTP = ?, isOneTimePW = ? WHERE userName = ?";
-    String generatedPW = UUID.randomUUID().toString().substring(0, 8); // Generate a random 8-character password
+    //This is where the password is really generated
+    String generatedPW = passWordGenerator();
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
       pstmt.setString(1, generatedPW);
       pstmt.setBoolean(2, true);
@@ -861,6 +863,106 @@ public class Database {
       e.printStackTrace();
     }
     return "";
+  }
+  
+  
+  /*******
+   * <p>
+   * Method: String passWordGenerator()
+   * </p>
+   * 
+   * <p>
+   * Description: Function that generates the random password
+   * </p>
+   * 
+   * @return the generated one-time PW
+   *
+   * 
+   */
+  // update the password
+  public String passWordGenerator()
+  {
+	    boolean validPW = false;
+	    String generatedPW = "";
+	    int passWordLength = 0;
+	    //Buy yourself a lottery ticket if this hit
+	    int overloadPreventer = 0;
+	    //Set of booleans to check requirements
+	    boolean hasLowerCase = false;
+		boolean hasUpperCase = false;
+		boolean hasDigit = false;
+		boolean hasSpecialCharacter = false;
+		
+		//Password length can be from 8 to 16. Adds even more randomization!
+    	int randomPassWordLength = (int)(Math.random() * 9) + 8;
+		
+		//Loop as long as the password is invalid and it's not trying too many times
+	    while(!validPW && overloadPreventer < 128)
+	    {
+	    	int seed = (int)(Math.random() * 7);
+	    	//Shortcut to specifying the existence of special character
+	    	if(seed >= 3) hasSpecialCharacter = true;
+	    	switch (seed)
+	    	{
+	    		//Lower case characters
+	    		case 0:
+	    			generatedPW += (char)((Math.random() * 26) + 'a');
+	    			hasLowerCase = true;
+	    			break;
+	    		//Upper case characters
+	    		case 1:
+	    			generatedPW += (char)((Math.random() * 26) + 'A');
+	    			hasUpperCase = true;
+	    			break;
+	    		//Digit
+	    		case 2:
+	    			generatedPW += (char)((Math.random() * 10) + '0');
+	    			hasDigit = true;
+	    			break;
+	    		//Special characters, ASCII range 33-47
+	    		case 3:
+	    			generatedPW += (char)((Math.random() * 15) + '!');
+	    			break;
+	    		//Special characters, ASCII range 58-64
+	    		case 4:
+	    			generatedPW += (char)((Math.random() * 7) + ':');
+	    			break;
+	    		//Special characters, ASCII range 91-96
+	    		case 5:
+	    			generatedPW += (char)((Math.random() * 6) + '[');
+	    			break;
+	    			//Special characters, ASCII range 123-126
+	    		case 6:
+	    			generatedPW += (char)((Math.random() * 4) + '{');
+	    			break;
+	    	}
+	    	//The password has increased. Compare it with the new selected random length
+	    	passWordLength++;
+	    	if(passWordLength >= randomPassWordLength)
+	    	{
+	    		//If the password is valid, you may now break the loop
+	    		if(hasLowerCase && hasUpperCase && hasDigit && hasSpecialCharacter)
+	    			validPW = true;
+	    		//Otherwise, reset the generated password
+	    		else
+	    		{
+	    			generatedPW = "";
+	    			passWordLength = 0;
+	    			hasLowerCase = false;
+	    			hasUpperCase = false;
+	    			hasDigit = false;
+	    			hasSpecialCharacter = false;
+	    			overloadPreventer++;
+	    		}
+	    	}
+	    }
+	    
+	    //Password has overflowed, return a fixed password... We can tinker with this, but
+	    //I'd argue this method is already excessive enough
+	    if(overloadPreventer >= 128)
+	    	return "#1AbqdeYg%";
+	    
+	    return generatedPW;
   }
 
   /*******
@@ -881,7 +983,6 @@ public class Database {
   // update the password
   public void clearOneTimePassword(String username) {
     String query = "UPDATE userDB SET OTP = ?, isoneTimePW = ? WHERE userName = ?";
-    String generatedPW = UUID.randomUUID().toString().substring(0, 8); // Generate a random 8-character password
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
       pstmt.setString(1, "");
       pstmt.setBoolean(2, false);

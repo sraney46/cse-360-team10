@@ -17,6 +17,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ButtonBar;
 import entityClasses.User;
 import guiFirstAdmin.ModelFirstAdmin;
+import guiUserLogin.ViewUserLogin;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.geometry.Insets;
@@ -25,6 +26,8 @@ import javafx.scene.shape.Circle;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.Alert;
+import validation.PasswordValidator;
+import validation.ValidationResult;
 
 /*******
  * <p>
@@ -498,6 +501,28 @@ public class ViewUserUpdate {
               confirmField.clear();
               return;
             }
+          }
+            
+            PasswordValidator validator = new PasswordValidator();
+            ValidationResult pass_result = validator.validate(password1);
+            
+
+            if (!pass_result.isValid()) {
+
+              dialogUpdatePassword.setHeaderText(pass_result.getMessage());
+
+              passwordField.clear();
+              confirmField.clear();
+              result = dialogUpdatePassword.showAndWait();
+
+              if (result.isEmpty()) {
+                dialogUpdatePassword.setHeaderText("Update your Password");
+                passwordField.clear();
+                confirmField.clear();
+                return;
+              }
+              
+            
 
           } else {
             isValidated = true;

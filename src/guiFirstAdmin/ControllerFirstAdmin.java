@@ -148,9 +148,9 @@ public class ControllerFirstAdmin {
     }
     
     // Make sure password boxes are not empty
-    else if (adminPassword1.compareTo("") == 0) {
+    else if (adminPassword1.compareTo("") == 0 || adminPassword2.compareTo("") == 0) {
       ViewFirstAdmin.label_PasswordsDoNotMatch.setText(
-          "Please Enter a password");
+          "Invalid Password. Try Again");
     } else {
     	
 	// check password fulfills requirements

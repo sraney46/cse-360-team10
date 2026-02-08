@@ -107,12 +107,18 @@ public class ControllerNewAccount {
       ViewNewAccount.alertUserNameIsInvalid.showAndWait();
     } else {
     	
+    	
     	// Make sure password boxes are not empty
-//        if (ViewNewAccount.text_Password1.getText().compareTo("") == 0) {
-//        	ViewNewAccount.alertUsernamePasswordError.setHeaderText("Please Enter a password");
-//        	ViewNewAccount.alertUserNameIsInvalid.showAndWait();
-//        } 
-        
+        if (ViewNewAccount.text_Password1.getText().compareTo("") == 0 
+        		|| ViewNewAccount.text_Password1.getText().compareTo("") == 0) {
+        	ViewNewAccount.text_Password1.setText("");
+        	ViewNewAccount.text_Password2.setText("");
+        	ViewNewAccount.alertUsernamePasswordError.setHeaderText("Invalid Password");
+        	ViewNewAccount.alertUsernamePasswordError.setContentText("Correct the passwords and try again.");
+        	ViewNewAccount.alertUsernamePasswordError.showAndWait();
+        	return;
+        }
+ 
         	
     	// check password fulfills requirements
     	PasswordValidator validator = new PasswordValidator();

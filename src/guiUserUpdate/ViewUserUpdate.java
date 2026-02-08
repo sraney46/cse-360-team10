@@ -24,6 +24,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Circle;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.control.Alert;
 
 /*******
  * <p>
@@ -67,7 +68,7 @@ public class ViewUserUpdate {
 
   // These are the application values required by the user interface
 
-  private static double width = applicationMain.FoundationsMain.WINDOW_WIDTH;
+  private static double width = applicationMain.FoundationsMain.WINDOW_WIDTH * 1.25;
   private static double height = applicationMain.FoundationsMain.WINDOW_HEIGHT * 0.9;
 
   // These are the widget attributes for the GUI. There are 3 areas for this GUI.
@@ -302,7 +303,7 @@ public class ViewUserUpdate {
     VBox infoBox = new VBox(15);
     infoBox.setLayoutX(50);
     infoBox.setLayoutY(200);
-    infoBox.setPrefWidth(700);
+    infoBox.setPrefWidth(900);
     infoBox.setPadding(new Insets(20));
     infoBox.getStyleClass().add("infoBox");
 
@@ -406,10 +407,10 @@ public class ViewUserUpdate {
     usernameRow.getStyleClass().add("hbox-labels");
     usernameRow.setAlignment(Pos.CENTER_LEFT);
     label_Username.setPrefWidth(190);
-    label_CurrentUsername.setPrefWidth(260);
+    label_CurrentUsername.setPrefWidth(350);
     usernameRow.getChildren().addAll(label_Username, label_CurrentUsername, button_UpdateUsername);
 
-    HBox.setMargin(button_UpdateUsername, new Insets(0, 0, 0, 125));
+    HBox.setMargin(button_UpdateUsername, new Insets(0, 0, 0, 200));
     button_UpdateUsername.setOnAction((_) -> {
       result = dialogUpdateUserName.showAndWait();
       result.ifPresent(_ -> {
@@ -453,10 +454,10 @@ public class ViewUserUpdate {
     passwordRow.getStyleClass().add("hbox-labels");
     passwordRow.setAlignment(Pos.CENTER_LEFT);
     label_Password.setPrefWidth(190);
-    label_CurrentPassword.setPrefWidth(260);
+    label_CurrentPassword.setPrefWidth(350);
     passwordRow.getChildren().addAll(label_Password, label_CurrentPassword, button_UpdatePassword);
 
-    HBox.setMargin(button_UpdatePassword, new Insets(0, 0, 0, 125));
+    HBox.setMargin(button_UpdatePassword, new Insets(0, 0, 0, 200));
     button_UpdatePassword.setOnAction((_) -> {
       result = dialogUpdatePassword.showAndWait();
       result.ifPresent(_ -> {
@@ -469,6 +470,19 @@ public class ViewUserUpdate {
 
           password1 = passwordField.getText();
           password2 = confirmField.getText();
+          
+          if (password1.isBlank()) {
+              dialogUpdatePassword.setHeaderText("Password cannot be empty.");
+              passwordField.clear();
+              confirmField.clear();
+
+              result = dialogUpdatePassword.showAndWait();
+              if (result.isEmpty()) {
+                  dialogUpdatePassword.setHeaderText("Update your Password");
+                  return;
+              }
+              continue;
+          }
 
           if (!password1.equals(password2)) {
 
@@ -505,101 +519,134 @@ public class ViewUserUpdate {
     firstnameRow.getStyleClass().add("hbox-labels");
     firstnameRow.setAlignment(Pos.CENTER_LEFT);
     label_FirstName.setPrefWidth(190);
-    label_CurrentFirstName.setPrefWidth(260);
+    label_CurrentFirstName.setPrefWidth(350);
     firstnameRow.getChildren().addAll(label_FirstName, label_CurrentFirstName, button_UpdateFirstName);
 
-    HBox.setMargin(button_UpdateFirstName, new Insets(0, 0, 0, 125));
+    HBox.setMargin(button_UpdateFirstName, new Insets(0, 0, 0, 200));
     button_UpdateFirstName.setOnAction((_) -> {
       result = dialogUpdateFirstName.showAndWait();
-      result.ifPresent(_ -> theDatabase.updateFirstName(theUser.getUserName(), result.get()));
-      theDatabase.getUserAccountDetails(theUser.getUserName());
-      String newName = theDatabase.getCurrentFirstName();
-      theUser.setFirstName(newName);
-      if (newName == null || newName.length() < 1)
-        label_CurrentFirstName.setText("<none>");
-      else
-        label_CurrentFirstName.setText(newName);
+      result.ifPresent(input -> {
+    	  	if (input.isBlank()) return;
+
+    	    if (!validateLength(input, "First Name")) return; // 32-char check
+
+    	    // Only update if non-empty and valid length
+    	    theDatabase.updateFirstName(theUser.getUserName(), input);
+    	    
+    	    // Refresh display
+    	    theDatabase.getUserAccountDetails(theUser.getUserName());
+    	    String newName = theDatabase.getCurrentFirstName();
+    	    theUser.setFirstName(newName);
+    	    label_CurrentFirstName.setText((newName == null || newName.isEmpty()) ? "<none>" : newName);
+    	});
     });
 
     HBox middlenameRow = new HBox(10);
     middlenameRow.getStyleClass().add("hbox-labels");
     middlenameRow.setAlignment(Pos.CENTER_LEFT);
     label_MiddleName.setPrefWidth(190);
-    label_CurrentMiddleName.setPrefWidth(260);
+    label_CurrentMiddleName.setPrefWidth(350);
     middlenameRow.getChildren().addAll(label_MiddleName, label_CurrentMiddleName, button_UpdateMiddleName);
 
-    HBox.setMargin(button_UpdateMiddleName, new Insets(0, 0, 0, 125));
+    HBox.setMargin(button_UpdateMiddleName, new Insets(0, 0, 0, 200));
     button_UpdateMiddleName.setOnAction((_) -> {
       result = dialogUpdateMiddleName.showAndWait();
-      result.ifPresent(_ -> theDatabase.updateMiddleName(theUser.getUserName(), result.get()));
-      theDatabase.getUserAccountDetails(theUser.getUserName());
-      String newName = theDatabase.getCurrentMiddleName();
-      theUser.setMiddleName(newName);
-      if (newName == null || newName.length() < 1)
-        label_CurrentMiddleName.setText("<none>");
-      else
-        label_CurrentMiddleName.setText(newName);
+      
+      result.ifPresent(input -> {
+	  	  	if (input.isBlank()) return;
+	
+	  	    if (!validateLength(input, "Middle Name")) return; // 32-char check
+	
+	  	    // Only update if non-empty and valid length
+	  	    theDatabase.updateMiddleName(theUser.getUserName(), input);
+	  	    
+	  	    // Refresh display
+	  	    theDatabase.getUserAccountDetails(theUser.getUserName());
+	  	    String newName = theDatabase.getCurrentMiddleName();
+	  	    theUser.setMiddleName(newName);
+	  	    label_CurrentMiddleName.setText((newName == null || newName.isEmpty()) ? "<none>" : newName);
+  		});
     });
 
     HBox lastnameRow = new HBox(10);
     lastnameRow.getStyleClass().add("hbox-labels");
     lastnameRow.setAlignment(Pos.CENTER_LEFT);
     label_LastName.setPrefWidth(190);
-    label_CurrentLastName.setPrefWidth(260);
+    label_CurrentLastName.setPrefWidth(350);
     lastnameRow.getChildren().addAll(label_LastName, label_CurrentLastName, button_UpdateLastName);
 
-    HBox.setMargin(button_UpdateLastName, new Insets(0, 0, 0, 125));
+    HBox.setMargin(button_UpdateLastName, new Insets(0, 0, 0, 200));
     button_UpdateLastName.setOnAction((_) -> {
       result = dialogUpdateLastName.showAndWait();
-      result.ifPresent(_ -> theDatabase.updateLastName(theUser.getUserName(), result.get()));
-      theDatabase.getUserAccountDetails(theUser.getUserName());
-      String newName = theDatabase.getCurrentLastName();
-      theUser.setLastName(newName);
-      if (newName == null || newName.length() < 1)
-        label_CurrentLastName.setText("<none>");
-      else
-        label_CurrentLastName.setText(newName);
+      result.ifPresent(input -> {
+	  	  	if (input.isBlank()) return;
+	
+	  	    if (!validateLength(input, "Last Name")) return; // 32-char check
+	
+	  	    // Only update if non-empty and valid length
+	  	    theDatabase.updateLastName(theUser.getUserName(), input);
+	  	    
+	  	    // Refresh display
+	  	    theDatabase.getUserAccountDetails(theUser.getUserName());
+	  	    String newName = theDatabase.getCurrentLastName();
+	  	    theUser.setLastName(newName);
+	  	    label_CurrentLastName.setText((newName == null || newName.isEmpty()) ? "<none>" : newName);
+		});
     });
 
     HBox prefnameRow = new HBox(10);
     prefnameRow.getStyleClass().add("hbox-labels");
     prefnameRow.setAlignment(Pos.CENTER_LEFT);
     label_PreferredFirstName.setPrefWidth(190);
-    label_CurrentPreferredFirstName.setPrefWidth(260);
+    label_CurrentPreferredFirstName.setPrefWidth(350);
     prefnameRow.getChildren().addAll(label_PreferredFirstName, label_CurrentPreferredFirstName,
         button_UpdatePreferredFirstName);
 
-    HBox.setMargin(button_UpdatePreferredFirstName, new Insets(0, 0, 0, 125));
+    HBox.setMargin(button_UpdatePreferredFirstName, new Insets(0, 0, 0, 200));
     button_UpdatePreferredFirstName.setOnAction((_) -> {
       result = dialogUpdatePreferredFirstName.showAndWait();
-      result.ifPresent(_ -> theDatabase.updatePreferredFirstName(theUser.getUserName(), result.get()));
-      theDatabase.getUserAccountDetails(theUser.getUserName());
-      String newName = theDatabase.getCurrentPreferredFirstName();
-      theUser.setPreferredFirstName(newName);
-      if (newName == null || newName.length() < 1)
-        label_CurrentPreferredFirstName.setText("<none>");
-      else
-        label_CurrentPreferredFirstName.setText(newName);
+      
+      result.ifPresent(input -> {
+	  	  	if (input.isBlank()) return;
+	
+	  	    if (!validateLength(input, "Preferred Name")) return; // 32-char check
+	
+	  	    // Only update if non-empty and valid length
+	  	    theDatabase.updatePreferredFirstName(theUser.getUserName(), input);
+	  	    
+	  	    // Refresh display
+	  	    theDatabase.getUserAccountDetails(theUser.getUserName());
+	  	    String newName = theDatabase.getCurrentPreferredFirstName();
+	  	    theUser.setPreferredFirstName(newName);
+	  	    label_CurrentPreferredFirstName.setText((newName == null || newName.isEmpty()) ? "<none>" : newName);
+		});
     });
 
     HBox emailaddRow = new HBox(10);
     emailaddRow.getStyleClass().add("hbox-labels");
     emailaddRow.setAlignment(Pos.CENTER_LEFT);
     label_EmailAddress.setPrefWidth(190);
-    label_CurrentEmailAddress.setPrefWidth(260);
+    label_CurrentEmailAddress.setPrefWidth(350);
     emailaddRow.getChildren().addAll(label_EmailAddress, label_CurrentEmailAddress, button_UpdateEmailAddress);
 
-    HBox.setMargin(button_UpdateEmailAddress, new Insets(0, 0, 0, 125));
+    HBox.setMargin(button_UpdateEmailAddress, new Insets(0, 0, 0, 200));
     button_UpdateEmailAddress.setOnAction((_) -> {
       result = dialogUpdateEmailAddresss.showAndWait();
-      result.ifPresent(_ -> theDatabase.updateEmailAddress(theUser.getUserName(), result.get()));
-      theDatabase.getUserAccountDetails(theUser.getUserName());
-      String newEmail = theDatabase.getCurrentEmailAddress();
-      theUser.setEmailAddress(newEmail);
-      if (newEmail == null || newEmail.length() < 1)
-        label_CurrentEmailAddress.setText("<none>");
-      else
-        label_CurrentEmailAddress.setText(newEmail);
+      
+      result.ifPresent(input -> {
+	  	  	if (input.isBlank()) return;
+	
+	  	    if (!validateLength(input, "Email Address")) return; // 32-char check
+	
+	  	    // Only update if non-empty and valid length
+	  	    theDatabase.updateEmailAddress(theUser.getUserName(), input);
+	  	    
+	  	    // Refresh display
+	  	    theDatabase.getUserAccountDetails(theUser.getUserName());
+	  	    String newName = theDatabase.getCurrentEmailAddress();
+	  	    theUser.setEmailAddress(newName);
+	  	    label_CurrentEmailAddress.setText((newName == null || newName.isEmpty()) ? "<none>" : newName);
+		});
     });
 
     // add info box children widgets
@@ -627,6 +674,27 @@ public class ViewUserUpdate {
   Helper methods to reduce code length
   
    */
+  
+  /**
+   * Validates that the input string is at most 32 characters.
+   * Shows an alert if invalid.
+   *
+   * @param input     The string entered by the user
+   * @param fieldName The name of the field (for the alert)
+   * @return true if valid, false if too long
+   */
+  private static boolean validateLength(String input, String fieldName) {
+      if (input.length() > 32) {
+          // Simple alert
+          Alert alert = new Alert(Alert.AlertType.WARNING);
+          alert.setTitle("Input Too Long");
+          alert.setHeaderText(null);
+          alert.setContentText(fieldName + " must be 32 characters or less.");
+          alert.showAndWait();
+          return false;
+      }
+      return true;
+  }
 
   /**********
    * Private local method to initialize the standard fields for a label

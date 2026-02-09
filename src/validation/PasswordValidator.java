@@ -8,7 +8,7 @@ public class PasswordValidator {
     private static final int MIN_LENGTH = 8;
     private static final int MAX_LENGTH = 64;
 
-    private static final String SPECIAL_CHARS = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
+    private static final String SPECIAL_CHARS = "!@#$%^&*()-_=+[]{}|;:'\",.<>?/";
 
     // Commonly used and/or weak passwords to explicitly reject
     private static final Set<String> BLACKLIST = Set.of(

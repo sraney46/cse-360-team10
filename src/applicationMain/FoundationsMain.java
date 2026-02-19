@@ -61,25 +61,35 @@ import javafx.scene.text.Font;
 
 public class FoundationsMain extends Application {
 	
+	private FoundationsMain() {}
+	
 	/*-*******************************************************************************************
 
 	Attributes
 	
 	**********************************************************************************************/
 	
-	// These are the application values required by the user interface.  All the other classes
-	// access these constants to provide a uniform window size.	
+	/**
+	 * These are the application values required by the user interface.  All the other classes
+	 * access these constants to provide a uniform window size.	
+	*/
 	public final static double WINDOW_WIDTH = 800;
+	/**
+	 * Default width size for window
+	 */
 	public final static double WINDOW_HEIGHT = 600;
 
-	// These attributes establish the database and the fixed reference to it for the rest of the
-	// application so we do not need to keep passing the reference in parameters to the rest of the
-	// system for other methods that need it can access it.
+	/**
+	 *These attributes establish the database and the fixed reference to it for the rest of the
+	 *application so we do not need to keep passing the reference in parameters to the rest of the
+	 *system for other methods that need it can access it.
+	 */
 	public static Database database = new Database();
     private Alert databaseInUse = new Alert(AlertType.INFORMATION);
 
-	public static int activeHomePage = 0;		// Which role's home page is currently active?
-												// Role 0 is the admin role number
+    /** Which role's home page is currently active? Role 0 is the admin role number. */
+    public static int activeHomePage = 0;
+												
 	@Override
 	public void start(Stage theStage) {
 		
@@ -141,7 +151,7 @@ public class FoundationsMain extends Application {
 	 * command line parameters, if needed.  This application does not use them.  If they are
 	 * provided, the application will ignore them.</p>
 	 * 
-	 * @param String[] args   The array of command lines parameters.  These are not used.
+	 * @param args   The array of command lines parameters.  These are not used.
 	 */
 	public static void main(String[] args) {
 		launch(args);	// The launch method loads JavaFX and invokes its initialization.  When it

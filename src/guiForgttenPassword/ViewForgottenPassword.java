@@ -81,7 +81,10 @@ public class ViewForgottenPassword {
   private static Pane theRootPane; // The Pane that holds all the GUI widgets
   protected static User theUser; // The current logged in User
 
-  public static Scene theForgottenPassScene = null; // Access to the User Update page's GUI Widgets
+  /**
+   * Access to the User Update page's GUI Widgets
+   */
+  public static Scene theForgottenPassScene = null; 
 
   /*-********************************************************************************************
   
@@ -91,13 +94,12 @@ public class ViewForgottenPassword {
 
   /**********
    * <p>
-   * Method: displayNewAccount(Stage ps, String ic)
+   * Method: displayForgotPass(Stage ps, User user)
    * </p>
    * 
    * <p>
    * Description: This method is the single entry point from outside this package
-   * to cause
-   * the NewAccount page to be displayed.
+   * to cause the ViewForgottenPassword page to be displayed.
    * 
    * It first sets up very shared attributes so we don't have to pass parameters.
    * 
@@ -115,7 +117,7 @@ public class ViewForgottenPassword {
    * 
    * @param ps specifies the JavaFX Stage to be used for this GUI and it's methods
    * 
-   * @param ic specifies the user's invitation code for this GUI and it's methods
+   * @param user specifies the user's invitation code for this GUI and it's methods
    * 
    */
   public static void displayForgotPass(Stage ps, User user) {

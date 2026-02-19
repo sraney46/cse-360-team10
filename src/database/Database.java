@@ -241,6 +241,22 @@ public class Database {
     }
   }
 
+  /*******
+   * <p>
+   * Method: populateDatabaseWithTestUsers(User currentUser)
+   * </p>
+   * 
+   * <p>
+   * Description: Keeps the current user data but removes all users from database 
+   * and re-populates with more users for testing.
+   * </p>
+   * 
+   * @throws SQLException when there is an issue creating the SQL command or
+   *                      executing it.
+   * 
+   * @param currentUser specifies a user object to be added to the database.
+   * 
+   */
   public void populateDatabaseWithTestUsers(User currentUser) {
 	    try {
 	      // Drop everything to start fresh
@@ -336,7 +352,7 @@ public class Database {
    * 
    * <P>
    * Description: Generate an List of Strings, one for each user in the database,
-   * starting with "<Select User>" at the start of the list.
+   * starting with "&lt;Select User&gt;" at the start of the list.
    * </p>
    * 
    * @return a list of userNames found in the database.
@@ -367,7 +383,7 @@ public class Database {
    * <P>
    * Description: Generate an List of Strings, one for each admin user in the
    * database,
-   * starting with "<Select User>" at the start of the list.
+   * starting with "&lt;Select User&gt;" at the start of the list.
    * </p>
    * 
    * @return a list of userNames found in the database.
@@ -376,7 +392,7 @@ public class Database {
     List<String> userList = new ArrayList<String>();
     // Commenting out this line, having this will just cause more problems than it
     // solves
-    // userList.add("<Select a User>");
+    // userList.add("&lt;Select a User&gt;");
     String query = "SELECT userName FROM userDB WHERE adminRole = TRUE";
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
       ResultSet rs = pstmt.executeQuery();
@@ -779,21 +795,20 @@ public class Database {
 
   /*******
    * <p>
-   * Method: void updateFirstName(String username, String firstName)
+   * Method: void updateUserName(String oldUsername, String newUsername)
    * </p>
    * 
    * <p>
-   * Description: Update the first name of a user given that user's username and
-   * the new
-   * first name.
+   * Description: Update the user name of a user given that user's old user name and
+   * the new user name.
    * </p>
    * 
-   * @param username  is the username of the user
+   * @param oldUsername  is the user name of the user
    * 
-   * @param firstName is the new first name for the user
+   * @param newUsername is the new first name for the user
    * 
    */
-  // update the first name
+  // update the user name
   public void updateUserName(String oldUsername, String newUsername) {
     String query = "UPDATE userDB SET userName = ? WHERE userName = ?";
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
@@ -1738,6 +1753,18 @@ public class Database {
     return isTemporaryPassword;
   };
 
+  /*******
+   * <p>
+   * Method: boolean getCurrentOTP()
+   * </p>
+   * 
+   * <p>
+   * Description: Get the current user's generated one time password.
+   * </p>
+   * 
+   * @return the one time password value is returned
+   * 
+   */
   public String getCurrentOTP() {
     return currentOTP;
   }

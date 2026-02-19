@@ -81,7 +81,10 @@ public class ViewNewAccount {
     protected static String emailAddress;		// Established here for use by the controller
     protected static String theRole;			// Established here for use by the controller
     protected static boolean checkValidTimer;			// Established here for use by the controller
-	public static Scene theNewAccountScene = null;	// Access to the User Update page's GUI Widgets
+	/**
+	 * Access to the User Update page's GUI Widgets
+	 */
+    public static Scene theNewAccountScene = null;	
 	
 
 	/*-********************************************************************************************

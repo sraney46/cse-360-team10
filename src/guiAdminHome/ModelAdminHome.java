@@ -15,6 +15,9 @@ package guiAdminHome;
  *  
  */
 
+/***
+ * Unused model
+ */
 public class ModelAdminHome {
 
 }

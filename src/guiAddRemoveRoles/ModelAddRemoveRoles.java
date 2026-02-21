@@ -15,6 +15,9 @@ package guiAddRemoveRoles;
  *  
  */
 
+/***
+ * Unused model
+ */
 public class ModelAddRemoveRoles {
 
 }

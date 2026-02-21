@@ -511,7 +511,6 @@ public class ViewAdminHome {
 	 * doesn't cut it, and I'd have to make everything observeable. That could be a huge can of
 	 * worms.
 	 * 
-	 * @param userName	The username to get data from
 	 */
 	public static void refreshUsersList()
 	{

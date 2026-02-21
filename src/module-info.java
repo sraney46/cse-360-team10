@@ -1,3 +1,7 @@
+/***
+ * Some auxiliary stuff. Nothing to be worried about
+ */
+
 module FoundationsF25 {
   requires javafx.controls;
   requires java.sql;

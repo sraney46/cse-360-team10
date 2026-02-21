@@ -251,8 +251,6 @@ public class Database {
    * and re-populates with more users for testing.
    * </p>
    * 
-   * @throws SQLException when there is an issue creating the SQL command or
-   *                      executing it.
    * 
    * @param currentUser specifies a user object to be added to the database.
    * 
@@ -338,7 +336,9 @@ public class Database {
 	        pstmt.executeBatch();
 	        System.out.println("Inserted 25 test users into userDB successfully.");
 	        System.out.println("First user preserved: " + currentUser.getUserName());
-	      }
+	      } catch (SQLException e) {
+		      e.printStackTrace();
+		    }
 
 	    } catch (SQLException e) {
 	      e.printStackTrace();
@@ -858,7 +858,6 @@ public class Database {
    * </p>
    * 
    * @param username is the username of the user
-   * @param password is the new password of the user
    * @return the generated one-time PW
    *
    * 

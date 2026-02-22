@@ -110,7 +110,7 @@ public class Database {
       connection = DriverManager.getConnection(DB_URL, USER, PASS);
       statement = connection.createStatement();
       // You can use this command to clear the database and restart from fresh.
-//       statement.execute("DROP ALL OBJECTS");
+      // statement.execute("DROP ALL OBJECTS");
 
       createTables(); // Create the necessary tables if they don't exist
     } catch (ClassNotFoundException e) {
@@ -247,7 +247,7 @@ public class Database {
    * </p>
    * 
    * <p>
-   * Description: Keeps the current user data but removes all users from database 
+   * Description: Keeps the current user data but removes all users from database
    * and re-populates with more users for testing.
    * </p>
    * 
@@ -256,94 +256,94 @@ public class Database {
    * 
    */
   public void populateDatabaseWithTestUsers(User currentUser) {
-	    try {
-	      // Drop everything to start fresh
-	      statement.execute("DROP ALL OBJECTS");
-	      System.out.println("All objects dropped.");
+    try {
+      // Drop everything to start fresh
+      statement.execute("DROP ALL OBJECTS");
+      System.out.println("All objects dropped.");
 
-	      // Recreate tables
-	      createTables();
-	      System.out.println("Tables recreated.");
+      // Recreate tables
+      createTables();
+      System.out.println("Tables recreated.");
 
-	      // Insert test users - NOW INCLUDING OTP COLUMN
-	      String sql = "INSERT INTO userDB "
-	          + "(userName, password, OTP, firstName, middleName, lastName, preferredFirstName, emailAddress, "
-	          + "adminRole, newRole1, newRole2, isOneTimePW) "
-	          + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      // Insert test users - NOW INCLUDING OTP COLUMN
+      String sql = "INSERT INTO userDB "
+          + "(userName, password, OTP, firstName, middleName, lastName, preferredFirstName, emailAddress, "
+          + "adminRole, newRole1, newRole2, isOneTimePW) "
+          + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-	      try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-	        for (int i = 1; i <= 25; i++) {
-	          String username;
-	          String password;
-	          String otp;  // Add OTP variable
-	          String firstName;
-	          String middleName;
-	          String lastName;
-	          String preferredFirstName;
-	          String email;
-	          boolean isAdmin;
-	          boolean role1;
-	          boolean role2;
-	          boolean oneTimePw;
+      try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        for (int i = 1; i <= 25; i++) {
+          String username;
+          String password;
+          String otp; // Add OTP variable
+          String firstName;
+          String middleName;
+          String lastName;
+          String preferredFirstName;
+          String email;
+          boolean isAdmin;
+          boolean role1;
+          boolean role2;
+          boolean oneTimePw;
 
-	          if (i == 1) {
-	            // Use the current user's data for the first entry
-	            username = currentUser.getUserName();
-	            password = currentUser.getPassword();
-	            otp = currentUser.getOTP();  
-	            firstName = currentUser.getFirstName() != null ? currentUser.getFirstName() : "";
-	            middleName = currentUser.getMiddleName() != null ? currentUser.getMiddleName() : "";
-	            lastName = currentUser.getLastName() != null ? currentUser.getLastName() : "";
-	            preferredFirstName = currentUser.getPreferredFirstName() != null ? currentUser.getPreferredFirstName() : "";
-	            email = currentUser.getEmailAddress() != null ? currentUser.getEmailAddress() : "";
-	            isAdmin = currentUser.getAdminRole();
-	            role1 = currentUser.getNewRole1();
-	            role2 = currentUser.getNewRole2();
-	            oneTimePw = false;
-	          } else {
-	            // Generate test users starting from user2
-	            username = "user" + i;
-	            password = "Password123!";
-	            otp = "";  // Set OTP to empty string for all test users
-	            firstName = "TestFirst" + i;
-	            middleName = "";
-	            lastName = "";
-	            preferredFirstName = "";
-	            email = "user" + i + "@example.com";
+          if (i == 1) {
+            // Use the current user's data for the first entry
+            username = currentUser.getUserName();
+            password = currentUser.getPassword();
+            otp = currentUser.getOTP();
+            firstName = currentUser.getFirstName() != null ? currentUser.getFirstName() : "";
+            middleName = currentUser.getMiddleName() != null ? currentUser.getMiddleName() : "";
+            lastName = currentUser.getLastName() != null ? currentUser.getLastName() : "";
+            preferredFirstName = currentUser.getPreferredFirstName() != null ? currentUser.getPreferredFirstName() : "";
+            email = currentUser.getEmailAddress() != null ? currentUser.getEmailAddress() : "";
+            isAdmin = currentUser.getAdminRole();
+            role1 = currentUser.getNewRole1();
+            role2 = currentUser.getNewRole2();
+            oneTimePw = false;
+          } else {
+            // Generate test users starting from user2
+            username = "user" + i;
+            password = "Password123!";
+            otp = ""; // Set OTP to empty string for all test users
+            firstName = "TestFirst" + i;
+            middleName = "";
+            lastName = "";
+            preferredFirstName = "";
+            email = "user" + i + "@example.com";
 
-	            isAdmin = (i % 5 == 0); // Every 5th user is admin
-	            role1 = !isAdmin && (i % 2 == 0);
-	            role2 = !isAdmin && !role1;
-	            oneTimePw = false;
-	          }
+            isAdmin = (i % 5 == 0); // Every 5th user is admin
+            role1 = !isAdmin && (i % 2 == 0);
+            role2 = !isAdmin && !role1;
+            oneTimePw = false;
+          }
 
-	          pstmt.setString(1, username);
-	          pstmt.setString(2, password);
-	          pstmt.setString(3, otp);  // Add OTP parameter (empty string)
-	          pstmt.setString(4, firstName);
-	          pstmt.setString(5, middleName);
-	          pstmt.setString(6, lastName);
-	          pstmt.setString(7, preferredFirstName);
-	          pstmt.setString(8, email);
-	          pstmt.setBoolean(9, isAdmin);
-	          pstmt.setBoolean(10, role1);
-	          pstmt.setBoolean(11, role2);
-	          pstmt.setBoolean(12, oneTimePw);
+          pstmt.setString(1, username);
+          pstmt.setString(2, password);
+          pstmt.setString(3, otp); // Add OTP parameter (empty string)
+          pstmt.setString(4, firstName);
+          pstmt.setString(5, middleName);
+          pstmt.setString(6, lastName);
+          pstmt.setString(7, preferredFirstName);
+          pstmt.setString(8, email);
+          pstmt.setBoolean(9, isAdmin);
+          pstmt.setBoolean(10, role1);
+          pstmt.setBoolean(11, role2);
+          pstmt.setBoolean(12, oneTimePw);
 
-	          pstmt.addBatch();
-	        }
+          pstmt.addBatch();
+        }
 
-	        pstmt.executeBatch();
-	        System.out.println("Inserted 25 test users into userDB successfully.");
-	        System.out.println("First user preserved: " + currentUser.getUserName());
-	      } catch (SQLException e) {
-		      e.printStackTrace();
-		    }
+        pstmt.executeBatch();
+        System.out.println("Inserted 25 test users into userDB successfully.");
+        System.out.println("First user preserved: " + currentUser.getUserName());
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
 
-	    } catch (SQLException e) {
-	      e.printStackTrace();
-	    }
-	  }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
 
   /*******
    * <p>
@@ -799,11 +799,12 @@ public class Database {
    * </p>
    * 
    * <p>
-   * Description: Update the user name of a user given that user's old user name and
+   * Description: Update the user name of a user given that user's old user name
+   * and
    * the new user name.
    * </p>
    * 
-   * @param oldUsername  is the user name of the user
+   * @param oldUsername is the user name of the user
    * 
    * @param newUsername is the new first name for the user
    * 
@@ -865,7 +866,7 @@ public class Database {
   // update the password
   public String generateOneTimePassword(String username) {
     String query = "UPDATE userDB SET OTP = ?, isOneTimePW = ? WHERE userName = ?";
-    //This is where the password is really generated
+    // This is where the password is really generated
     String generatedPW = passWordGenerator();
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
       pstmt.setString(1, generatedPW);
@@ -878,8 +879,7 @@ public class Database {
     }
     return "";
   }
-  
-  
+
   /*******
    * <p>
    * Method: String passWordGenerator()
@@ -894,89 +894,86 @@ public class Database {
    * 
    */
   // update the password
-  public String passWordGenerator()
-  {
-	    boolean validPW = false;
-	    String generatedPW = "";
-	    int passWordLength = 0;
-	    //Buy yourself a lottery ticket if this hit
-	    int overloadPreventer = 0;
-	    //Set of booleans to check requirements
-	    boolean hasLowerCase = false;
-		boolean hasUpperCase = false;
-		boolean hasDigit = false;
-		boolean hasSpecialCharacter = false;
-		
-		//Password length can be from 8 to 16. Adds even more randomization!
-    	int randomPassWordLength = (int)(Math.random() * 9) + 8;
-		
-		//Loop as long as the password is invalid and it's not trying too many times
-	    while(!validPW && overloadPreventer < 128)
-	    {
-	    	int seed = (int)(Math.random() * 7);
-	    	//Shortcut to specifying the existence of special character
-	    	if(seed >= 3) hasSpecialCharacter = true;
-	    	switch (seed)
-	    	{
-	    		//Lower case characters
-	    		case 0:
-	    			generatedPW += (char)((Math.random() * 26) + 'a');
-	    			hasLowerCase = true;
-	    			break;
-	    		//Upper case characters
-	    		case 1:
-	    			generatedPW += (char)((Math.random() * 26) + 'A');
-	    			hasUpperCase = true;
-	    			break;
-	    		//Digit
-	    		case 2:
-	    			generatedPW += (char)((Math.random() * 10) + '0');
-	    			hasDigit = true;
-	    			break;
-	    		//Special characters, ASCII range 33-47
-	    		case 3:
-	    			generatedPW += (char)((Math.random() * 15) + '!');
-	    			break;
-	    		//Special characters, ASCII range 58-64
-	    		case 4:
-	    			generatedPW += (char)((Math.random() * 7) + ':');
-	    			break;
-	    		//Special characters, ASCII range 91-96
-	    		case 5:
-	    			generatedPW += (char)((Math.random() * 6) + '[');
-	    			break;
-	    			//Special characters, ASCII range 123-126
-	    		case 6:
-	    			generatedPW += (char)((Math.random() * 4) + '{');
-	    			break;
-	    	}
-	    	//The password has increased. Compare it with the new selected random length
-	    	passWordLength++;
-	    	if(passWordLength >= randomPassWordLength)
-	    	{
-	    		//If the password is valid, you may now break the loop
-	    		if(hasLowerCase && hasUpperCase && hasDigit && hasSpecialCharacter)
-	    			validPW = true;
-	    		//Otherwise, reset the generated password
-	    		else
-	    		{
-	    			generatedPW = "";
-	    			passWordLength = 0;
-	    			hasLowerCase = false;
-	    			hasUpperCase = false;
-	    			hasDigit = false;
-	    			hasSpecialCharacter = false;
-	    			overloadPreventer++;
-	    		}
-	    	}
-	    }
-	    
-	    //Password has overflowed, return a fixed password... We can tinker with this, but
-	    //I'd argue this method is already excessive enough
-	    if(overloadPreventer >= 128)
-	    	return "#1AbqdeYg%";
-	    
-	    return generatedPW;
+  public String passWordGenerator() {
+    boolean validPW = false;
+    String generatedPW = "";
+    int passWordLength = 0;
+    // Buy yourself a lottery ticket if this hit
+    int overloadPreventer = 0;
+    // Set of booleans to check requirements
+    boolean hasLowerCase = false;
+    boolean hasUpperCase = false;
+    boolean hasDigit = false;
+    boolean hasSpecialCharacter = false;
+
+    // Password length can be from 8 to 16. Adds even more randomization!
+    int randomPassWordLength = (int) (Math.random() * 9) + 8;
+
+    // Loop as long as the password is invalid and it's not trying too many times
+    while (!validPW && overloadPreventer < 128) {
+      int seed = (int) (Math.random() * 7);
+      // Shortcut to specifying the existence of special character
+      if (seed >= 3)
+        hasSpecialCharacter = true;
+      switch (seed) {
+        // Lower case characters
+        case 0:
+          generatedPW += (char) ((Math.random() * 26) + 'a');
+          hasLowerCase = true;
+          break;
+        // Upper case characters
+        case 1:
+          generatedPW += (char) ((Math.random() * 26) + 'A');
+          hasUpperCase = true;
+          break;
+        // Digit
+        case 2:
+          generatedPW += (char) ((Math.random() * 10) + '0');
+          hasDigit = true;
+          break;
+        // Special characters, ASCII range 33-47
+        case 3:
+          generatedPW += (char) ((Math.random() * 15) + '!');
+          break;
+        // Special characters, ASCII range 58-64
+        case 4:
+          generatedPW += (char) ((Math.random() * 7) + ':');
+          break;
+        // Special characters, ASCII range 91-96
+        case 5:
+          generatedPW += (char) ((Math.random() * 6) + '[');
+          break;
+        // Special characters, ASCII range 123-126
+        case 6:
+          generatedPW += (char) ((Math.random() * 4) + '{');
+          break;
+      }
+      // The password has increased. Compare it with the new selected random length
+      passWordLength++;
+      if (passWordLength >= randomPassWordLength) {
+        // If the password is valid, you may now break the loop
+        if (hasLowerCase && hasUpperCase && hasDigit && hasSpecialCharacter)
+          validPW = true;
+        // Otherwise, reset the generated password
+        else {
+          generatedPW = "";
+          passWordLength = 0;
+          hasLowerCase = false;
+          hasUpperCase = false;
+          hasDigit = false;
+          hasSpecialCharacter = false;
+          overloadPreventer++;
+        }
+      }
+    }
+
+    // Password has overflowed, return a fixed password... We can tinker with this,
+    // but
+    // I'd argue this method is already excessive enough
+    if (overloadPreventer >= 128)
+      return "#1AbqdeYg%";
+
+    return generatedPW;
   }
 
   /*******
@@ -989,8 +986,6 @@ public class Database {
    * </p>
    * 
    * @param username is the username of the user
-   * @param password is the new password of the user
-   * @return the generated one-time PW
    *
    * 
    */
@@ -1398,7 +1393,6 @@ public class Database {
    * 
    * @param username is the username of the user
    * 
-   * @param lastName is the new last name for the user
    * 
    */
   // update the last name

@@ -19,5 +19,9 @@ package guiAddRemoveRoles;
  * Unused model
  */
 public class ModelAddRemoveRoles {
-
+  /**
+   * Default constructor for the ModelAddRemoveRoles class.
+   */
+  public ModelAddRemoveRoles() {
+  }
 }

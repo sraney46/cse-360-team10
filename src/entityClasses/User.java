@@ -56,8 +56,9 @@ public class User {
 
   /*****
    * <p>
-   * Method: User(String userName, String password, boolean r1, boolean r2,
-   * boolean r3, boolean r4, boolean r5)
+   * Method: User(String userName, String password, String OTP, String fn, String
+   * mn, String ln, String pfn,
+   * String ea, boolean r1, boolean r2, boolean r3, boolean tpw)
    * </p>
    * 
    * <p>
@@ -68,6 +69,18 @@ public class User {
    * 
    * @param password specifies the account password for this user
    * 
+   * @param OTP      specifies the one time password for this user
+   *
+   * @param fn       specifies the first name for this user
+   *
+   * @param mn       specifies the middle name for this user
+   *
+   * @param ln       specifies the last name for this user
+   *
+   * @param pfn      specifies the preferred first name for this user
+   *
+   * @param ea       specifies the email address for this user
+   *
    * @param r1       specifies the the Admin attribute (TRUE or FALSE) for this
    *                 user
    * 
@@ -76,6 +89,9 @@ public class User {
    * 
    * @param r3       specifies the the Reviewer attribute (TRUE or FALSE) for this
    *                 user
+   *
+   * @param tpw      specifies the temp password for this user
+   * 
    * 
    */
   // Constructor to initialize a new User object with userName, password, and
@@ -302,29 +318,147 @@ public class User {
     return emailAddress;
   }
 
+  /*****
+   * <p>
+   * Method: void setUserName(String s)
+   * *
+   * </p>
+   *
+   * 
+   * <p>
+   * Description: This setter sets the username.
+   * </p>
+   *
+   * @param s is a vale taken from the input of username text field.
+   * 
+   *
+   */
+  // Sets the current value of the Student role attribute.
+
   public void setUserName(String s) {
     userName = s;
   }
 
+  /*****
+   * <p>
+   * Method: void setPassword(String s)
+   * *
+   * </p>
+   *
+   * 
+   * <p>
+   * Description: This setter sets the password.
+   * </p>
+   *
+   * @param s is a vale taken from the input of password text field.
+   * 
+   *
+   */
+  // Sets the current value of the Student role attribute.
   public void setPassword(String s) {
     password = s;
   }
+
+  /*****
+   * <p>
+   * Method: void setFirstName(String s)
+   * *
+   * </p>
+   *
+   * 
+   * <p>
+   * Description: This setter sets the users first name.
+   * </p>
+   *
+   * @param s is a vale taken from the input of first name text field.
+   * 
+   *
+   */
+  // Sets the current value of the Student role attribute.
 
   public void setFirstName(String s) {
     firstName = s;
   }
 
+  /*****
+   * <p>
+   * Method: void setMiddleName(String s)
+   * *
+   * </p>
+   *
+   * 
+   * <p>
+   * Description: This setter sets the users middle name.
+   * </p>
+   *
+   * @param s is a vale taken from the input of middle name text field.
+   * 
+   *
+   */
+  // Sets the current value of the Student role attribute.
+
   public void setMiddleName(String s) {
     middleName = s;
   }
+
+  /*****
+   * <p>
+   * Method: void setLastName(String s)
+   * *
+   * </p>
+   *
+   * 
+   * <p>
+   * Description: This setter sets the users last name.
+   * </p>
+   *
+   * @param s is a vale taken from the input of last name text field.
+   * 
+   *
+   */
+  // Sets the current value of the Student role attribute.
 
   public void setLastName(String s) {
     lastName = s;
   }
 
+  /*****
+   * <p>
+   * Method: void setPreferredFirstName(String s)
+   * *
+   * </p>
+   *
+   * 
+   * <p>
+   * Description: This setter sets the users perferred first name.
+   * </p>
+   *
+   * @param s is a vale taken from the input of perferred first name text field.
+   * 
+   *
+   */
+  // Sets the current value of the Student role attribute.
+
   public void setPreferredFirstName(String s) {
     preferredFirstName = s;
   }
+
+  /*****
+   * <p>
+   * Method: void setEmailAddress(String s)
+   * *
+   * </p>
+   *
+   * 
+   * <p>
+   * Description: This setter sets the users email.
+   * </p>
+   *
+   * @param s is a vale taken from the input of email text field.
+   * 
+   *
+   */
+  // Sets the current value of the Student role attribute.
 
   public void setEmailAddress(String s) {
     emailAddress = s;
@@ -422,6 +556,19 @@ public class User {
     return String.join("|", roles);
   }
 
+  /*****
+   * <p>
+   * Method: String getRoles()
+   * </p>
+   * 
+   * <p>
+   * Description: This getter returns the string of all the roles.
+   * </p>
+   * 
+   * @return a String of "TRUE" or "FALSE" based on state of the attribute
+   *
+   */
+  // Gets the current value of the role2 attribute.
   public String getRoles() {
     List<String> roles = new ArrayList<>();
 

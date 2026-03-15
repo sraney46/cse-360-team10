@@ -62,6 +62,8 @@ public class ViewRole1Home {
 
   /** Label used to display the details of the currently logged-in user. */
   protected static Label label_UserDetails = new Label();
+  
+  protected static Button button_DiscussionForum = new Button("Discussion Forum");
 
   /** Button that allows the user to navigate to the account update page. */
   protected static Button button_UpdateThisUser = new Button("Account Update");
@@ -212,10 +214,13 @@ public class ViewRole1Home {
     label_UserDetails.setText("User: " + theUser.getUserName());
     setupLabelUI(label_UserDetails, "Arial", 20, width, Pos.BASELINE_LEFT, 20, 55);
 
-    setupButtonUI(button_UpdateThisUser, "Dialog", 18, 170, Pos.CENTER, 610, 45);
+    setupButtonUI(button_UpdateThisUser, "Dialog", 18, 170, Pos.CENTER, 610, 55);
     button_UpdateThisUser.setOnAction((_) -> {
       ControllerRole1Home.performUpdate();
     });
+    
+    setupButtonUI(button_DiscussionForum, "Dialog", 16, 170, Pos.CENTER, 315, 55);
+	button_DiscussionForum.setOnAction((_) -> {ControllerRole1Home.discussionForum(); });
 
     // GUI Area 2: Staff Announcements
     setupLabelUI(label_AnnouncementsTitle, "Arial", 22, width - 40, Pos.CENTER, 20, 120);
@@ -268,7 +273,7 @@ public class ViewRole1Home {
 
     // Place all of the widget items into the Root Pane's list of children
     theRootPane.getChildren().addAll(
-        label_PageTitle, label_UserDetails, button_UpdateThisUser, line_Separator1,
+        label_PageTitle, label_UserDetails, button_UpdateThisUser, line_Separator1, button_DiscussionForum,
         label_AnnouncementsTitle, textArea_Announcements,
         line_Separator4, button_Logout, button_Quit);
   }

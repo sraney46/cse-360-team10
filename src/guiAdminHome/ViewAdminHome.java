@@ -197,6 +197,8 @@ public class ViewAdminHome {
 
   /** The button that navigates the admin to the Add/Remove Roles interface. */
   protected static Button button_AddRemoveRoles = new Button("Add/Remove Roles");
+  
+  protected static Button button_DiscussionForum = new Button("Discussion Forum");
 
   /**
    * The alert displayed when a requested feature has not yet been fully
@@ -427,6 +429,9 @@ public class ViewAdminHome {
 
     button_ListUsers.setVisible(false);
     button_ListUsers.setManaged(false);
+    
+	setupButtonUI(button_DiscussionForum, "Dialog", 16, 250, Pos.CENTER, 20, 420);
+	button_DiscussionForum.setOnAction((_) -> {ControllerAdminHome.discussionForum(); });
 
     setupButtonUI(button_AddRemoveRoles, "Dialog", 16, 250, Pos.CENTER, 20, 470);
     button_AddRemoveRoles.setOnAction((_) -> {
@@ -525,6 +530,7 @@ public class ViewAdminHome {
         button_SetOnetimePassword,
         button_DeleteUser,
         button_ListUsers,
+        button_DiscussionForum,
         button_AddRemoveRoles,
         line_Separator4,
         button_Logout,

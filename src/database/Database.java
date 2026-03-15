@@ -117,6 +117,18 @@ public class Database {
       System.err.println("JDBC Driver not found: " + e.getMessage());
     }
   }
+  
+  /**********
+   * <p>Method: getConnection()</p>
+   *
+   * <p>Description: Returns the active database connection so other classes
+   * can execute queries without establishing a new connection.</p>
+   *
+   * @return the active H2 database Connection
+   */
+  public Connection getConnection() {
+      return connection;
+  }
 
   /*******
    * <p>
@@ -344,6 +356,200 @@ public class Database {
       e.printStackTrace();
     }
   }
+  
+  /*******
+   * <p>
+   * Method: populateDatabaseWithTestPosts()
+   * </p>
+   *
+   * <p>
+   * Description: Populates the postDB and replyDB tables with sample discussion
+   * forum data for testing purposes. Inserts 10 sample posts across various
+   * categories, with 5 of those posts having replies from users of different roles.
+   * </p>
+   *
+   * @throws SQLException when there is an issue creating the SQL command or
+   *                      executing it.
+   */
+  public void populateDatabaseWithTestPosts() {
+	    try {
+	        // Clear existing post and reply data
+	        statement.execute("DELETE FROM replyDB");
+	        statement.execute("DELETE FROM postDB");
+	        System.out.println("Post and reply tables cleared.");
+
+	        // Insert test posts
+	        String postSQL = "INSERT INTO postDB (author, content, category, timestamp) VALUES (?, ?, ?, ?)";
+	        try (PreparedStatement pstmt = connection.prepareStatement(postSQL)) {
+
+	            Object[][] posts = {
+	                {"user1",  "What is the difference between a stack and a queue?",                                "General",     System.currentTimeMillis() - 200000},
+	                {"user2",  "Can someone explain how interfaces work in Java?",                                   "Lectures",    System.currentTimeMillis() - 190000},
+	                {"user3",  "I am confused about HW2 requirements, can someone clarify?",                        "Homework",    System.currentTimeMillis() - 180000},
+	                {"user4",  "What topics will be covered on the midterm?",                                        "Exams",       System.currentTimeMillis() - 170000},
+	                {"user5",  "Does anyone know how to set up the H2 database in Eclipse?",                        "General",     System.currentTimeMillis() - 160000},
+	                {"user6",  "I keep getting a NullPointerException in my PostList class, any ideas?",            "Homework",    System.currentTimeMillis() - 150000},
+	                {"user7",  "What is the deadline for the team project phase 2?",                                 "Assignments", System.currentTimeMillis() - 140000},
+	                {"user8",  "Can someone share tips for recording screencasts on Mac?",                          "General",     System.currentTimeMillis() - 130000},
+	                {"user9",  "Is inheritance always better than composition in OOP?",                             "Lectures",    System.currentTimeMillis() - 120000},
+	                {"user10", "Where do we submit the HW2 zip file, Canvas or email?",                            "Homework",    System.currentTimeMillis() - 110000},
+	                {"user2",  "Can someone explain the difference between abstract classes and interfaces?",       "Lectures",    System.currentTimeMillis() - 100000},
+	                {"user4",  "How do we handle merge conflicts in Git when two people edit the same file?",       "General",     System.currentTimeMillis() - 90000},
+	                {"user6",  "Is the sequence diagram required for every use case or just the main one?",        "Assignments", System.currentTimeMillis() - 80000},
+	                {"user1",  "What is the best way to test CRUD operations without a GUI?",                       "Homework",    System.currentTimeMillis() - 70000},
+	                {"user8",  "Does the team project need to follow the FoundationsF25 documentation style?",     "Assignments", System.currentTimeMillis() - 60000},
+	                {"user3",  "I am getting a ClassNotFoundException for the H2 driver, how do I fix this?",      "General",     System.currentTimeMillis() - 50000},
+	                {"user5",  "What is the difference between epics and user stories?",                            "Lectures",    System.currentTimeMillis() - 40000},
+	                {"user9",  "Should our PostList class extend ArrayList or use composition instead?",            "Homework",    System.currentTimeMillis() - 30000},
+	                {"user7",  "How many screencasts do we need to submit for HW2?",                               "Assignments", System.currentTimeMillis() - 20000},
+	                {"user10", "Can we use JavaFX TableView instead of a custom VBox list for displaying posts?",  "General",     System.currentTimeMillis() - 10000},
+	            };
+
+	            for (Object[] post : posts) {
+	                pstmt.setString(1, (String) post[0]);
+	                pstmt.setString(2, (String) post[1]);
+	                pstmt.setString(3, (String) post[2]);
+	                pstmt.setLong(4,   (Long)   post[3]);
+	                pstmt.addBatch();
+	            }
+	            pstmt.executeBatch();
+	            System.out.println("Inserted 20 test posts into postDB successfully.");
+	        }
+
+	        // Get the actual postIDs after insertion
+	        List<Integer> postIDs = new ArrayList<>();
+	        ResultSet rs_init = statement.executeQuery("SELECT postID FROM postDB ORDER BY postID");
+	        while (rs_init.next()) {
+	            postIDs.add(rs_init.getInt("postID"));
+	        }
+
+	        // Insert replies — every post gets at least 2, some get up to 10
+	        String replySQL = "INSERT INTO replyDB (postID, author, authorRole, content, timestamp) VALUES (?, ?, ?, ?, ?)";
+	        try (PreparedStatement pstmt = connection.prepareStatement(replySQL)) {
+
+	            Object[][] replies = {
+	                // Post 0 — 5 replies
+	                {postIDs.get(0), "instructor1", "Staff",   "A stack is LIFO and a queue is FIFO. Great question!",                              System.currentTimeMillis() - 199000},
+	                {postIDs.get(0), "user3",       "Student", "I had the same question, this clears it up!",                                       System.currentTimeMillis() - 198000},
+	                {postIDs.get(0), "user5",       "Student", "Think of a stack like a pile of plates and a queue like a line at a store.",        System.currentTimeMillis() - 197000},
+	                {postIDs.get(0), "admin1",      "Admin",   "Great analogy user5! Both are covered in the Week 3 lecture slides.",               System.currentTimeMillis() - 196000},
+	                {postIDs.get(0), "user8",       "Student", "Thanks everyone, this makes a lot more sense now.",                                 System.currentTimeMillis() - 195000},
+
+	                // Post 1 — 4 replies
+	                {postIDs.get(1), "instructor1", "Staff",   "Interfaces define a contract. A class that implements it must provide all methods.", System.currentTimeMillis() - 189000},
+	                {postIDs.get(1), "user6",       "Student", "So interfaces are like a blueprint but without any implementation?",                System.currentTimeMillis() - 188000},
+	                {postIDs.get(1), "instructor1", "Staff",   "Exactly right user6! Default methods in Java 8+ are the one exception.",            System.currentTimeMillis() - 187000},
+	                {postIDs.get(1), "user2",       "Student", "That makes sense, thanks for clarifying!",                                          System.currentTimeMillis() - 186000},
+
+	                // Post 2 — 6 replies
+	                {postIDs.get(2), "admin1",      "Admin",   "Please refer to the Canvas assignment page for the full requirements breakdown.",    System.currentTimeMillis() - 179000},
+	                {postIDs.get(2), "user7",       "Student", "The PDF on Canvas has a much clearer breakdown than the website.",                  System.currentTimeMillis() - 178000},
+	                {postIDs.get(2), "user1",       "Student", "I was confused too, focus on the CRUD and input validation sections.",              System.currentTimeMillis() - 177000},
+	                {postIDs.get(2), "instructor1", "Staff",   "Good advice. Remember you only need CRUD and validation for this assignment.",       System.currentTimeMillis() - 176000},
+	                {postIDs.get(2), "user9",       "Student", "Does the user story document need to be a PDF or can it be a Word doc?",            System.currentTimeMillis() - 175000},
+	                {postIDs.get(2), "admin1",      "Admin",   "It must be submitted as a PDF as stated in the deliverables section.",              System.currentTimeMillis() - 174000},
+
+	                // Post 3 — 3 replies
+	                {postIDs.get(3), "instructor1", "Staff",   "Midterm covers weeks 1 through 6. Focus on OOP principles and UML diagrams.",       System.currentTimeMillis() - 169000},
+	                {postIDs.get(3), "user2",       "Student", "Will there be questions on sequence diagrams specifically?",                        System.currentTimeMillis() - 168000},
+	                {postIDs.get(3), "instructor1", "Staff",   "Yes, expect at least one sequence diagram question on the exam.",                   System.currentTimeMillis() - 167000},
+
+	                // Post 4 — 4 replies
+	                {postIDs.get(4), "user2",       "Student", "Make sure the JDBC driver JAR is added to your build path in Eclipse.",             System.currentTimeMillis() - 159000},
+	                {postIDs.get(4), "user4",       "Student", "Right-click the project, Build Path, Add External JARs, then select h2.jar.",       System.currentTimeMillis() - 158000},
+	                {postIDs.get(4), "instructor1", "Staff",   "Good answers. Also ensure your DB URL matches the path in FoundationsMain.",        System.currentTimeMillis() - 157000},
+	                {postIDs.get(4), "user5",       "Student", "Got it working, the build path was the issue. Thanks everyone!",                    System.currentTimeMillis() - 156000},
+
+	                // Post 5 — 2 replies
+	                {postIDs.get(5), "user1",       "Student", "Check that you are not calling a method on a null object before it is initialized.", System.currentTimeMillis() - 149000},
+	                {postIDs.get(5), "instructor1", "Staff",   "Add a null check before calling theDatabase.getConnection() in your PostList.",     System.currentTimeMillis() - 148000},
+
+	                // Post 6 — 2 replies
+	                {postIDs.get(6), "admin1",      "Admin",   "Phase 2 is due two weeks from Friday. Check the course schedule on Canvas.",        System.currentTimeMillis() - 139000},
+	                {postIDs.get(6), "user3",       "Student", "Thanks, I had the wrong date written down!",                                        System.currentTimeMillis() - 138000},
+
+	                // Post 7 — 3 replies
+	                {postIDs.get(7), "user4",       "Student", "I use Zoom for screencasts, just share your screen and record with audio.",         System.currentTimeMillis() - 129000},
+	                {postIDs.get(7), "user6",       "Student", "QuickTime Player on Mac also works great and requires no setup.",                   System.currentTimeMillis() - 128000},
+	                {postIDs.get(7), "instructor1", "Staff",   "Either tool is fine. Make sure your audio is clear and text is readable.",          System.currentTimeMillis() - 127000},
+
+	                // Post 8 — 10 replies
+	                {postIDs.get(8), "instructor1", "Staff",   "Neither is always better. Prefer composition for flexibility and loose coupling.",   System.currentTimeMillis() - 119000},
+	                {postIDs.get(8), "user1",       "Student", "I read that composition is preferred in most modern OOP design patterns.",          System.currentTimeMillis() - 118000},
+	                {postIDs.get(8), "user3",       "Student", "Inheritance makes sense when there is a true is-a relationship between classes.",   System.currentTimeMillis() - 117000},
+	                {postIDs.get(8), "user5",       "Student", "Composition gives you more flexibility at runtime which is usually what you want.", System.currentTimeMillis() - 116000},
+	                {postIDs.get(8), "user7",       "Student", "Does this mean we should avoid inheritance entirely in our team project?",          System.currentTimeMillis() - 115000},
+	                {postIDs.get(8), "instructor1", "Staff",   "Not at all. Use inheritance where there is a natural hierarchy like User roles.",   System.currentTimeMillis() - 114000},
+	                {postIDs.get(8), "user9",       "Student", "So BankAccount extending Account would be a good use of inheritance?",              System.currentTimeMillis() - 113000},
+	                {postIDs.get(8), "instructor1", "Staff",   "Yes, that is a classic textbook example of appropriate inheritance use.",           System.currentTimeMillis() - 112000},
+	                {postIDs.get(8), "user2",       "Student", "This thread is really helpful, should be pinned at the top!",                      System.currentTimeMillis() - 111000},
+	                {postIDs.get(8), "admin1",      "Admin",   "Agreed, great discussion everyone. This is exactly what Ed Discussion is for.",    System.currentTimeMillis() - 110000},
+
+	                // Post 9 — 2 replies
+	                {postIDs.get(9), "admin1",      "Admin",   "All submissions go through Canvas only. Do not email the instructor or TAs.",       System.currentTimeMillis() - 109000},
+	                {postIDs.get(9), "user4",       "Student", "Thanks, I was not sure since the ZIP file gets pretty large.",                      System.currentTimeMillis() - 108000},
+
+	                // Post 10 — 3 replies
+	                {postIDs.get(10), "instructor1", "Staff",  "Abstract classes can have implementation while interfaces traditionally cannot.",    System.currentTimeMillis() - 99000},
+	                {postIDs.get(10), "user8",       "Student","So use abstract class when sharing code and interface when defining a contract?",   System.currentTimeMillis() - 98000},
+	                {postIDs.get(10), "instructor1", "Staff",  "Exactly right. That is the key distinction to remember for the exam.",              System.currentTimeMillis() - 97000},
+
+	                // Post 11 — 2 replies
+	                {postIDs.get(11), "user5",       "Student","Always pull before you start working and communicate with your team on who edits what.", System.currentTimeMillis() - 89000},
+	                {postIDs.get(11), "instructor1", "Staff",  "Feature branches are a good strategy to avoid conflicts on shared files.",          System.currentTimeMillis() - 88000},
+
+	                // Post 12 — 2 replies
+	                {postIDs.get(12), "admin1",      "Admin",  "The assignment requires at least one sequence diagram covering a main use case.",   System.currentTimeMillis() - 79000},
+	                {postIDs.get(12), "user3",       "Student","Good to know, I was planning to do one for the login flow.",                        System.currentTimeMillis() - 78000},
+
+	                // Post 13 — 2 replies
+	                {postIDs.get(13), "instructor1", "Staff",  "You can write a main method with hardcoded test data and print results to console.", System.currentTimeMillis() - 69000},
+	                {postIDs.get(13), "user6",       "Student","That is basically what TP1 does for the user tests, good reference point.",         System.currentTimeMillis() - 68000},
+
+	                // Post 14 — 2 replies
+	                {postIDs.get(14), "instructor1", "Staff",  "Yes, all code and documentation must follow the FoundationsF25 style guide.",       System.currentTimeMillis() - 59000},
+	                {postIDs.get(14), "user7",       "Student","Does that include the Javadoc comment format above every method?",                  System.currentTimeMillis() - 58000},
+
+	                // Post 15 — 3 replies
+	                {postIDs.get(15), "user2",       "Student","Make sure the H2 JAR is on the build path and the driver string is correct.",       System.currentTimeMillis() - 49000},
+	                {postIDs.get(15), "user4",       "Student","The driver class name is org.h2.Driver, double check yours matches exactly.",       System.currentTimeMillis() - 48000},
+	                {postIDs.get(15), "instructor1", "Staff",  "Also verify the DB_URL in your Database class matches the one in FoundationsMain.", System.currentTimeMillis() - 47000},
+
+	                // Post 16 — 2 replies
+	                {postIDs.get(16), "instructor1", "Staff",  "Epics are high level goals and user stories are the specific tasks within them.",   System.currentTimeMillis() - 39000},
+	                {postIDs.get(16), "user8",       "Student","So an epic might be manage users and a story is add a new user to the system?",    System.currentTimeMillis() - 38000},
+
+	                // Post 17 — 2 replies
+	                {postIDs.get(17), "instructor1", "Staff",  "Composition is preferred here. PostList should contain a list, not extend one.",   System.currentTimeMillis() - 29000},
+	                {postIDs.get(17), "user1",       "Student","That makes sense, extending ArrayList would expose too many unrelated methods.",    System.currentTimeMillis() - 28000},
+
+	                // Post 18 — 2 replies
+	                {postIDs.get(18), "admin1",      "Admin",  "HW2 requires 7 screencasts total. See the deliverables section for details.",      System.currentTimeMillis() - 19000},
+	                {postIDs.get(18), "user9",       "Student","Seven is a lot but at least most of them only need to be 2 to 5 minutes long.",    System.currentTimeMillis() - 18000},
+
+	                // Post 19 — 2 replies
+	                {postIDs.get(19), "instructor1", "Staff",  "TableView works but a custom VBox gives you more control over the row styling.",   System.currentTimeMillis() - 9000},
+	                {postIDs.get(19), "user3",       "Student","I tried TableView first but switched to VBox after seeing the TP1 examples.",      System.currentTimeMillis() - 8000},
+	            };
+
+	            for (Object[] reply : replies) {
+	                pstmt.setInt(1,    (Integer) reply[0]);
+	                pstmt.setString(2, (String)  reply[1]);
+	                pstmt.setString(3, (String)  reply[2]);
+	                pstmt.setString(4, (String)  reply[3]);
+	                pstmt.setLong(5,   (Long)    reply[4]);
+	                pstmt.addBatch();
+	            }
+	            pstmt.executeBatch();
+	            System.out.println("Inserted replies into replyDB successfully.");
+	        }
+
+	       
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
 
   /*******
    * <p>

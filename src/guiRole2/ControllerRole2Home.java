@@ -49,6 +49,21 @@ public class ControllerRole2Home {
 	protected static void performUpdate () {
 		guiUserUpdate.ViewUserUpdate.displayUserUpdate(ViewRole2Home.theStage, ViewRole2Home.theUser);
 	}	
+	
+	/**********
+	 * <p> 
+	 * 
+	 * Title: discussionForum () Method. </p>
+	 * 
+	 * <p> Description: Protected method that allows an admin to add and remove roles for any of
+	 * the users currently in the system.  This is done by invoking the AddRemoveRoles Page. There
+	 * is no need to specify the home page for the return as this can only be initiated by and
+	 * Admin.</p>
+	 */
+	protected static void discussionForum() {
+		guiDiscussionForum.ViewDiscussionForum.displayDiscussionForum(ViewRole2Home.theStage, 
+				ViewRole2Home.theUser, "Student");
+	}
 
 	/**********
 	 * <p> Method: performLogout() </p>

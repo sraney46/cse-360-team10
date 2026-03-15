@@ -77,7 +77,7 @@ public class ViewAddRemoveRoles {
   protected static Label label_UserDetails = new Label();
 
   /** Button to trigger database population */
-  protected static Button button_PopulateDatebase = new Button("Populate Database");
+//  protected static Button button_PopulateDatebase = new Button("Populate Database");
 
   /** Button to update the current user's account */
   protected static Button button_UpdateThisUser = new Button("Account Update");
@@ -249,19 +249,19 @@ public class ViewAddRemoveRoles {
       guiUserUpdate.ViewUserUpdate.displayUserUpdate(theStage, theUser);
     });
 
-    setupButtonUI(button_PopulateDatebase, "Dialog", 18, 170, Pos.CENTER, 310, 45);
-    button_PopulateDatebase.setOnAction((_) -> {
-      // Show the alert and wait for user response
-      Optional<ButtonType> result = alertPopulateDatabase.showAndWait();
-      if (result.isPresent() && result.get() == ButtonType.OK) {
-        // User pressed OK, proceed
-        theDatabase.populateDatabaseWithTestUsers(theUser);
-        refreshUserList();
-      } else {
-        // User cancelled, do nothing
-        System.out.println("Database population cancelled by user.");
-      }
-    });
+//    setupButtonUI(button_PopulateDatebase, "Dialog", 18, 170, Pos.CENTER, 310, 45);
+//    button_PopulateDatebase.setOnAction((_) -> {
+//      // Show the alert and wait for user response
+//      Optional<ButtonType> result = alertPopulateDatabase.showAndWait();
+//      if (result.isPresent() && result.get() == ButtonType.OK) {
+//        // User pressed OK, proceed
+//        theDatabase.populateDatabaseWithTestUsers(theUser);
+//        refreshUserList();
+//      } else {
+//        // User cancelled, do nothing
+//        System.out.println("Database population cancelled by user.");
+//      }
+//    });
 
     // GUI Area 2
     userListBox = new VBox(8);
@@ -340,7 +340,8 @@ public class ViewAddRemoveRoles {
 
     theRootPane.getChildren().addAll(
         label_PageTitle, label_UserDetails,
-        button_UpdateThisUser, button_PopulateDatebase,
+        button_UpdateThisUser, 
+        //button_PopulateDatebase,
         line_Separator1,
         scrollPane,
         line_Separator4,
@@ -768,7 +769,7 @@ public class ViewAddRemoveRoles {
    * `theDatabase`, and is intended for internal use only.
    * </p>
    */
-  private static void refreshUserList() {
+  public static void refreshUserList() {
     // Clear current list
     userListBox.getChildren().clear();
 

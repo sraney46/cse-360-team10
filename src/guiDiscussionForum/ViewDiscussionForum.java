@@ -147,6 +147,7 @@ public class ViewDiscussionForum {
         
         setupButtonUI(button_PopulateDatabase, "Dialog", 16, 100, Pos.BASELINE_LEFT, width/2 - 75, 55);
         button_PopulateDatabase.setOnAction((_) -> { 
+        
         	
         	// Show the alert and wait for user response
 		    Optional<ButtonType> result = alertPopulateDatabase.showAndWait();
@@ -159,6 +160,9 @@ public class ViewDiscussionForum {
 		        System.out.println("Database population cancelled by user.");
 		    }
         });
+        
+        button_PopulateDatabase.setVisible(false);
+        button_PopulateDatabase.setManaged(false);
 
         // Category filter combo
         combo_Category.setItems(FXCollections.observableArrayList(

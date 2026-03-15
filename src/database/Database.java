@@ -110,7 +110,7 @@ public class Database {
       connection = DriverManager.getConnection(DB_URL, USER, PASS);
       statement = connection.createStatement();
       // You can use this command to clear the database and restart from fresh.
-      // statement.execute("DROP ALL OBJECTS");
+//       statement.execute("DROP ALL OBJECTS");
 
       createTables(); // Create the necessary tables if they don't exist
     } catch (ClassNotFoundException e) {
@@ -164,6 +164,23 @@ public class Database {
         + "role VARCHAR(10), "
         + "expirationTime BIGINT)";
     statement.execute(invitationCodesTable);
+    
+    String postTable = "CREATE TABLE IF NOT EXISTS postDB ("
+        + "postID INT AUTO_INCREMENT PRIMARY KEY, "
+        + "author VARCHAR(255), "
+        + "content VARCHAR(1000), "
+        + "category VARCHAR(50), "
+        + "timestamp BIGINT)";
+    statement.execute(postTable);
+
+    String replyTable = "CREATE TABLE IF NOT EXISTS replyDB ("
+        + "replyID INT AUTO_INCREMENT PRIMARY KEY, "
+        + "postID INT, "
+        + "author VARCHAR(255), "
+        + "authorRole VARCHAR(50), "
+        + "content VARCHAR(1000), "
+        + "timestamp BIGINT)";
+    statement.execute(replyTable);
   }
 
   /*******
@@ -374,9 +391,9 @@ public class Database {
   public void populateDatabaseWithTestPosts() {
 	    try {
 	        // Clear existing post and reply data
-	        statement.execute("DELETE FROM replyDB");
-	        statement.execute("DELETE FROM postDB");
-	        System.out.println("Post and reply tables cleared.");
+//	        statement.execute("DELETE FROM replyDB");
+//	        statement.execute("DELETE FROM postDB");
+//	        System.out.println("Post and reply tables cleared.");
 
 	        // Insert test posts
 	        String postSQL = "INSERT INTO postDB (author, content, category, timestamp) VALUES (?, ?, ?, ?)";

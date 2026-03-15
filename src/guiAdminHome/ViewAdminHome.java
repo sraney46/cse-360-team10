@@ -2,6 +2,7 @@ package guiAdminHome;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
@@ -27,6 +28,7 @@ import javafx.stage.Stage;
 import database.Database;
 import entityClasses.User;
 import guiUserUpdate.ViewUserUpdate;
+import guiAddRemoveRoles.ViewAddRemoveRoles;
 
 /*******
  * <p>
@@ -205,6 +207,9 @@ public class ViewAdminHome {
    * implemented.
    */
   protected static Alert alertNotImplemented = new Alert(AlertType.INFORMATION);
+  
+  /** Warning for populate database button */
+  protected static Alert alertPopulateDatabase = new Alert(AlertType.CONFIRMATION);
 
   // This is a separator and it is used to partition the GUI for various tasks
   private static Line line_Separator4 = new Line(20, 525, width - 20, 525);
@@ -223,6 +228,8 @@ public class ViewAdminHome {
    * screen.
    */
   protected static Button button_Logout = new Button("Logout");
+  
+  protected static Button button_PopulateDatebase = new Button("Populate Database");
 
   /** The button that terminates the application and closes all windows. */
   protected static Button button_Quit = new Button("Quit");
@@ -443,6 +450,22 @@ public class ViewAdminHome {
     button_Logout.setOnAction((_) -> {
       ControllerAdminHome.performLogout();
     });
+    
+    setupButtonUI(button_PopulateDatebase, "Dialog", 18, 170, Pos.CENTER, 310, 540);
+    button_PopulateDatebase.setOnAction((_) -> {
+      // Show the alert and wait for user response
+      Optional<ButtonType> result = alertPopulateDatabase.showAndWait();
+      if (result.isPresent() && result.get() == ButtonType.OK) {
+        // User pressed OK, proceed
+        theDatabase.populateDatabaseWithTestUsers(theUser);
+//        ViewAddRemoveRoles.refreshUserList();
+        refreshUsersList();
+        theDatabase.populateDatabaseWithTestPosts();
+      } else {
+        // User cancelled, do nothing
+        System.out.println("Database population cancelled by user.");
+      }
+    });
 
     setupButtonUI(button_Quit, "Dialog", 18, 170, Pos.CENTER, 800, 540);
     button_Quit.setOnAction((_) -> {
@@ -514,6 +537,11 @@ public class ViewAdminHome {
         }
       }
     });
+    
+    alertPopulateDatabase.setTitle("Confirm Database Population");
+    alertPopulateDatabase.setHeaderText(
+        "This action will keep the current user data\nbut delete all other users in the database.\nEach user account password will be initialized to \"Password123!\".");
+    alertPopulateDatabase.setContentText("Press OK to continue or Cancel to abort.");
 
     // This is the end of the GUI initialization code
 
@@ -534,6 +562,7 @@ public class ViewAdminHome {
         button_AddRemoveRoles,
         line_Separator4,
         button_Logout,
+        button_PopulateDatebase,
         button_Quit);
 
     // With theRootPane set up with the common widgets, it is up to displayAdminHome
@@ -547,6 +576,8 @@ public class ViewAdminHome {
   Helper methods used to minimizes the number of lines of code needed above
   
   */
+  
+  
 
   /**********
    * Private local method to initialize the standard fields for a label

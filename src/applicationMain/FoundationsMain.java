@@ -61,6 +61,9 @@ import javafx.scene.text.Font;
 
 public class FoundationsMain extends Application {
 	
+	/***
+	 * The starting point of execution for the application
+	 */
 	public FoundationsMain() {}
 	
 	/*-*******************************************************************************************

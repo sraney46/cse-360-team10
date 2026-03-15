@@ -1,0 +1,16 @@
+module:FoundationsF25
+applicationMain
+database
+entityClasses
+guiAddRemoveRoles
+guiAdminHome
+guiFirstAdmin
+guiForgttenPassword
+guiMultipleRoleDispatch
+guiNewAccount
+guiRole1
+guiRole2
+guiTools
+guiUserLogin
+guiUserUpdate
+validation

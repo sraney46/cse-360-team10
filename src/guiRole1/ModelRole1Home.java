@@ -1,5 +1,8 @@
 package guiRole1;
 
+/***
+ * Unused model
+ */
 public class ModelRole1Home {
 
 /*******

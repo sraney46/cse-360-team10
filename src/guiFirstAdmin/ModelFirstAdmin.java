@@ -21,7 +21,9 @@ package guiFirstAdmin;
  */
 
 
-
+/**
+ * The model for the FirstAdmin. Contains all of the properties associated with the FirstAdmin page.
+ */
 public class ModelFirstAdmin {
 
 	/**********************************************************************************************
@@ -32,8 +34,11 @@ public class ModelFirstAdmin {
 	 */
 
 	public static String userNameRecognizerErrorMessage = "";	// The error message text
-	public static String userNameRecognizerInput = "";			// The input being processed
-	public static int userNameRecognizerIndexofError = -1;		// The index of error location
+	/** The input being processed */
+	public static String userNameRecognizerInput = "";
+	
+	/** The index of error location */
+	public static int userNameRecognizerIndexofError = -1;
 	private static int state = 0;						// The current state value
 	private static int nextState = 0;					// The next state value
 	private static boolean finalState = false;			// Is this state a final state?

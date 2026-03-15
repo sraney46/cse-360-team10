@@ -72,10 +72,11 @@ public class ViewUserLogin {
 
   private static Button button_Quit = new Button("Quit");
 
-  private static Stage theStage;
-  private static Pane theRootPane;
+  private static Stage theStage;				
+  private static Pane theRootPane;		
+  
+  /** An object for the user login scene. By default null since it does not appear by default */
   public static Scene theUserLoginScene = null;
-
   private static ViewUserLogin theView = null; // private static guiUserLogin.ControllerUserLogin theController;
 
   /*-********************************************************************************************

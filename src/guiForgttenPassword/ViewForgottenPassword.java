@@ -50,7 +50,16 @@ public class ViewForgottenPassword {
 
   // These are the application values required by the user interface
 
+  /**
+   * The width for the Forgotten Password window, based on a fraction of main
+   * window width.
+   */
   private static double width = applicationMain.FoundationsMain.WINDOW_WIDTH * 0.5;
+
+  /**
+   * The height for the Forgotten Password window, based on a fraction of main
+   * window height.
+   */
   private static double height = applicationMain.FoundationsMain.WINDOW_HEIGHT * 0.75;
 
   // This is a simple GUI password change Page, very similar to the pages
@@ -59,32 +68,54 @@ public class ViewForgottenPassword {
   // difference is in this case we also know the user, since it was are
   // referencing the user
   // from the login
+
+  /** The label indicating the purpose of the page: changing the password. */
   protected static Label label_PasswordChange = new Label("Change Password");
+
+  /** The primary password input field. */
   protected static PasswordField text_Password1 = new PasswordField();
+
+  /** The confirmation password input field. */
   protected static PasswordField text_Password2 = new PasswordField();
-  protected static Button button_ChangePassword = new Button("Change Password");
-  // This alert is used should the user enter two passwords that do not match
+
+  /** The button that triggers the password change logic. */
+  protected static Button button_ChangePassword = new Button("Change Password"); // This alert is used should the user
+                                                                                 // enter two passwords that do not
+                                                                                 // match
+
   // Another alert is used when the password change was successful
+
+  /** Alert displayed when password validation fails (e.g., mismatch). */
   protected static Alert alertPasswordError = new Alert(AlertType.INFORMATION);
+
+  /** Alert displayed when the password has been successfully updated. */
   protected static Alert success = new Alert(AlertType.INFORMATION);
 
+  /** Button to exit the application. */
   protected static Button button_Quit = new Button("Quit");
 
   // These attributes are used to configure the page and populate it with this
   // user's information
-  private static ViewForgottenPassword theView; // Is instantiation of the class needed?
 
-  // Reference for the in-memory database so this package has access
+  /** The singleton instance of this view. */
+  private static ViewForgottenPassword theView;
+
+  /** Reference to the system database for password updates. */
   private static Database theDatabase = applicationMain.FoundationsMain.database;
 
-  protected static Stage theStage; // The Stage that JavaFX has established for us
-  private static Pane theRootPane; // The Pane that holds all the GUI widgets
-  protected static User theUser; // The current logged in User
+  /** The Stage provided by JavaFX for displaying this scene. */
+  protected static Stage theStage;
+
+  /** The container holding all GUI components for this page. */
+  private static Pane theRootPane;
+
+  /** The user whose password is currently being updated. */
+  protected static User theUser;
 
   /**
    * Access to the User Update page's GUI Widgets
    */
-  public static Scene theForgottenPassScene = null; 
+  public static Scene theForgottenPassScene = null;
 
   /*-********************************************************************************************
   
@@ -115,9 +146,11 @@ public class ViewForgottenPassword {
    * makes it visible
    * to the user.
    * 
-   * @param ps specifies the JavaFX Stage to be used for this GUI and it's methods
+   * @param ps   specifies the JavaFX Stage to be used for this GUI and it's
+   *             methods
    * 
-   * @param user specifies the user's invitation code for this GUI and it's methods
+   * @param user specifies the user's invitation code for this GUI and it's
+   *             methods
    * 
    */
   public static void displayForgotPass(Stage ps, User user) {

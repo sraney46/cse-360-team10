@@ -62,6 +62,7 @@ public class ModelDiscussionForum {
         String query = "INSERT INTO postDB (author, content, category, timestamp) VALUES (?, ?, ?, ?)";
         try (PreparedStatement pstmt = theDatabase.getConnection()
                 .prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+
             pstmt.setString(1, post.getAuthor());
             pstmt.setString(2, post.getContent());
             pstmt.setString(3, post.getCategory());

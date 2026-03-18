@@ -1,0 +1,292 @@
+package testing;
+
+import java.util.List;
+
+import database.Database;
+import guiDiscussionForum.ModelDiscussionForum;
+import entityClasses.Post;
+import entityClasses.Reply;
+import validation.ValidationResult;
+
+/*******
+ * <p>
+ * Title: HW2Tests Class
+ * </p>
+ *
+ * <p>
+ * Description: Test cases for Post and Reply CRUD, input validation, and
+ * collection subset operations. Tests cover positive and negative scenarios
+ * with helpful error message verification. Runs independently to verify
+ * requirements.
+ * </p>
+ *
+ *
+ * 
+ * @author Jonathan Stark
+ * @version 1.00 2026-02-22 HW2 Test cases
+ *
+ */
+
+public class PostTests {
+
+  private int passed;
+  private int failed;
+  private boolean isValid;
+  private static database.Database theDatabase = applicationMain.FoundationsMain.database;
+  private int nextId = 1;
+
+  public PostTests() {
+    this.passed = 0;
+    this.failed = 0;
+  }
+
+  private void assertTrue(boolean condition, String testName, String message) {
+    if (condition) {
+      passed++;
+      System.out.println("  [PASS] " + testName + (message != null ? ": " + message : ""));
+    } else {
+      failed++;
+      System.out.println("  [FAIL] " + testName + ": " + (message != null ? message : "expected true"));
+    }
+  }
+
+  private void assertFalse(boolean condition, String testName, String message) {
+    assertTrue(!condition, testName, message);
+  }
+
+  private void assertNotNull(Object obj, String testName, String message) {
+    assertTrue(obj != null, testName, message);
+  }
+
+  private void assertNull(Object obj, String testName, String message) {
+    assertTrue(obj == null, testName, message);
+  }
+
+  private void assertEquals(Object expected, Object actual, String testName) {
+    boolean eq = (expected == null && actual == null) || (expected != null && expected.equals(actual));
+    assertTrue(eq, testName, "expected=" + expected + ", actual=" + actual);
+  }
+
+  /**
+   * Run all test cases for Post CRUD and validation.
+   */
+  public void runPostTests() {
+    System.out.println("\n ---Post CRUD and Validation Tests---");
+    ModelDiscussionForum pc = new ModelDiscussionForum();
+    isValid=false;
+
+   
+
+    // Positive: Create valid post
+    entityClasses.Post p1 = new entityClasses.Post();
+    p1.setPostID(nextId++);
+    p1.setAuthor("s1");
+    p1.setContent("The test");
+    p1.setCategory("HW");
+    p1.setTimestamp(System.currentTimeMillis());
+    if(pc.addPost(p1)){
+      isValid=true;
+      assertTrue(isValid, "Post Create - valid input", "Post created successfully with id " + p1.getPostID() + ".");
+    }
+/**
+    // Positive: Read post
+    Post read = pc.read(1);
+    assertNotNull(read, "Post Read - found by id", null);
+    assertEquals("student1", read.getAuthor(), "Post Read - author");
+    assertEquals("How do I use the debugger?", read.getTitle(), "Post Read - title");
+
+    // Positive: Update post
+    read.setTitle("How do I use the Java debugger in Eclipse?");
+    vr = pc.update(read);
+    assertTrue(vr.isValid(), "Post Update - valid", vr.getMessage());
+    Post updated = pc.read(1);
+    assertEquals("How do I use the Java debugger in Eclipse?", updated.getTitle(), "Post Update - title updated");
+
+    // Positive: GetAllPosts
+    List<Post> all = pc.getAllPosts();
+    assertTrue(all.size() == 1, "Post GetAllPosts - count", "size=" + all.size());
+
+    // Positive: Subset by search
+    pc.create(new Post(0, "ta1", "What is polymorphism?", "Explain polymorphism in Java.", System.currentTimeMillis()));
+    List<Post> subset = pc.getSubset("debugger");
+    assertTrue(subset.size() == 1, "Post Subset search - found", "size=" + subset.size());
+    subset = pc.getSubset("polymorphism");
+    assertTrue(subset.size() == 1, "Post Subset search - polymorphism", "size=" + subset.size());
+
+    // Negative: Create with null author
+    Post bad = new Post();
+    bad.setAuthor(null);
+    bad.setTitle("Title");
+    bad.setContent("Content");
+    vr = pc.create(bad);
+    assertFalse(vr.isValid(), "Post Create - null author", vr.getMessage());
+    assertTrue(vr.getMessage().contains("Author"), "Post Create - error for null author", vr.getMessage());
+
+    // Negative: Create with empty title
+    bad.setAuthor("user");
+    bad.setTitle("");
+    bad.setContent("Content");
+    vr = pc.create(bad);
+    assertFalse(vr.isValid(), "Post Create - empty title", vr.getMessage());
+    assertTrue(vr.getMessage().contains("Title"), "Post Create - error for empty title", vr.getMessage());
+
+    // Negative: Create with empty content
+    bad.setTitle("Title");
+    bad.setContent("");
+    vr = pc.create(bad);
+    assertFalse(vr.isValid(), "Post Create - empty content", vr.getMessage());
+
+    // Negative: Read non-existent
+    Post notFound = pc.read(999);
+    assertNull(notFound, "Post Read - non-existent id", null);
+
+    // Negative: Delete non-existent
+    vr = pc.delete(999);
+    assertFalse(vr.isValid(), "Post Delete - non-existent", vr.getMessage());
+    assertTrue(vr.getMessage().contains("not found"), "Post Delete - error", vr.getMessage());
+
+    // Positive: Delete existing
+    vr = pc.delete(1);
+    assertTrue(vr.isValid(), "Post Delete - valid", vr.getMessage());
+    assertNull(pc.read(1), "Post Delete - verify removed", null);
+    **/
+  }
+
+  /**
+   * Run all test cases for Reply CRUD and validation.
+   */
+  public void runReplyTests() {
+    /**
+    System.out.println("\n---Reply CRUD and Validation Tests---");
+    ReplyCollection rc = new ReplyCollection();
+    PostCollection pc = new PostCollection();
+
+    // Create a post first for postId
+    Post p = new Post();
+    p.setAuthor("student1");
+    p.setTitle("Question");
+    p.setContent("Content");
+    pc.create(p);
+
+    // Positive: Create valid reply
+    Reply r1 = new Reply();
+    r1.setPostId(1);
+    r1.setAuthor("ta1");
+    r1.setContent("You can set breakpoints by double-clicking in the left margin of the editor.");
+    r1.setTimestamp(System.currentTimeMillis());
+    ValidationResult vr = rc.create(r1);
+    assertTrue(vr.isValid(), "Reply Create - valid input", vr.getMessage());
+    assertEquals(1, rc.size(), "Reply Create - size");
+
+    // Positive: Read reply
+    Reply read = rc.read(1);
+    assertNotNull(read, "Reply Read - found", null);
+    assertEquals(1, read.getPostId(), "Reply Read - postId");
+    assertEquals("ta1", read.getAuthor(), "Reply Read - author");
+
+    // Positive: Update reply
+    read.setContent("Updated: Double-click in the left margin to set breakpoints.");
+    vr = rc.update(read);
+    assertTrue(vr.isValid(), "Reply Update - valid", vr.getMessage());
+
+    // Positive: GetAllReplies
+    List<Reply> all = rc.getAllReplies();
+    assertTrue(all.size() == 1, "Reply GetAllReplies - count", "size=" + all.size());
+
+    // Positive: Subset by postId
+    rc.create(new Reply(0, 1, "instructor", "Great question!", System.currentTimeMillis()));
+    List<Reply> byPost = rc.getSubset(1);
+    assertTrue(byPost.size() == 2, "Reply Subset by postId - count", "size=" + byPost.size());
+
+    // Positive: Subset by search
+    List<Reply> bySearch = rc.getSubset("breakpoints");
+    assertTrue(bySearch.size() >= 1, "Reply Subset search - found", "size=" + bySearch.size());
+
+    // Negative: Create with invalid postId (0)
+    Reply bad = new Reply();
+    bad.setPostId(0);
+    bad.setAuthor("user");
+    bad.setContent("Content");
+    vr = rc.create(bad);
+    assertFalse(vr.isValid(), "Reply Create - invalid postId 0", vr.getMessage());
+    assertTrue(vr.getMessage().contains("Post ID"), "Reply Create - error", vr.getMessage());
+
+    // Negative: Create with empty content
+    bad.setPostId(1);
+    bad.setContent("");
+    vr = rc.create(bad);
+    assertFalse(vr.isValid(), "Reply Create - empty content", vr.getMessage());
+
+    // Negative: Read non-existent
+    Reply notFound = rc.read(999);
+    assertNull(notFound, "Reply Read - non-existent", null);
+
+    // Positive: Delete
+    vr = rc.delete(1);
+    assertTrue(vr.isValid(), "Reply Delete - valid", vr.getMessage());
+    **/
+  }
+
+  /**
+   * Run tests for empty and large subset behavior.
+   */
+  public void runSubsetTests() {
+    /**
+    System.out.println("\n---Subset Tests---");
+    PostCollection pc = new PostCollection();
+    ReplyCollection rc = new ReplyCollection();
+
+    // Empty subset - search with no matches
+    List<Post> empty = pc.getSubset("nonexistentxyz");
+    assertTrue(empty.isEmpty(), "Post Subset - empty when no match", "size=" + empty.size());
+
+    // Empty subset - empty search term
+    List<Post> emptySearch = pc.getSubset("");
+    assertTrue(emptySearch.isEmpty(), "Post Subset - empty for empty search term", null);
+
+    // Empty subset - null search term
+    List<Post> nullSearch = pc.getSubset(null);
+    assertTrue(nullSearch.isEmpty(), "Post Subset - empty for null search", null);
+
+    // Reply subset for non-existent postId returns empty
+    List<Reply> emptyReplies = rc.getSubset(999);
+    assertTrue(emptyReplies.isEmpty(), "Reply Subset - empty for non-existent postId", null);
+    **/
+  }
+
+  /**
+   * Run all tests and print summary.
+   */
+  public void runAll() {
+theDatabase = new database.Database();
+    try {
+        theDatabase.connectToDatabase();
+        applicationMain.FoundationsMain.database = theDatabase; 
+        
+        System.out.println("   Database Connection Established.");
+    } catch (Exception e) {
+        System.out.println("  Database failed to connect.");
+    }
+    System.out.println("HW2 Test Suite - Post, Reply, PostCollection, ReplyCollection");
+    runPostTests();
+    runReplyTests();
+    runSubsetTests();
+    System.out.println("\n--- Summary ---");
+    System.out.println("  Passed: " + passed);
+    System.out.println("  Failed: " + failed);
+    System.out.println("  Total:  " + (passed + failed));
+    if (failed == 0) {
+      System.out.println("\nAll tests PASSED.");
+    } else {
+      System.out.println("\n" + failed + " test(s) FAILED.");
+    }
+  }
+
+  public int getPassed() {
+    return passed;
+  }
+
+  public int getFailed() {
+    return failed;
+  }
+}

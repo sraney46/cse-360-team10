@@ -33,7 +33,6 @@ public class PostTests {
   private int failed;
   private boolean isValid;
   private static database.Database theDatabase = applicationMain.FoundationsMain.database;
-  private int nextId = 1;
 
   public PostTests() {
     this.passed = 0;
@@ -79,7 +78,6 @@ public class PostTests {
 
     // Positive: Create valid post
     entityClasses.Post p1 = new entityClasses.Post();
-    p1.setPostID(nextId++);
     p1.setAuthor("s1");
     p1.setContent("The test");
     p1.setCategory("HW");
@@ -88,20 +86,22 @@ public class PostTests {
       isValid=true;
       assertTrue(isValid, "Post Create - valid input", "Post created successfully with id " + p1.getPostID() + ".");
     }
-/**
+
     // Positive: Read post
-    Post read = pc.read(1);
+    Post read = pc.getPostByID(1);
     assertNotNull(read, "Post Read - found by id", null);
-    assertEquals("student1", read.getAuthor(), "Post Read - author");
-    assertEquals("How do I use the debugger?", read.getTitle(), "Post Read - title");
+    assertEquals("s1", read.getAuthor(), "Post Read - author");
+    assertEquals("HW", read.getCategory(), "Post Read - title");
 
     // Positive: Update post
-    read.setTitle("How do I use the Java debugger in Eclipse?");
-    vr = pc.update(read);
-    assertTrue(vr.isValid(), "Post Update - valid", vr.getMessage());
-    Post updated = pc.read(1);
-    assertEquals("How do I use the Java debugger in Eclipse?", updated.getTitle(), "Post Update - title updated");
+    read.setAuthor("Jonathan");
+    if(pc.updatePost(read)){
+          assertTrue(isValid, "Post Update - valid", "Post " + read.getPostID() + " updated successfully.");
 
+    }
+    Post updated =pc.getPostByID(1);
+    assertEquals("Jonathan", updated.getAuthor(), "Post Update - author updated");
+/**
     // Positive: GetAllPosts
     List<Post> all = pc.getAllPosts();
     assertTrue(all.size() == 1, "Post GetAllPosts - count", "size=" + all.size());

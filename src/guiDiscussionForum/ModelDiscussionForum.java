@@ -85,6 +85,30 @@ public class ModelDiscussionForum {
      * POST - READ
      **********************************************************************************************/
 
+   /**********
+     * <p>Method: getPostByID(int id)</p>
+     *
+     * <p>Description: Retrieves post matching the desired id and returns the post object.</p>
+     *
+     * @param postID the ID of the post to grab.
+     * @return a post object of desired post, or null if an error occurs.
+     */
+  public Post getPostByID(int id){
+     List<Post> postList = new ArrayList<>();
+        String query = "SELECT * FROM postDB WHERE postID = ?";
+        try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {  
+      pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+            if(rs.next()) {
+                return buildPostFromResultSet(rs);
+            }
+        } catch (SQLException e) {
+            System.out.println("*** ERROR *** Failed to retrieve posts by ID: " + e.getMessage());    
+    }
+    return null;
+
+  }
+
     /**********
      * <p>Method: getAllPosts()</p>
      *
@@ -131,7 +155,7 @@ public class ModelDiscussionForum {
             return null;
         }
         return postList;
-    }
+    } 
 
     /**********************************************************************************************
      * POST - UPDATE
@@ -152,11 +176,12 @@ public class ModelDiscussionForum {
             System.out.println("*** ERROR *** Cannot update post: " + error);
             return false;
         }
-        String query = "UPDATE postDB SET content = ?, category = ? WHERE postID = ?";
+        String query = "UPDATE postDB SET content = ?, category = ?, author = ? WHERE postID = ? ";
         try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
             pstmt.setString(1, post.getContent());
             pstmt.setString(2, post.getCategory());
-            pstmt.setInt(3, post.getPostID());
+            pstmt.setString(3,post.getAuthor());
+            pstmt.setInt(4, post.getPostID());
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {

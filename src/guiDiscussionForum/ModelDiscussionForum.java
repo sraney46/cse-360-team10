@@ -46,7 +46,9 @@ public class ModelDiscussionForum {
      *
      * <p>Description: Inserts a new Post object into the postDB table.
      * Validates the post before attempting insertion and returns false
-     * with a printed error if validation fails.</p>
+     * with a printed error if validation fails. On successful insert,
+     * the database-generated postID is retrieved and stamped back onto
+     * the Post object.</p>
      *
      * @param post the Post object to insert into the database
      * @return true if the post was successfully inserted, false otherwise
@@ -58,12 +60,19 @@ public class ModelDiscussionForum {
             return false;
         }
         String query = "INSERT INTO postDB (author, content, category, timestamp) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
+        try (PreparedStatement pstmt = theDatabase.getConnection()
+                .prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, post.getAuthor());
             pstmt.setString(2, post.getContent());
             pstmt.setString(3, post.getCategory());
             pstmt.setLong(4, post.getTimestamp());
             pstmt.executeUpdate();
+
+            ResultSet generatedKeys = pstmt.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                post.setPostID(generatedKeys.getInt(1));
+            }
+
             return true;
         } catch (SQLException e) {
             System.out.println("*** ERROR *** Failed to add post: " + e.getMessage());

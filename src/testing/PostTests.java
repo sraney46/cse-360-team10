@@ -101,27 +101,32 @@ public class PostTests {
     }
     Post updated =pc.getPostByID(1);
     assertEquals("Jonathan", updated.getAuthor(), "Post Update - author updated");
-/**
+
     // Positive: GetAllPosts
     List<Post> all = pc.getAllPosts();
     assertTrue(all.size() == 1, "Post GetAllPosts - count", "size=" + all.size());
-
+/**
     // Positive: Subset by search
     pc.create(new Post(0, "ta1", "What is polymorphism?", "Explain polymorphism in Java.", System.currentTimeMillis()));
     List<Post> subset = pc.getSubset("debugger");
     assertTrue(subset.size() == 1, "Post Subset search - found", "size=" + subset.size());
     subset = pc.getSubset("polymorphism");
     assertTrue(subset.size() == 1, "Post Subset search - polymorphism", "size=" + subset.size());
-
+**/
     // Negative: Create with null author
     Post bad = new Post();
     bad.setAuthor(null);
-    bad.setTitle("Title");
-    bad.setContent("Content");
-    vr = pc.create(bad);
-    assertFalse(vr.isValid(), "Post Create - null author", vr.getMessage());
-    assertTrue(vr.getMessage().contains("Author"), "Post Create - error for null author", vr.getMessage());
+     p1.setContent("The test");
+    p1.setCategory("HW");
+    p1.setTimestamp(System.currentTimeMillis());
+    if (pc.addPost(bad)){
+      isValid= false;
+          assertFalse(isValid, "Post Create - null author", "Post created successfully with id "+ bad.getPostID() + ".");
 
+    }
+        assertTrue(isValid, "Post Create - error for null author", bad.checkValidation());
+
+/**
     // Negative: Create with empty title
     bad.setAuthor("user");
     bad.setTitle("");

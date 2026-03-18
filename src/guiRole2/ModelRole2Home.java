@@ -1,5 +1,8 @@
 package guiRole2;
 
+/***
+ * Unused model
+ */
 public class ModelRole2Home {
 
 /*******
@@ -18,4 +21,12 @@ public class ModelRole2Home {
  *  
  */
 
+	
+	/**********
+     * <p>Constructor: ModelRole2Home()</p>
+     *
+     * <p>Description: In the hopes of shutting up java doc errors,
+     * this constructor shall exist!</p>
+     */
+	public ModelRole2Home() {}
 }

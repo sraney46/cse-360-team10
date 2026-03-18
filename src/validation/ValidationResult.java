@@ -1,5 +1,11 @@
 package validation;
 
+/**********
+ * <p>Title: ValidationResult</p>
+ *
+ * <p>Description: Largely a helper class used for the validation of passwords and
+ * providing a helpful error message.</p>
+ */
 public class ValidationResult {
 
     private final boolean valid;

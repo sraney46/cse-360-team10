@@ -79,12 +79,13 @@ public class ViewUserLogin {
   public static Scene theUserLoginScene = null;
   private static ViewUserLogin theView = null; // private static guiUserLogin.ControllerUserLogin theController;
 
-  /*-********************************************************************************************
-  
-  Constructor
-  
-   *********************************************************************************************/
-
+  /**********
+   * <p>Constructor: displayUserLogin()</p>
+   *
+   * <p>Description: Constructs the interface for users to login to the system.</p>
+   * 
+   * @param ps the previous state used
+   */
   public static void displayUserLogin(Stage ps) {
 
     // Establish the references to the GUI. There is no current user yet.

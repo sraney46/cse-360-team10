@@ -70,7 +70,8 @@ public class ViewDiscussionForum {
     protected static Post theSelectedPost = null;
     protected static String returnPage = "";
 
-    public static Scene theDiscussionForumScene = null;
+    // The scene used for the discussion forum. This can get away with being protected...
+    protected static Scene theDiscussionForumScene = null;
 
     // Alerts
     protected static Alert alertDeleteConfirm = new Alert(Alert.AlertType.CONFIRMATION);
@@ -91,6 +92,7 @@ public class ViewDiscussionForum {
      *
      * @param ps   the JavaFX Stage to use
      * @param user the currently logged-in User
+     * @param returnPageStr the page to return to
      */
     public static void displayDiscussionForum(Stage ps, User user, String returnPageStr) {
         theStage = ps;

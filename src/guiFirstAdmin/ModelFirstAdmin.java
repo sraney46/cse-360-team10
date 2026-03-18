@@ -26,6 +26,13 @@ package guiFirstAdmin;
  */
 public class ModelFirstAdmin {
 
+	/**********
+     * <p>Constructor: ModelFirstAdmin()</p>
+     *
+     * <p>Description: We really don't need this, but it will shut up Javadoc...</p>
+     */
+	public ModelFirstAdmin() {}
+	
 	/**********************************************************************************************
 	 * 
 	 * Result attributes to be used for GUI applications where a detailed error message and a 

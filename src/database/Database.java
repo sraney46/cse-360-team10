@@ -385,8 +385,6 @@ public class Database {
    * categories, with 5 of those posts having replies from users of different roles.
    * </p>
    *
-   * @throws SQLException when there is an issue creating the SQL command or
-   *                      executing it.
    */
   public void populateDatabaseWithTestPosts() {
 	    try {

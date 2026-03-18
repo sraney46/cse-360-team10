@@ -2,8 +2,29 @@ package validation;
 
 import java.util.Set;
 
+/*******
+ * <p> Title: PasswordValidator Class. </p>
+ * 
+ * <p> Description: The password validation class used for validating password requirements
+ * when created, and/or entered.</p>
+ * 
+ * <p> Copyright: James Waldrop @ 2026 </p>
+ * 
+ * @author James Waldrop
+ * 
+ * @version 1.00		2026-02-18 Initial version
+ *  
+ */
 public class PasswordValidator {
 
+	/**********
+     * <p>Constructor: PasswordValidator()</p>
+     *
+     * <p>Description: In the hopes of shutting up java doc errors,
+     * this constructor shall exist!</p>
+     */
+	public PasswordValidator() {}
+	
     // ---- Configuration ----
     private static final int MIN_LENGTH = 8;
     private static final int MAX_LENGTH = 64;

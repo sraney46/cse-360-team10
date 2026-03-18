@@ -20,5 +20,13 @@ public class ModelRole1Home {
  * @version 1.01		2025-09-13 Updated JavaDoc description
  *  
  */
-
+	
+	
+	/**********
+     * <p>Constructor: ModelRole1Home()</p>
+     *
+     * <p>Description: In the hopes of shutting up java doc errors,
+     * this constructor shall exist!</p>
+     */
+public ModelRole1Home() {}
 }

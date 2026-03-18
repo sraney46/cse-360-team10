@@ -14,6 +14,18 @@ package guiNewAccount;
  * @version 1.00		2025-08-15 Initial version
  *  
  */
-public class ModelNewAccount {
 
+/**********
+ * <p>Title: ModelNewAccount</p>
+ *
+ * <p>Description: Does absolutely nothing!</p>
+ */
+public class ModelNewAccount {
+	/**********
+     * <p>Constructor: ModelNewAccount()</p>
+     *
+     * <p>Description: In the hopes of shutting up java doc errors,
+     * this constructor shall exist!</p>
+     */
+	public ModelNewAccount() {}
 }

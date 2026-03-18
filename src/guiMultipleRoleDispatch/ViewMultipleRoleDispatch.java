@@ -85,12 +85,15 @@ public class ViewMultipleRoleDispatch {
 	private static Scene theMultipleRoleDispatchScene = null;	
 
 
-	/*-********************************************************************************************
-
-	Constructor
-
-	 */
-
+	/**********
+     * <p>Constructor: displayMultipleRoleDispatch()</p>
+     *
+     * <p>Description: Constructs the interface for selecting which role you want
+     * to view the system as, when the user has multiple roles.</p>
+     * 
+     * @param ps the previous state used
+     * @param user the current user logged in
+     */
 	public static void displayMultipleRoleDispatch(Stage ps, User user) {
 		
 		// Establish the references to the GUI and the current user

@@ -34,11 +34,38 @@ public class PostTests {
   private boolean isValid;
   private static database.Database theDatabase = applicationMain.FoundationsMain.database;
 
+  /*****
+   * <p>
+   * Method: PostTests()
+   * </p>
+   * 
+   * <p>
+   * Description: This constructor is used to establish PostTest objects.
+   * </p>
+   */
+  // Constructor to initialize a PostTests object that tracks the passes and fails for each test run.
   public PostTests() {
     this.passed = 0;
     this.failed = 0;
   }
 
+  /*****
+   * <p>
+   * Method: void assertTrue(boolean condition, String testName, String message)
+   * </p>
+   * 
+   * <p>
+   * Description: This method prints the result and details of a test.
+   * </p>
+   * 
+   * @param condition is the pass/fail result of the test.
+   * 
+   * @param testName is the name of the test.
+   * 
+   * @param message contains the content of the print statement. 
+   * 
+   */
+  // Prints the result and details of a test
   private void assertTrue(boolean condition, String testName, String message) {
     if (condition) {
       passed++;
@@ -49,18 +76,89 @@ public class PostTests {
     }
   }
 
+  /*****
+   * <p>
+   * Method: void assertFalse(boolean condition, String testName, String message)
+   * </p>
+   * 
+   * <p>
+   * Description: This sets the result of a test to false, then calls assertTrue to print a failed test message.
+   * </p>
+   * 
+   * @param condition is the pass/fail result of the test.
+   * 
+   * @param testName is the name of the test.
+   * 
+   * @param message contains the content of the print statement. 
+   * 
+   */
+  // This sets the result of a test to false, then calls assertTrue to print a failed test message.
   private void assertFalse(boolean condition, String testName, String message) {
     assertTrue(!condition, testName, message);
   }
 
+  
+  /*****
+   * <p>
+   * Method: void assertNotNull(Object obj, String testName, String message)
+   * </p>
+   * 
+   * <p>
+   * Description: This method is used to show that a searched object (Post/Reply) was found.
+   * </p>
+   * 
+   * @param obj is the object (Post/Reply) searched for.
+   * 
+   * @param testName is the name of the test.
+   * 
+   * @param message contains the content of the print statement. 
+   * 
+   */
+  // This method is used to show that a searched object (Post/Reply) was found.
   private void assertNotNull(Object obj, String testName, String message) {
     assertTrue(obj != null, testName, message);
   }
 
+  /*****
+   * <p>
+   * Method: void assertNull(Object obj, String testName, String message)
+   * </p>
+   * 
+   * <p>
+   * Description: This method is used to show that a searched object (Post/Reply) was not found.
+   * </p>
+   * 
+   * @param obj is the object (Post/Reply) searched for.
+   * 
+   * @param testName is the name of the test.
+   * 
+   * @param message contains the content of the print statement. 
+   * 
+   */
+  // This method is used to show that a searched object (Post/Reply) was not found.
   private void assertNull(Object obj, String testName, String message) {
     assertTrue(obj == null, testName, message);
   }
 
+  /*****
+   * <p>
+   * Method: void assertEquals(Object obj, String testName, String message)
+   * </p>
+   * 
+   * <p>
+   * Description: This method is used to show that an object is what we expect it to be.
+   * </p>
+   * 
+   * @param expected is the object is the expected object.
+   * 
+   * @param actual is the actual object found.
+   * 
+   * @param testName is the name of the test.
+   * 
+   * @param message contains the content of the print statement. 
+   * 
+   */
+  // This method is used to show that a searched object (postID) was found.
   private void assertEquals(Object expected, Object actual, String testName) {
     boolean eq = (expected == null && actual == null) || (expected != null && expected.equals(actual));
     assertTrue(eq, testName, "expected=" + expected + ", actual=" + actual);

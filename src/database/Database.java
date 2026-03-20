@@ -395,7 +395,7 @@ public class Database {
 //	        System.out.println("Post and reply tables cleared.");
 
 	        // Insert test posts
-	        String postSQL = "INSERT INTO postDB (author, content, category, timestamp) VALUES (?, ?, ?, ?)";
+	        String postSQL = "INSERT INTO postDB (author, title, content, category, timestamp) VALUES (?, ?, ?, ?, ?)";
 	        try (PreparedStatement pstmt = connection.prepareStatement(postSQL)) {
 
 	        	Object[][] posts = {
@@ -423,10 +423,10 @@ public class Database {
 
 	            for (Object[] post : posts) {
 	                pstmt.setString(1, (String) post[0]);
-	                pstmt.setString(1, (String) post[1]);
-	                pstmt.setString(2, (String) post[2]);
-	                pstmt.setString(3, (String) post[3]);
-	                pstmt.setLong(4,   (Long)   post[4]);
+	                pstmt.setString(2, (String) post[1]);
+	                pstmt.setString(3, (String) post[2]);
+	                pstmt.setString(4, (String) post[3]);
+	                pstmt.setLong(5,   (Long)   post[4]);
 	                pstmt.addBatch();
 	            }
 	            pstmt.executeBatch();

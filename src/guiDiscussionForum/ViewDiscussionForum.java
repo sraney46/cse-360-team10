@@ -392,13 +392,16 @@ public class ViewDiscussionForum {
         );
         topLine.getChildren().addAll(authorLabel, categoryBadge);
 
-        // Content preview 
-        String preview = post.getContent().length() > 60
-            ? post.getContent().substring(0, 60) + "..."
-            : post.getContent();
+        // Title + content preview
+        String titlePart = post.getTitle() != null ? post.getTitle() : "";
+        String contentPart = post.getContent() != null ? post.getContent() : "";
+        String combined = titlePart + " - " + contentPart;
+        String preview = combined.length() > 60
+            ? combined.substring(0, 60) + "..."
+            : combined;
         Label previewLabel = new Label(preview);
         previewLabel.setStyle(
-            "-fx-font-family: 'Montserrat'; -fx-font-size: 12px; -fx-text-fill: #aaa;"
+        	"-fx-font-family: 'Montserrat SemiBold'; -fx-font-size: 13px; -fx-text-fill: #fff;"
         );
         previewLabel.setWrapText(false);
 

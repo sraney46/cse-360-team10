@@ -168,6 +168,7 @@ public class Database {
     String postTable = "CREATE TABLE IF NOT EXISTS postDB ("
         + "postID INT AUTO_INCREMENT PRIMARY KEY, "
         + "author VARCHAR(255), "
+        + "title VARCHAR(255), "
         + "content VARCHAR(1000), "
         + "category VARCHAR(50), "
         + "timestamp BIGINT)";
@@ -397,34 +398,35 @@ public class Database {
 	        String postSQL = "INSERT INTO postDB (author, content, category, timestamp) VALUES (?, ?, ?, ?)";
 	        try (PreparedStatement pstmt = connection.prepareStatement(postSQL)) {
 
-	            Object[][] posts = {
-	                {"user1",  "What is the difference between a stack and a queue?",                                "General",     System.currentTimeMillis() - 200000},
-	                {"user2",  "Can someone explain how interfaces work in Java?",                                   "Lectures",    System.currentTimeMillis() - 190000},
-	                {"user3",  "I am confused about HW2 requirements, can someone clarify?",                        "Homework",    System.currentTimeMillis() - 180000},
-	                {"user4",  "What topics will be covered on the midterm?",                                        "Exams",       System.currentTimeMillis() - 170000},
-	                {"user5",  "Does anyone know how to set up the H2 database in Eclipse?",                        "General",     System.currentTimeMillis() - 160000},
-	                {"user6",  "I keep getting a NullPointerException in my PostList class, any ideas?",            "Homework",    System.currentTimeMillis() - 150000},
-	                {"user7",  "What is the deadline for the team project phase 2?",                                 "Assignments", System.currentTimeMillis() - 140000},
-	                {"user8",  "Can someone share tips for recording screencasts on Mac?",                          "General",     System.currentTimeMillis() - 130000},
-	                {"user9",  "Is inheritance always better than composition in OOP?",                             "Lectures",    System.currentTimeMillis() - 120000},
-	                {"user10", "Where do we submit the HW2 zip file, Canvas or email?",                            "Homework",    System.currentTimeMillis() - 110000},
-	                {"user2",  "Can someone explain the difference between abstract classes and interfaces?",       "Lectures",    System.currentTimeMillis() - 100000},
-	                {"user4",  "How do we handle merge conflicts in Git when two people edit the same file?",       "General",     System.currentTimeMillis() - 90000},
-	                {"user6",  "Is the sequence diagram required for every use case or just the main one?",        "Assignments", System.currentTimeMillis() - 80000},
-	                {"user1",  "What is the best way to test CRUD operations without a GUI?",                       "Homework",    System.currentTimeMillis() - 70000},
-	                {"user8",  "Does the team project need to follow the FoundationsF25 documentation style?",     "Assignments", System.currentTimeMillis() - 60000},
-	                {"user3",  "I am getting a ClassNotFoundException for the H2 driver, how do I fix this?",      "General",     System.currentTimeMillis() - 50000},
-	                {"user5",  "What is the difference between epics and user stories?",                            "Lectures",    System.currentTimeMillis() - 40000},
-	                {"user9",  "Should our PostList class extend ArrayList or use composition instead?",            "Homework",    System.currentTimeMillis() - 30000},
-	                {"user7",  "How many screencasts do we need to submit for HW2?",                               "Assignments", System.currentTimeMillis() - 20000},
-	                {"user10", "Can we use JavaFX TableView instead of a custom VBox list for displaying posts?",  "General",     System.currentTimeMillis() - 10000},
-	            };
+	        	Object[][] posts = {
+	        		    {"user1",  "STACK/QUEUE",      "What is the difference between a stack and a queue?",                               "General",     System.currentTimeMillis() - 200000},
+	        		    {"user2",  "INTERFACES",       "Can someone explain how interfaces work in Java?",                                   "Lectures",    System.currentTimeMillis() - 190000},
+	        		    {"user3",  "HW2 CLARIFY",      "I am confused about HW2 requirements, can someone clarify?",                        "Homework",    System.currentTimeMillis() - 180000},
+	        		    {"user4",  "MIDTERM TOPICS",   "What topics will be covered on the midterm?",                                        "Exams",       System.currentTimeMillis() - 170000},
+	        		    {"user5",  "H2 SETUP",         "Does anyone know how to set up the H2 database in Eclipse?",                        "General",     System.currentTimeMillis() - 160000},
+	        		    {"user6",  "NULL POINTER",     "I keep getting a NullPointerException in my PostList class, any ideas?",            "Homework",    System.currentTimeMillis() - 150000},
+	        		    {"user7",  "PROJECT DEADLINE", "What is the deadline for the team project phase 2?",                                 "Assignments", System.currentTimeMillis() - 140000},
+	        		    {"user8",  "SCREENCAST TIPS",  "Can someone share tips for recording screencasts on Mac?",                          "General",     System.currentTimeMillis() - 130000},
+	        		    {"user9",  "INHERITANCE",      "Is inheritance always better than composition in OOP?",                             "Lectures",    System.currentTimeMillis() - 120000},
+	        		    {"user10", "HW2 SUBMISSION",   "Where do we submit the HW2 zip file, Canvas or email?",                            "Homework",    System.currentTimeMillis() - 110000},
+	        		    {"user2",  "ABSTRACT VS INTERFACE", "Can someone explain the difference between abstract classes and interfaces?", "Lectures",    System.currentTimeMillis() - 100000},
+	        		    {"user4",  "GIT MERGE",        "How do we handle merge conflicts in Git when two people edit the same file?",       "General",     System.currentTimeMillis() - 90000},
+	        		    {"user6",  "SEQUENCE DIAGRAM", "Is the sequence diagram required for every use case or just the main one?",        "Assignments", System.currentTimeMillis() - 80000},
+	        		    {"user1",  "CRUD TEST",        "What is the best way to test CRUD operations without a GUI?",                       "Homework",    System.currentTimeMillis() - 70000},
+	        		    {"user8",  "PROJECT STYLE",    "Does the team project need to follow the FoundationsF25 documentation style?",     "Assignments", System.currentTimeMillis() - 60000},
+	        		    {"user3",  "H2 DRIVER ERROR",  "I am getting a ClassNotFoundException for the H2 driver, how do I fix this?",      "General",     System.currentTimeMillis() - 50000},
+	        		    {"user5",  "EPICS VS STORIES", "What is the difference between epics and user stories?",                            "Lectures",    System.currentTimeMillis() - 40000},
+	        		    {"user9",  "ARRAYLIST/COMPOSITION", "Should our PostList class extend ArrayList or use composition instead?",        "Homework",    System.currentTimeMillis() - 30000},
+	        		    {"user7",  "HW2 SCREENCASTS",  "How many screencasts do we need to submit for HW2?",                               "Assignments", System.currentTimeMillis() - 20000},
+	        		    {"user10", "JAVA FX",          "Can we use JavaFX TableView instead of a custom VBox list for displaying posts?",  "General",     System.currentTimeMillis() - 10000},
+	        		};
 
 	            for (Object[] post : posts) {
 	                pstmt.setString(1, (String) post[0]);
-	                pstmt.setString(2, (String) post[1]);
-	                pstmt.setString(3, (String) post[2]);
-	                pstmt.setLong(4,   (Long)   post[3]);
+	                pstmt.setString(1, (String) post[1]);
+	                pstmt.setString(2, (String) post[2]);
+	                pstmt.setString(3, (String) post[3]);
+	                pstmt.setLong(4,   (Long)   post[4]);
 	                pstmt.addBatch();
 	            }
 	            pstmt.executeBatch();

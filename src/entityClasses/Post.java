@@ -19,6 +19,8 @@ public class Post {
 
     /** The username of the student who created the post */
     private String author;
+    
+    private String title;
 
     /** The body content of the post */
     private String content;
@@ -55,8 +57,9 @@ public class Post {
      * @param content  the body text of the post
      * @param category the category the post belongs to
      */
-    public Post(String author, String content, String category) {
+    public Post(String author, String title, String content, String category) {
         this.author = author;
+        this.title = title;
         this.content = content;
         this.category = category;
         this.timestamp = System.currentTimeMillis();
@@ -77,6 +80,12 @@ public class Post {
      * @return the username of the post's author
      */
     public String getAuthor() { return author; }
+    
+    /**********
+     * <p>Method: getTitle()</p>
+     * @return the title of the post
+     */
+    public String getTitle() { return title; }
 
     /**********
      * <p>Method: getContent()</p>
@@ -111,6 +120,12 @@ public class Post {
      * @param author the username to set as the author
      */
     public void setAuthor(String author) { this.author = author; }
+    
+    /**********
+     * <p>Method: setTitle(String title)</p>
+     * @param author the username to set as the author
+     */
+    public void setTitle(String title) { this.title = title; }
 
     /**********
      * <p>Method: setContent(String content)</p>

@@ -627,20 +627,28 @@ public class ViewDiscussionForum {
 
         ButtonType submitType = new ButtonType("Submit", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(submitType, ButtonType.CANCEL);
+        
+        ComboBox<String> categoryCombo = new ComboBox<>();
+        categoryCombo.setItems(FXCollections.observableArrayList(
+            "General", "Homework", "Lectures", "Assignments", "Exams"
+        ));
+        categoryCombo.setValue("General");
+        
+        TextArea titleArea = new TextArea();
+        titleArea.setPromptText("Write your title here...");
+        titleArea.setWrapText(true);
+        titleArea.setPrefHeight(50);
 
         TextArea contentArea = new TextArea();
         contentArea.setPromptText("Write your post here...");
         contentArea.setWrapText(true);
         contentArea.setPrefHeight(150);
 
-        ComboBox<String> categoryCombo = new ComboBox<>();
-        categoryCombo.setItems(FXCollections.observableArrayList(
-            "General", "Homework", "Lectures", "Assignments", "Exams"
-        ));
-        categoryCombo.setValue("General");
+   
 
         VBox content = new VBox(10,
             new Label("Category:"), categoryCombo,
+            new Label("Title:"),    titleArea,
             new Label("Content:"),  contentArea
         );
         content.setPadding(new Insets(10));
@@ -650,6 +658,7 @@ public class ViewDiscussionForum {
         if (result.isPresent() && result.get() == submitType) {
             Post newPost = new Post(
                 theUser.getUserName(),
+                titleArea.getText(),
                 contentArea.getText(),
                 categoryCombo.getValue()
             );
@@ -679,19 +688,25 @@ public class ViewDiscussionForum {
 
         ButtonType saveType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(saveType, ButtonType.CANCEL);
-
-        TextArea contentArea = new TextArea(post.getContent());
-        contentArea.setWrapText(true);
-        contentArea.setPrefHeight(150);
-
+        
         ComboBox<String> categoryCombo = new ComboBox<>();
         categoryCombo.setItems(FXCollections.observableArrayList(
             "General", "Homework", "Lectures", "Assignments", "Exams"
         ));
         categoryCombo.setValue(post.getCategory());
+        
+        TextArea titleArea = new TextArea(post.getTitle());
+        titleArea.setWrapText(true);
+        titleArea.setPrefHeight(50);
+
+        TextArea contentArea = new TextArea(post.getContent());
+        contentArea.setWrapText(true);
+        contentArea.setPrefHeight(150);
+
 
         VBox content = new VBox(10,
             new Label("Category:"), categoryCombo,
+            new Label("Title:"),    titleArea,
             new Label("Content:"),  contentArea
         );
         content.setPadding(new Insets(10));
@@ -699,6 +714,7 @@ public class ViewDiscussionForum {
 
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == saveType) {
+        	post.setTitle(titleArea.getText());
             post.setContent(contentArea.getText());
             post.setCategory(categoryCombo.getValue());
             String error = post.checkValidation();

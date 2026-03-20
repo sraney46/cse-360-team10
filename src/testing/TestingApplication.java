@@ -2,7 +2,7 @@ package testing;
 
 import java.util.List;
 
-import guiDiscussionForum.PostList;
+//import guiDiscussionForum.PostList;
 import entityClasses.Post;
 import validation.ValidationResult;
 

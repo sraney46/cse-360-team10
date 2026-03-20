@@ -13,9 +13,11 @@ import javafx.scene.layout.*;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import database.Database;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,6 +45,7 @@ public class ViewDiscussionForum {
     protected static Button button_PopulateDatabase = new Button("Populate Database");
     protected static Button button_UpdateThisUser = new Button("Account Update");
     protected static ComboBox<String> combo_Category = new ComboBox<>();
+    protected static TextField textField_searchCriteria = new TextField();
 
     protected static Line line_Separator1 = new Line();
 
@@ -176,16 +179,17 @@ public class ViewDiscussionForum {
         combo_Category.setLayoutY(55);
         combo_Category.setPrefWidth(100);
         combo_Category.setPrefHeight(16);
-        combo_Category.setOnAction(_ -> {
-            String selected = combo_Category.getValue();
-            if (selected == null || selected.equals("All")) {
-                refreshPostList();
-            } else {
-                List<Post> subset = model.getPostsByCategory(selected);
-                populatePostList(subset);
-            }
+        combo_Category.setOnAction(_ -> {     
+            refreshPostList();
         });
-
+        
+        // Andrew C -- Data for the text search bar
+        setupTextFieldUI(textField_searchCriteria, "Dialog", 18, 600, Pos.BASELINE_LEFT, 360, 52);
+        textField_searchCriteria.textProperty().addListener(_ -> {
+        	refreshPostList();
+        });
+        
+        // Here's what's left of GUI Area 1
         setupButtonUI(button_UpdateThisUser, "Dialog", 16, 160, Pos.CENTER,
                       width - 180, 45);
         button_UpdateThisUser.setOnAction(_ ->
@@ -293,7 +297,8 @@ public class ViewDiscussionForum {
             scrollPane_PostList,
             scrollPane_PostDetail,
             line_Separator4,
-            button_Return, button_Logout, button_Quit
+            button_Return, button_Logout, button_Quit,
+            textField_searchCriteria
         );
     }
 
@@ -308,8 +313,20 @@ public class ViewDiscussionForum {
      * the left panel post list. Called on page load and after any CRUD operation.</p>
      */
     private static void refreshPostList() {
-        List<Post> posts = model.getAllPosts();
-        populatePostList(posts);
+    	//This list holds the arguments used for the search
+    	List<String> args = new ArrayList<>();
+    	String selectedCategory = combo_Category.getValue();
+    	
+    	//Add category filter, but only if it's special
+    	if(selectedCategory != null && combo_Category.getSelectionModel().getSelectedIndex() > 0)
+    		args.add("category = " + selectedCategory);
+    	
+    	//Add the subject filter here
+    	if(textField_searchCriteria.textProperty().getValue().length() > 0)
+    		args.add("content LIKE %" + textField_searchCriteria.textProperty().getValue() + "%");
+    	
+        List<Post> subset = model.getAllPosts(args);
+        populatePostList(subset);
     }
 
     /**********
@@ -784,5 +801,22 @@ public class ViewDiscussionForum {
         b.setLayoutY(y);
     }
     
-    
+    /*****
+	 * 
+	 * @param l		The Textfield object
+	 * @param ff	The font to be used
+	 * @param f		The size of the font to be used
+	 * @param w		The width
+	 * @param p		The alignment (e.g. left, centered, or right)
+	 * @param x		The location from the left edge (x axis)
+	 * @param y		The location from the top (y axis)
+	 */
+	private static void setupTextFieldUI(TextField tf, String ff, double f, double w, Pos p, 
+			double x, double y){
+		tf.setFont(Font.font(ff, f));
+		tf.setMinWidth(w);
+		tf.setAlignment(p);
+		tf.setLayoutX(x);
+		tf.setLayoutY(y);		
+	}
 }

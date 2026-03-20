@@ -90,7 +90,7 @@ public class ModelDiscussionForum {
      *
      * <p>Description: Retrieves post matching the desired id and returns the post object.</p>
      *
-     * @param postID the ID of the post to grab.
+     * @param id the ID of the post to grab.
      * @return a post object of desired post, or null if an error occurs.
      */
   public Post getPostByID(int id){
@@ -114,13 +114,58 @@ public class ModelDiscussionForum {
      *
      * <p>Description: Retrieves all posts from the postDB table and returns them
      * as a list of Post objects.</p>
+     * 
+     * @param constraints is a list of arguments to add to the query
+     * 
+     * <p>In addition, the method can take a list of constraints. But that list CANNOT
+     * use integers, it must be strings.</p>
      *
      * @return a List of all Post objects in the database, or null if an error occurs
+     * and if there is a filter for the posts, will only return the posts that pass
+     * the filter.
      */
-    public List<Post> getAllPosts() {
+    public List<Post> getAllPosts(List<String> constraints) {
         List<Post> postList = new ArrayList<>();
         String query = "SELECT * FROM postDB";
+        
+        //We need this in two places, so let's init here...
+        List<String> rightHandArgs = new ArrayList<>();
+        
+        //If there is a list of constraints, then we need to add args to the query
+        if(constraints != null && constraints.size() > 0)
+        {
+        	//Track if we need an AND
+        	int stringCounter = 0;
+        	query += " WHERE ";
+	        //We need an array for right hand args, which will get saved in the list parser
+	        for(String str : constraints)
+	        {  	
+	        	//Extract the left and right hand side of the args, where they are used
+	        	//in two different places
+	        	String left = str.substring(0, str.indexOf(" "));
+	        	
+	        	//Get everything to the right of the left hand as a substring
+	        	String leftSub = str.substring(str.indexOf(" ") + 1, str.length());
+	        	
+	        	//Extract operator from the statement
+	        	String operator = leftSub.substring(0, leftSub.indexOf(" "));
+	        	
+	        	//Now extract the right hand side and add them to a list
+	        	String right = leftSub.substring(leftSub.indexOf(" ") + 1, leftSub.length());
+	        	rightHandArgs.add(right);
+	        	
+	        	//Finally, build the statement. Append AND if it's another filter
+	        	if(stringCounter > 0) query += " AND ";
+	        	query += left + " " + operator + " ?";
+	        	stringCounter++;
+	        }
+        }
         try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
+        	//If there is a list of constraints, let's loop through the list
+        	if(constraints != null)
+	        	for(int i = 1; i <= constraints.size(); i++)
+	        		pstmt.setString(i, rightHandArgs.get(i - 1));
+        	
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 postList.add(buildPostFromResultSet(rs));
@@ -131,31 +176,6 @@ public class ModelDiscussionForum {
         }
         return postList;
     }
-
-    /**********
-     * <p>Method: getPostsByCategory(String category)</p>
-     *
-     * <p>Description: Retrieves a subset of posts filtered by category
-     * (e.g., "General", "Homework", "Lectures").</p>
-     *
-     * @param category the category to filter posts by
-     * @return a List of Post objects matching the category, or null if an error occurs
-     */
-    public List<Post> getPostsByCategory(String category) {
-        List<Post> postList = new ArrayList<>();
-        String query = "SELECT * FROM postDB WHERE category = ?";
-        try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
-            pstmt.setString(1, category);
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                postList.add(buildPostFromResultSet(rs));
-            }
-        } catch (SQLException e) {
-            System.out.println("*** ERROR *** Failed to retrieve posts by category: " + e.getMessage());
-            return null;
-        }
-        return postList;
-    } 
 
     /**********************************************************************************************
      * POST - UPDATE

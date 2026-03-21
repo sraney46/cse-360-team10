@@ -169,7 +169,7 @@ public class Database {
         + "postID INT AUTO_INCREMENT PRIMARY KEY, "
         + "author VARCHAR(255), "
         + "title VARCHAR(255), "
-        + "content VARCHAR(1000), "
+        + "content LONGTEXT, "
         + "category VARCHAR(50), "
         + "timestamp BIGINT)";
     statement.execute(postTable);
@@ -179,7 +179,7 @@ public class Database {
         + "postID INT, "
         + "author VARCHAR(255), "
         + "authorRole VARCHAR(50), "
-        + "content VARCHAR(1000), "
+        + "content LONGTEXT, "
         + "timestamp BIGINT)";
     statement.execute(replyTable);
   }

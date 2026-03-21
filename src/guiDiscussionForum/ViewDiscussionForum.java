@@ -45,7 +45,9 @@ public class ViewDiscussionForum {
     protected static Button button_PopulateDatabase = new Button("Populate Database");
     protected static Button button_UpdateThisUser = new Button("Account Update");
     protected static ComboBox<String> combo_Category = new ComboBox<>();
+    protected static ComboBox<String> combo_SearchCriteria = new ComboBox<>();
     protected static TextField textField_searchCriteria = new TextField();
+    protected static Label label_searchText = new Label();
 
     protected static Line line_Separator1 = new Line();
 
@@ -184,9 +186,26 @@ public class ViewDiscussionForum {
         });
         
         // Andrew C -- Data for the text search bar
-        setupTextFieldUI(textField_searchCriteria, "Dialog", 18, 600, Pos.BASELINE_LEFT, 360, 52);
+        setupLabelUI(label_searchText, "Arial", 18, 64, Pos.BASELINE_LEFT, 336, 48);
+        label_searchText.setText("Search For:");
+        
+        setupTextFieldUI(textField_searchCriteria, "Dialog", 18, 600, Pos.BASELINE_LEFT, 460, 52);
         textField_searchCriteria.textProperty().addListener(_ -> {
         	refreshPostList();
+        });
+        
+        // Categorical text filter combo
+        combo_SearchCriteria.setItems(FXCollections.observableArrayList(
+            "Title", "Content", "Author"
+        ));
+        combo_SearchCriteria.setValue("All");
+        combo_SearchCriteria.getStyleClass().add("default-combo-box");
+        combo_SearchCriteria.setLayoutX(width/2 + 372);
+        combo_SearchCriteria.setLayoutY(55);
+        combo_SearchCriteria.setPrefWidth(100);
+        combo_SearchCriteria.setPrefHeight(16);
+        combo_SearchCriteria.setOnAction(_ -> {     
+            refreshPostList();
         });
         
         // Here's what's left of GUI Area 1
@@ -298,7 +317,7 @@ public class ViewDiscussionForum {
             scrollPane_PostDetail,
             line_Separator4,
             button_Return, button_Logout, button_Quit,
-            textField_searchCriteria
+            textField_searchCriteria, combo_SearchCriteria, label_searchText
         );
     }
 
@@ -316,14 +335,30 @@ public class ViewDiscussionForum {
     	//This list holds the arguments used for the search
     	List<String> args = new ArrayList<>();
     	String selectedCategory = combo_Category.getValue();
+    	String searchFilterMode = combo_SearchCriteria.getValue();
+    	String textFilterContent = textField_searchCriteria.textProperty().getValue();
     	
     	//Add category filter, but only if it's special
     	if(selectedCategory != null && combo_Category.getSelectionModel().getSelectedIndex() > 0)
     		args.add("category = " + selectedCategory);
     	
-    	//Add the subject filter here
-    	if(textField_searchCriteria.textProperty().getValue().length() > 0)
-    		args.add("content LIKE %" + textField_searchCriteria.textProperty().getValue() + "%");
+    	switch(searchFilterMode)
+    	{
+    		default:
+    		case "Title":
+    			if(textFilterContent.length() > 0)
+    	    		args.add("UPPER(title) LIKE %" + textFilterContent.toUpperCase() + "%");
+    		break;
+    		case "Content":
+    			if(textFilterContent.length() > 0)
+    	    		args.add("UPPER(content) LIKE %" + textFilterContent.toUpperCase() + "%");
+    		break;
+    		case "Author":
+    			if(textFilterContent.length() > 0)
+    	    		args.add("UPPER(author) = " + textFilterContent.toUpperCase());
+    		break;
+    	}
+    	
     	
         List<Post> subset = model.getAllPosts(args);
         populatePostList(subset);

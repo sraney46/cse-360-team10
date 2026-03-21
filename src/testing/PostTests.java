@@ -164,9 +164,18 @@ public class PostTests {
     assertTrue(eq, testName, "expected=" + expected + ", actual=" + actual);
   }
 
-  /**
-   * Run all test cases for Post CRUD and validation.
+
+  /*****
+   * <p>
+   * Method: runPostTests()
+   * </p>
+   * 
+   * <p>
+   * Description: This method runs all test cases for Post CRUD and validation.
+   * </p>
    */
+  // This method runs all test cases for Post CRUD and validation.
+  
   public void runPostTests() {
     System.out.println("\n ---Post CRUD and Validation Tests---");
     ModelDiscussionForum pc = new ModelDiscussionForum();
@@ -255,9 +264,17 @@ public class PostTests {
     **/
   }
 
-  /**
-   * Run all test cases for Reply CRUD and validation.
+
+  /*****
+   * <p>
+   * Method: runReplyTests()
+   * </p>
+   * 
+   * <p>
+   * Description: This method runs all test cases for Reply CRUD and validation.
+   * </p>
    */
+  // This method runs all test cases for Reply CRUD and validation.
   public void runReplyTests() {
     /**
     System.out.println("\n---Reply CRUD and Validation Tests---");
@@ -330,9 +347,17 @@ public class PostTests {
     **/
   }
 
-  /**
-   * Run tests for empty and large subset behavior.
+
+  /*****
+   * <p>
+   * Method: runSubsetTests()
+   * </p>
+   * 
+   * <p>
+   * Description: This method runs all test cases for empty and large subset behavior.
+   * </p>
    */
+  // This method runs all test cases for empty and large subset behavior.
   public void runSubsetTests() {
     /**
     System.out.println("\n---Subset Tests---");
@@ -357,9 +382,17 @@ public class PostTests {
     **/
   }
 
-  /**
-   * Run all tests and print summary.
+
+  /*****
+   * <p>
+   * Method: runSubsetTests()
+   * </p>
+   * 
+   * <p>
+   * Description: This method runs all tests and prints a summary.
+   * </p>
    */
+  // This method runs all tests and prints a summary.
   public void runAll() {
 theDatabase = new database.Database();
     try {
@@ -385,10 +418,31 @@ theDatabase = new database.Database();
     }
   }
 
+
+  /*****
+   * <p>
+   * Method: getPassed()
+   * </p>
+   * 
+   * <p>
+   * Description: This getter method gets the count of passed tests.
+   * </p>
+   */
+  // This getter method gets the count of passed tests.
   public int getPassed() {
     return passed;
   }
 
+  /*****
+   * <p>
+   * Method: getFailed()
+   * </p>
+   * 
+   * <p>
+   * Description: This getter method gets the count of failed tests.
+   * </p>
+   */
+  // This getter method gets the count of failed tests.
   public int getFailed() {
     return failed;
   }

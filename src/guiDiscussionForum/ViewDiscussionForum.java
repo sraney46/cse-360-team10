@@ -392,13 +392,16 @@ public class ViewDiscussionForum {
         );
         topLine.getChildren().addAll(authorLabel, categoryBadge);
 
-        // Content preview 
-        String preview = post.getContent().length() > 60
-            ? post.getContent().substring(0, 60) + "..."
-            : post.getContent();
+        // Title + content preview
+        String titlePart = post.getTitle() != null ? post.getTitle() : "";
+        String contentPart = post.getContent() != null ? post.getContent() : "";
+        String combined = titlePart + " - " + contentPart;
+        String preview = combined.length() > 60
+            ? combined.substring(0, 60) + "..."
+            : combined;
         Label previewLabel = new Label(preview);
         previewLabel.setStyle(
-            "-fx-font-family: 'Montserrat'; -fx-font-size: 12px; -fx-text-fill: #aaa;"
+        	"-fx-font-family: 'Montserrat SemiBold'; -fx-font-size: 13px; -fx-text-fill: #fff;"
         );
         previewLabel.setWrapText(false);
 
@@ -627,20 +630,28 @@ public class ViewDiscussionForum {
 
         ButtonType submitType = new ButtonType("Submit", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(submitType, ButtonType.CANCEL);
+        
+        ComboBox<String> categoryCombo = new ComboBox<>();
+        categoryCombo.setItems(FXCollections.observableArrayList(
+            "General", "Homework", "Lectures", "Assignments", "Exams"
+        ));
+        categoryCombo.setValue("General");
+        
+        TextArea titleArea = new TextArea();
+        titleArea.setPromptText("Write your title here...");
+        titleArea.setWrapText(true);
+        titleArea.setPrefHeight(50);
 
         TextArea contentArea = new TextArea();
         contentArea.setPromptText("Write your post here...");
         contentArea.setWrapText(true);
         contentArea.setPrefHeight(150);
 
-        ComboBox<String> categoryCombo = new ComboBox<>();
-        categoryCombo.setItems(FXCollections.observableArrayList(
-            "General", "Homework", "Lectures", "Assignments", "Exams"
-        ));
-        categoryCombo.setValue("General");
+   
 
         VBox content = new VBox(10,
             new Label("Category:"), categoryCombo,
+            new Label("Title:"),    titleArea,
             new Label("Content:"),  contentArea
         );
         content.setPadding(new Insets(10));
@@ -650,6 +661,7 @@ public class ViewDiscussionForum {
         if (result.isPresent() && result.get() == submitType) {
             Post newPost = new Post(
                 theUser.getUserName(),
+                titleArea.getText(),
                 contentArea.getText(),
                 categoryCombo.getValue()
             );
@@ -679,19 +691,25 @@ public class ViewDiscussionForum {
 
         ButtonType saveType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(saveType, ButtonType.CANCEL);
-
-        TextArea contentArea = new TextArea(post.getContent());
-        contentArea.setWrapText(true);
-        contentArea.setPrefHeight(150);
-
+        
         ComboBox<String> categoryCombo = new ComboBox<>();
         categoryCombo.setItems(FXCollections.observableArrayList(
             "General", "Homework", "Lectures", "Assignments", "Exams"
         ));
         categoryCombo.setValue(post.getCategory());
+        
+        TextArea titleArea = new TextArea(post.getTitle());
+        titleArea.setWrapText(true);
+        titleArea.setPrefHeight(50);
+
+        TextArea contentArea = new TextArea(post.getContent());
+        contentArea.setWrapText(true);
+        contentArea.setPrefHeight(150);
+
 
         VBox content = new VBox(10,
             new Label("Category:"), categoryCombo,
+            new Label("Title:"),    titleArea,
             new Label("Content:"),  contentArea
         );
         content.setPadding(new Insets(10));
@@ -699,6 +717,7 @@ public class ViewDiscussionForum {
 
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == saveType) {
+        	post.setTitle(titleArea.getText());
             post.setContent(contentArea.getText());
             post.setCategory(categoryCombo.getValue());
             String error = post.checkValidation();

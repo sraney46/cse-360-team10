@@ -59,14 +59,15 @@ public class ModelDiscussionForum {
             System.out.println("*** ERROR *** Cannot add post: " + error);
             return false;
         }
-        String query = "INSERT INTO postDB (author, content, category, timestamp) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO postDB (author, title, content, category, timestamp) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement pstmt = theDatabase.getConnection()
                 .prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setString(1, post.getAuthor());
-            pstmt.setString(2, post.getContent());
-            pstmt.setString(3, post.getCategory());
-            pstmt.setLong(4, post.getTimestamp());
+            pstmt.setString(2, post.getTitle());
+            pstmt.setString(3, post.getContent());
+            pstmt.setString(4, post.getCategory());
+            pstmt.setLong(5, post.getTimestamp());
             pstmt.executeUpdate();
 
             ResultSet generatedKeys = pstmt.getGeneratedKeys();
@@ -196,12 +197,13 @@ public class ModelDiscussionForum {
             System.out.println("*** ERROR *** Cannot update post: " + error);
             return false;
         }
-        String query = "UPDATE postDB SET content = ?, category = ?, author = ? WHERE postID = ? ";
+        String query = "UPDATE postDB SET title = ?, content = ?, category = ?, author = ? WHERE postID = ? ";
         try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
-            pstmt.setString(1, post.getContent());
-            pstmt.setString(2, post.getCategory());
-            pstmt.setString(3,post.getAuthor());
-            pstmt.setInt(4, post.getPostID());
+        	pstmt.setString(1, post.getTitle());
+        	pstmt.setString(2, post.getContent());
+            pstmt.setString(3, post.getCategory());
+            pstmt.setString(4,post.getAuthor());
+            pstmt.setInt(5, post.getPostID());
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -366,6 +368,7 @@ public class ModelDiscussionForum {
         Post post = new Post();
         post.setPostID(rs.getInt("postID"));
         post.setAuthor(rs.getString("author"));
+        post.setTitle(rs.getString("title"));
         post.setContent(rs.getString("content"));
         post.setCategory(rs.getString("category"));
         post.setTimestamp(rs.getLong("timestamp"));

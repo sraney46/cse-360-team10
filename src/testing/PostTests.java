@@ -427,6 +427,8 @@ theDatabase = new database.Database();
    * <p>
    * Description: This getter method gets the count of passed tests.
    * </p>
+   * 
+   * @return the count of passed tests.
    */
   // This getter method gets the count of passed tests.
   public int getPassed() {
@@ -441,6 +443,8 @@ theDatabase = new database.Database();
    * <p>
    * Description: This getter method gets the count of failed tests.
    * </p>
+   * 
+   * @return the number of failed tests.
    */
   // This getter method gets the count of failed tests.
   public int getFailed() {

@@ -23,6 +23,17 @@ import validation.ValidationResult;
  *
  */
 
+/*****
+ * <p>
+ * Method: TestingApplication()
+ * </p>
+ * 
+ * <p>
+ * Description: This method initiates the running of the tests by calling runTests().
+ * </p>
+ * 
+ */
+// Starts the testing application by calling runTests().
 public class TestingApplication {
 
   /**
@@ -33,9 +44,17 @@ public class TestingApplication {
 
   }
 
-  /**
-   * Run all automated test cases.
+  /*****
+   * <p>
+   * Method: runTests()
+   * </p>
+   * 
+   * <p>
+   * Description: Runs all of the tests.
+   * </p>
+   * 
    */
+  // Runs all of the tests.
   public static void runTests() {
     PostTests tests = new PostTests();
     tests.runAll();

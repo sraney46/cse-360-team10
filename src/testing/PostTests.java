@@ -195,7 +195,7 @@ public class PostTests {
     }
 
     // Positive: Read post
-    Post read = pc.getPostByID(1);
+    Post read = pc.getPostByID(p1.getPostID());
     assertNotNull(read, "Post Read - found by id", null);
     assertEquals("s1", read.getAuthor(), "Post Read - author");
     assertEquals("HW", read.getCategory(), "Post Read - title");
@@ -206,13 +206,49 @@ public class PostTests {
           assertTrue(isValid, "Post Update - valid", "Post " + read.getPostID() + " updated successfully.");
 
     }
-    Post updated =pc.getPostByID(1);
+    Post updated =pc.getPostByID(p1.getPostID());
     assertEquals("Jonathan", updated.getAuthor(), "Post Update - author updated");
 
     // Positive: GetAllPosts
 //    List<Post> all = pc.getAllPosts();
 //    assertTrue(all.size() == 1, "Post GetAllPosts - count", "size=" + all.size());
-/**
+// Empty Title/Category Test   
+    Post emptyCategory = new Post();
+    emptyCategory.setAuthor("s1");
+    emptyCategory.setContent("Body text");
+    emptyCategory.setCategory("");
+    emptyCategory.setTimestamp(System.currentTimeMillis());
+
+    boolean createdEmptyCategory = pc.addPost(emptyCategory);
+    System.out.println("  Debug empty category -> created=" + createdEmptyCategory
+    	    + ", validation='" + emptyCategory.checkValidation() + "'");
+    assertFalse(createdEmptyCategory, "Post Create - empty title/category", emptyCategory.checkValidation());
+    
+ // Empty Body Post Test
+    Post emptyBody = new Post();
+    emptyBody.setAuthor("s1");
+    emptyBody.setContent("");
+    emptyBody.setCategory("HW");
+    emptyBody.setTimestamp(System.currentTimeMillis());
+
+    boolean createdEmptyBody = pc.addPost(emptyBody);
+    System.out.println("  Debug empty body -> created=" + createdEmptyBody
+            + ", validation='" + emptyBody.checkValidation() + "'");
+    assertFalse(createdEmptyBody, "Post Create - empty body", emptyBody.checkValidation());
+    
+    // Null Body Test
+    
+    Post nullBody = new Post();
+    nullBody.setAuthor("s1");
+    nullBody.setContent(null);
+    nullBody.setCategory("HW");
+    nullBody.setTimestamp(System.currentTimeMillis());
+
+    boolean createdNullBody = pc.addPost(nullBody);
+    System.out.println("  Debug null body -> created=" + createdNullBody
+            + ", validation='" + nullBody.checkValidation() + "'");
+    assertFalse(createdNullBody, "Post Create - null body", nullBody.checkValidation());
+    /**
     // Positive: Subset by search
     pc.create(new Post(0, "ta1", "What is polymorphism?", "Explain polymorphism in Java.", System.currentTimeMillis()));
     List<Post> subset = pc.getSubset("debugger");
@@ -223,15 +259,14 @@ public class PostTests {
     // Negative: Create with null author
     Post bad = new Post();
     bad.setAuthor(null);
-     p1.setContent("The test");
-    p1.setCategory("HW");
-    p1.setTimestamp(System.currentTimeMillis());
-    if (pc.addPost(bad)){
-      isValid= false;
-          assertFalse(isValid, "Post Create - null author", "Post created successfully with id "+ bad.getPostID() + ".");
+    bad.setContent("The test");
+    bad.setCategory("HW");
+    bad.setTimestamp(System.currentTimeMillis());
 
-    }
-        assertTrue(isValid, "Post Create - error for null author", bad.checkValidation());
+    boolean createdBad = pc.addPost(bad);
+    System.out.println("  Debug null author -> created=" + createdBad
+            + ", validation='" + bad.checkValidation() + "'");
+    assertFalse(createdBad, "Post Create - null author", bad.checkValidation());
 
 /**
     // Negative: Create with empty title

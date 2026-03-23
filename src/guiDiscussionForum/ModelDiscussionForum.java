@@ -241,7 +241,7 @@ public class ModelDiscussionForum {
      * REPLY - CREATE
      **********************************************************************************************/
 
-    /**********
+      /**********
      * <p>Method: addReply(Reply reply)</p>
      *
      * <p>Description: Inserts a new Reply object into the replyDB table.
@@ -251,21 +251,53 @@ public class ModelDiscussionForum {
      * @param reply the Reply object to insert into the database
      * @return true if the reply was successfully inserted, false otherwise
      */
-    public boolean addReply(Reply reply) {
+    public boolean addReply(Reply reply,int id) {
         String error = reply.checkValidation();
         if (!error.isEmpty()) {
             System.out.println("*** ERROR *** Cannot add reply: " + error);
             return false;
+              }
+    String checkPostQuery = "SELECT postID FROM postDB WHERE postID = ?";
+    try (PreparedStatement checkStmt = theDatabase.getConnection().prepareStatement(checkPostQuery)) {
+        checkStmt.setInt(1, id);
+        ResultSet rs = checkStmt.executeQuery();
+        if (!rs.next()) {
+            System.out.println("*** ERROR *** Cannot add reply: Post ID " + id + " does not exist.");
+            return false;
         }
-        String query = "INSERT INTO replyDB (postID, author, authorRole, content, timestamp) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
-            pstmt.setInt(1, reply.getPostID());
-            pstmt.setString(2, reply.getAuthor());
-            pstmt.setString(3, reply.getAuthorRole());
-            pstmt.setString(4, reply.getContent());
-            pstmt.setLong(5, reply.getTimestamp());
-            pstmt.executeUpdate();
-            return true;
+    } catch (SQLException e) {
+        System.out.println("*** ERROR *** Database error during post existence check: " + e.getMessage());
+        return false;
+    }
+
+    int nextID = 1; 
+    String idQuery = "SELECT MAX(replyID) FROM replyDB WHERE postID = ?";
+    try (PreparedStatement idStmt = theDatabase.getConnection().prepareStatement(idQuery)) {
+        idStmt.setInt(1, id);
+        ResultSet rs = idStmt.executeQuery();
+        if (rs.next()) {
+            nextID = rs.getInt(1) + 1;
+        }
+    } catch (SQLException e) {
+        System.out.println("*** ERROR *** Could not determine next replyID: " + e.getMessage());
+        return false;
+    }
+      String query = "INSERT INTO replyDB (replyID, postID, author, authorRole, content, timestamp) VALUES (?, ?, ?, ?, ?, ?)";
+    
+    try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
+        pstmt.setInt(1, nextID);      
+      pstmt.setInt(2, id);          
+        pstmt.setString(3, reply.getAuthor());
+        pstmt.setString(4, reply.getAuthorRole());
+        pstmt.setString(5, reply.getContent());
+        pstmt.setLong(6, reply.getTimestamp());
+        
+        pstmt.executeUpdate();
+
+        reply.setReplyID(nextID);
+        reply.setPostID(id);
+
+        return true;
         } catch (SQLException e) {
             System.out.println("*** ERROR *** Failed to add reply: " + e.getMessage());
             return false;
@@ -275,6 +307,30 @@ public class ModelDiscussionForum {
     /**********************************************************************************************
      * REPLY - READ
      **********************************************************************************************/
+
+  /**********
+     * <p>Method: getPostByID(int id)</p>
+     *
+     * <p>Description: Retrieves post matching the desired id and returns the post object.</p>
+     *
+     * @param id the ID of the post to grab.
+     * @return a post object of desired post, or null if an error occurs.
+     */
+  public Reply getReplyByID(int id){
+        List<Reply> replyList = new ArrayList<>();
+        String query = "SELECT * FROM replyDB WHERE replyID = ?";
+        try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {  
+      pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+            if(rs.next()) {
+                return buildReplyFromResultSet(rs);
+            }
+        } catch (SQLException e) {
+            System.out.println("*** ERROR *** Failed to retrieve posts by ID: " + e.getMessage());    
+    }
+    return null;
+
+  }  
 
     /**********
      * <p>Method: getAllReplies()</p>
@@ -349,6 +405,50 @@ public class ModelDiscussionForum {
         }
         return replyList;
     }
+  /**********************************************************************************************
+     * REPLY - UPDATE
+     **********************************************************************************************/
+
+    /**********
+     * <p>Method: updateReply(Reply reply)</p>
+     *
+     * <p>Description: Updates the content and category of an existing post in the postDB table.
+     * Matches the record by postID. Validates the post before attempting the update.</p>
+     *
+     * @param post the Post object containing the updated values and the postID to match
+     * @return true if the update was successful, false otherwise
+     */
+   public boolean updateReply(Reply reply) {
+    String error = reply.checkValidation(); 
+    if (!error.isEmpty()) {
+        System.out.println("*** ERROR *** Cannot update reply: " + error);
+        return false;
+    }
+
+    String query = "UPDATE replyDB SET content = ?, author = ?, authorRole = ? " +
+                   "WHERE postID = ? AND replyID = ?";
+
+    try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
+        pstmt.setString(1, reply.getContent());
+        pstmt.setString(2, reply.getAuthor());
+        pstmt.setString(3, reply.getAuthorRole());
+        pstmt.setInt(4, reply.getPostID());
+        pstmt.setInt(5, reply.getReplyID());
+
+        int rowsAffected = pstmt.executeUpdate();
+        
+        if (rowsAffected == 0) {
+            System.out.println("*** ERROR *** No reply found with PostID " + 
+                               reply.getPostID() + " and ReplyID " + reply.getReplyID());
+            return false;
+        }
+        
+        return true;
+    } catch (SQLException e) {
+        System.out.println("*** ERROR *** Failed to update reply: " + e.getMessage());
+        return false;
+    }
+}
 
     /**********************************************************************************************
      * Helper Methods
@@ -374,6 +474,36 @@ public class ModelDiscussionForum {
         post.setTimestamp(rs.getLong("timestamp"));
         return post;
     }
+  /**********************************************************************************************
+ * REPLY - DELETE
+ **********************************************************************************************/
+
+/**********
+ * <p>Method: deleteReply(int postID, int replyID)</p>
+ *
+ * <p>Description: Deletes a specific reply from the replyDB table using its 
+ * postID and replyID. The "Are you sure?" confirmation is handled by the 
+ * GUI before this method is called.</p>
+ *
+ * @param postID the ID of the post the reply belongs to
+ * @param replyID the ID of the specific reply to delete
+ * @return true if the deletion was successful, false otherwise
+ */
+public boolean deleteReply(int postID, int replyID) {
+    String query = "DELETE FROM replyDB WHERE postID = ? AND replyID = ?";
+    
+    try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
+        pstmt.setInt(1, postID);
+        pstmt.setInt(2, replyID);
+        
+        int rowsAffected = pstmt.executeUpdate();
+        
+        return rowsAffected > 0;
+    } catch (SQLException e) {
+        System.out.println("*** ERROR *** Failed to delete reply: " + e.getMessage());
+        return false;
+    }
+}
 
     /**********
      * <p>Method: buildReplyFromResultSet(ResultSet rs)</p>

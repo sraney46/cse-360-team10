@@ -32,7 +32,10 @@ public class Post {
     private long timestamp;
     
     /** Maximum allowed character length for post body content */
-    private static final int MAX_LENGTH = 5000;
+    private static final int MAX_LENGTH = 100;
+
+    private static final String SPECIAL_CHARS = "!@#$%^&*()-_=+[]{}|;:'\",.<>?/";
+
 
     /**********************************************************************************************
      * Constructors
@@ -159,15 +162,37 @@ public class Post {
      *
      * @return a String describing the validation error, or empty string if valid
      */
-    public String checkValidation() {
-        if (content == null)
-            return "Post body cannot be null.";
-        if (content.isEmpty())
-            return "Post body cannot be empty.";
-        if (content.trim().isEmpty())
-            return "Post body cannot be whitespace only.";
-        if (content.length() > MAX_LENGTH)
-            return "Post body cannot exceed " + MAX_LENGTH + " characters.";
-        return "";
+public String checkValidation() {
+    if (author == null) return "Post author cannot be null.";
+    if (title == null) return "Post title cannot be null."; // Added title null check
+    if (content == null) return "Post body cannot be null.";
+    if (category == null) return "Post category cannot be null.";
+
+    if (author.isEmpty() && title.isEmpty() && content.isEmpty() && category.isEmpty()) {
+        return "All fields can not be empty.";
     }
+
+    if (author.isEmpty()) return "Post author cannot be empty.";
+    if (title.isEmpty()) return "Post title cannot be empty.";
+    if (content.isEmpty()) return "Post body cannot be empty.";
+    
+    if (content.trim().isEmpty()) return "Post body cannot be whitespace only.";
+    if (content.length() > MAX_LENGTH) {
+        return "Post body cannot exceed " + MAX_LENGTH + " characters.";
+    }
+
+    boolean hasSpecial = false;
+    for (char c : author.toCharArray()) {
+        if (SPECIAL_CHARS.indexOf(c) >= 0) {
+            hasSpecial = true;
+            break; 
+      }
+    }
+    
+    if (hasSpecial) {
+        return "Post author and/or category cannot be special character.";
+    }
+
+    return "";
+}
 }

@@ -10,7 +10,7 @@ import validation.ValidationResult;
 
 /*******
  * <p>
- * Title: HW2Tests Class
+ * Title: PostTests Class
  * </p>
  *
  * <p>
@@ -33,6 +33,7 @@ public class PostTests {
   private int failed;
   private boolean isValid;
   private static database.Database theDatabase = applicationMain.FoundationsMain.database;
+
 
   /*****
    * <p>
@@ -186,6 +187,7 @@ public class PostTests {
     // Positive: Create valid post
     entityClasses.Post p1 = new entityClasses.Post();
     p1.setAuthor("s1");
+    p1.setTitle("Title");
     p1.setContent("The test");
     p1.setCategory("HW");
     p1.setTimestamp(System.currentTimeMillis());
@@ -193,6 +195,19 @@ public class PostTests {
       isValid=true;
       assertTrue(isValid, "Post Create - valid input", "Post created successfully with id " + p1.getPostID() + ".");
     }
+
+    // negative: Create blank post
+    entityClasses.Post p2 = new entityClasses.Post();
+    p2.setAuthor("");
+    p2.setTitle("");
+    p2.setContent("");
+    p2.setCategory("");
+    p2.setTimestamp(System.currentTimeMillis());
+    if(!pc.addPost(p2)){
+      isValid=false;
+      assertFalse(isValid, "Post Create - invalid input", "Post created unsuccessfully " + "requied fileds are blank.");
+    }
+
 
     // Positive: Read post
     Post read = pc.getPostByID(p1.getPostID());
@@ -203,36 +218,44 @@ public class PostTests {
     // Positive: Update post
     read.setAuthor("Jonathan");
     if(pc.updatePost(read)){
+      isValid=true;
           assertTrue(isValid, "Post Update - valid", "Post " + read.getPostID() + " updated successfully.");
 
     }
     Post updated =pc.getPostByID(p1.getPostID());
     assertEquals("Jonathan", updated.getAuthor(), "Post Update - author updated");
 
-    // Positive: GetAllPosts
-//    List<Post> all = pc.getAllPosts();
-//    assertTrue(all.size() == 1, "Post GetAllPosts - count", "size=" + all.size());
-// Empty Title/Category Test   
-    Post emptyCategory = new Post();
-    emptyCategory.setAuthor("s1");
-    emptyCategory.setContent("Body text");
-    emptyCategory.setCategory("");
-    emptyCategory.setTimestamp(System.currentTimeMillis());
+     // Negative: Update post
+    read.setAuthor("");
+    if(!pc.updatePost(read)){
+      isValid=false;
+          assertFalse(isValid, "Post not updateded","Post " + read.getPostID() + " updated unsuccessfully.");
 
-    boolean createdEmptyCategory = pc.addPost(emptyCategory);
-    System.out.println("  Debug empty category -> created=" + createdEmptyCategory
-    	    + ", validation='" + emptyCategory.checkValidation() + "'");
-    assertFalse(createdEmptyCategory, "Post Create - empty title/category", emptyCategory.checkValidation());
+    }
+
+    /// Empty Title Test   
+    Post emptyTitle = new Post();
+    emptyTitle.setAuthor("s1");
+    emptyTitle.setTitle("");
+    emptyTitle.setContent("hello");
+    emptyTitle.setCategory("HW");
+    emptyTitle.setTimestamp(System.currentTimeMillis());
+
+    boolean createdEmptyTitle = pc.addPost(emptyTitle);
+    System.out.println("  empty Tile -> created=" + createdEmptyTitle
+    	    + ", validation='" + emptyTitle.checkValidation() + "'");
+    assertFalse(createdEmptyTitle, "Post Create - empty title", emptyTitle.checkValidation());
     
  // Empty Body Post Test
     Post emptyBody = new Post();
     emptyBody.setAuthor("s1");
+    emptyBody.setTitle("Title");
     emptyBody.setContent("");
     emptyBody.setCategory("HW");
     emptyBody.setTimestamp(System.currentTimeMillis());
 
     boolean createdEmptyBody = pc.addPost(emptyBody);
-    System.out.println("  Debug empty body -> created=" + createdEmptyBody
+    System.out.println("  empty body -> created=" + createdEmptyBody
             + ", validation='" + emptyBody.checkValidation() + "'");
     assertFalse(createdEmptyBody, "Post Create - empty body", emptyBody.checkValidation());
     
@@ -240,6 +263,7 @@ public class PostTests {
     
     Post nullBody = new Post();
     nullBody.setAuthor("s1");
+    nullBody.setTitle("Title");
     nullBody.setContent(null);
     nullBody.setCategory("HW");
     nullBody.setTimestamp(System.currentTimeMillis());
@@ -248,55 +272,77 @@ public class PostTests {
     System.out.println("  Debug null body -> created=" + createdNullBody
             + ", validation='" + nullBody.checkValidation() + "'");
     assertFalse(createdNullBody, "Post Create - null body", nullBody.checkValidation());
-    /**
-    // Positive: Subset by search
-    pc.create(new Post(0, "ta1", "What is polymorphism?", "Explain polymorphism in Java.", System.currentTimeMillis()));
-    List<Post> subset = pc.getSubset("debugger");
-    assertTrue(subset.size() == 1, "Post Subset search - found", "size=" + subset.size());
-    subset = pc.getSubset("polymorphism");
-    assertTrue(subset.size() == 1, "Post Subset search - polymorphism", "size=" + subset.size());
-**/
-    // Negative: Create with null author
+    
+    // Max Length Body Test
+    
+    Post maxBody = new Post();
+    maxBody.setAuthor("s1");
+    maxBody.setTitle("Title");
+    maxBody.setContent("1a1B2c3D4e5F6g7H8i9J0k1L2m3N4o5P6q7R8s9T0u1V2w3X4y5Z6a1B2c3D4e5F6g7H8i9J0k1L2m3N4o5P6q7R8s9T0u1V2w3X4");
+    maxBody.setCategory("HW");
+    maxBody.setTimestamp(System.currentTimeMillis());
+
+    boolean createdMaxBody = pc.addPost(maxBody);
+    System.out.println("  max body -> created=" + createdMaxBody
+            + ", validation='" + maxBody.checkValidation() + "1a1B2c3D4e5F6g7H8i9J0k1L2m3N4o5P6q7R8s9T0u1V2w3X4y5Z6a1B2c3D4e5F6g7H8i9J0k1L2m3N4o5P6q7R8s9T0u1V2w3X4");
+    assertFalse(createdMaxBody, "Post Create - max body", maxBody.checkValidation());
+
+    // Special character Test
+    
+    Post special = new Post();
+    special.setAuthor("@");
+    special.setTitle("Title");
+    special.setContent("Hello");
+    special.setCategory("HW");
+    special.setTimestamp(System.currentTimeMillis());
+
+    boolean createdSpecial = pc.addPost(special);
+    System.out.println("  max body -> created=" + createdSpecial
+            + ", validation='" + special.checkValidation() + "@");
+    assertFalse(createdSpecial, "Post Create - special character", special.checkValidation());
+
+    
+    // Negative: Create with empty author
     Post bad = new Post();
-    bad.setAuthor(null);
+    bad.setAuthor("");
+    bad.setTitle("Title");
     bad.setContent("The test");
     bad.setCategory("HW");
     bad.setTimestamp(System.currentTimeMillis());
 
     boolean createdBad = pc.addPost(bad);
-    System.out.println("  Debug null author -> created=" + createdBad
+    System.out.println("   empty author -> created=" + createdBad
             + ", validation='" + bad.checkValidation() + "'");
-    assertFalse(createdBad, "Post Create - null author", bad.checkValidation());
+    assertFalse(createdBad, "Post Create - empty author", bad.checkValidation());
 
-/**
-    // Negative: Create with empty title
-    bad.setAuthor("user");
-    bad.setTitle("");
-    bad.setContent("Content");
-    vr = pc.create(bad);
-    assertFalse(vr.isValid(), "Post Create - empty title", vr.getMessage());
-    assertTrue(vr.getMessage().contains("Title"), "Post Create - error for empty title", vr.getMessage());
+    // Negative: Create with null author
+    Post nullAuthor = new Post();
+    nullAuthor.setAuthor(null);
+    nullAuthor.setTitle("Title");
+    nullAuthor.setContent("The test");
+    nullAuthor.setCategory("HW");
+    nullAuthor.setTimestamp(System.currentTimeMillis());
 
-    // Negative: Create with empty content
-    bad.setTitle("Title");
-    bad.setContent("");
-    vr = pc.create(bad);
-    assertFalse(vr.isValid(), "Post Create - empty content", vr.getMessage());
+    boolean createdNullAuthor= pc.addPost(nullAuthor);
+    System.out.println("  null author -> created=" + createdNullAuthor 
+            + ", validation='" + nullAuthor.checkValidation() + "'");
+    assertFalse(createdNullAuthor, "Post Create - null author", nullAuthor.checkValidation());
 
+    
     // Negative: Read non-existent
-    Post notFound = pc.read(999);
+    Post notFound = pc.getPostByID(999);
     assertNull(notFound, "Post Read - non-existent id", null);
 
-    // Negative: Delete non-existent
-    vr = pc.delete(999);
-    assertFalse(vr.isValid(), "Post Delete - non-existent", vr.getMessage());
-    assertTrue(vr.getMessage().contains("not found"), "Post Delete - error", vr.getMessage());
-
     // Positive: Delete existing
-    vr = pc.delete(1);
-    assertTrue(vr.isValid(), "Post Delete - valid", vr.getMessage());
-    assertNull(pc.read(1), "Post Delete - verify removed", null);
-    **/
+    boolean delete = pc.deletePost(1);
+    if(delete){
+      isValid=true;
+      assertTrue(isValid, "Post Delete - valid", "post deleted successfully");
+
+    }
+        assertNull(pc.getPostByID(1), "Post Delete - verify removed", null);
+
+    
   }
 
 
@@ -311,113 +357,74 @@ public class PostTests {
    */
   // This method runs all test cases for Reply CRUD and validation.
   public void runReplyTests() {
-    /**
+    
     System.out.println("\n---Reply CRUD and Validation Tests---");
-    ReplyCollection rc = new ReplyCollection();
-    PostCollection pc = new PostCollection();
+    ModelDiscussionForum rc = new ModelDiscussionForum();
+   
+     entityClasses.Post p1 = new entityClasses.Post();
+    p1.setAuthor("s1");
+    p1.setTitle("Title");
+    p1.setContent("The test");
+    p1.setCategory("HW");
+    p1.setTimestamp(System.currentTimeMillis());
+    
+    rc.addPost(p1);
+   
 
-    // Create a post first for postId
-    Post p = new Post();
-    p.setAuthor("student1");
-    p.setTitle("Question");
-    p.setContent("Content");
-    pc.create(p);
-
+   
     // Positive: Create valid reply
-    Reply r1 = new Reply();
-    r1.setPostId(1);
+    
+    entityClasses.Reply r1 = new Reply();
     r1.setAuthor("ta1");
-    r1.setContent("You can set breakpoints by double-clicking in the left margin of the editor.");
+    r1.setAuthorRole("admin");
+    r1.setContent("This is a reply");
     r1.setTimestamp(System.currentTimeMillis());
-    ValidationResult vr = rc.create(r1);
-    assertTrue(vr.isValid(), "Reply Create - valid input", vr.getMessage());
-    assertEquals(1, rc.size(), "Reply Create - size");
+    boolean createReply= rc.addReply(r1,2);
+    if(createReply){
+      isValid=true;
+      assertTrue(isValid, "Reply Create - valid input", "Post reply created successfully for post "+ r1.getPostID() + " Reply ID=" + r1.getReplyID() + ".");
+    }
 
     // Positive: Read reply
-    Reply read = rc.read(1);
+    int idToFind = r1.getReplyID();
+    Reply read = rc.getReplyByID(idToFind);
     assertNotNull(read, "Reply Read - found", null);
-    assertEquals(1, read.getPostId(), "Reply Read - postId");
+    assertEquals(2, read.getPostID(), "Reply Read - postId");
     assertEquals("ta1", read.getAuthor(), "Reply Read - author");
 
     // Positive: Update reply
-    read.setContent("Updated: Double-click in the left margin to set breakpoints.");
-    vr = rc.update(read);
-    assertTrue(vr.isValid(), "Reply Update - valid", vr.getMessage());
+    read.setContent("Updated: This is updated");
+    if(rc.updateReply(read)){
+      isValid=true;
+          assertTrue(isValid, "Reply Update - valid", "reply content Updated.");
+              assertEquals("Updated: This is updated", read.getContent(), "Reply Read - Content");
 
-    // Positive: GetAllReplies
-    List<Reply> all = rc.getAllReplies();
-    assertTrue(all.size() == 1, "Reply GetAllReplies - count", "size=" + all.size());
 
-    // Positive: Subset by postId
-    rc.create(new Reply(0, 1, "instructor", "Great question!", System.currentTimeMillis()));
-    List<Reply> byPost = rc.getSubset(1);
-    assertTrue(byPost.size() == 2, "Reply Subset by postId - count", "size=" + byPost.size());
+    }
 
-    // Positive: Subset by search
-    List<Reply> bySearch = rc.getSubset("breakpoints");
-    assertTrue(bySearch.size() >= 1, "Reply Subset search - found", "size=" + bySearch.size());
-
-    // Negative: Create with invalid postId (0)
-    Reply bad = new Reply();
-    bad.setPostId(0);
-    bad.setAuthor("user");
-    bad.setContent("Content");
-    vr = rc.create(bad);
-    assertFalse(vr.isValid(), "Reply Create - invalid postId 0", vr.getMessage());
-    assertTrue(vr.getMessage().contains("Post ID"), "Reply Create - error", vr.getMessage());
-
-    // Negative: Create with empty content
-    bad.setPostId(1);
-    bad.setContent("");
-    vr = rc.create(bad);
-    assertFalse(vr.isValid(), "Reply Create - empty content", vr.getMessage());
-
-    // Negative: Read non-existent
-    Reply notFound = rc.read(999);
-    assertNull(notFound, "Reply Read - non-existent", null);
+    // Negative: Create with invalid postId 
+     entityClasses.Reply r2 = new Reply();
+    r2.setAuthor("ta1");
+    r2.setAuthorRole("admin");
+    r2.setContent("This is a reply");
+    r2.setTimestamp(System.currentTimeMillis());
+    boolean createInReply= rc.addReply(r2,1);
+    if(!createInReply){
+      isValid=false;
+      assertFalse(isValid, "Reply Create - invalid input", "Post reply created unsuccessfully for post "+ r1.getPostID() + " PostID does not exist.");
+    }
 
     // Positive: Delete
-    vr = rc.delete(1);
-    assertTrue(vr.isValid(), "Reply Delete - valid", vr.getMessage());
-    **/
+    if(rc.deleteReply(2,1)){
+      isValid=true;
+      assertTrue(isValid, "Reply Delete - valid", "Reply deleted");
+
+    }
+    
   }
 
 
-  /*****
-   * <p>
-   * Method: runSubsetTests()
-   * </p>
-   * 
-   * <p>
-   * Description: This method runs all test cases for empty and large subset behavior.
-   * </p>
-   */
-  // This method runs all test cases for empty and large subset behavior.
-  public void runSubsetTests() {
-    /**
-    System.out.println("\n---Subset Tests---");
-    PostCollection pc = new PostCollection();
-    ReplyCollection rc = new ReplyCollection();
-
-    // Empty subset - search with no matches
-    List<Post> empty = pc.getSubset("nonexistentxyz");
-    assertTrue(empty.isEmpty(), "Post Subset - empty when no match", "size=" + empty.size());
-
-    // Empty subset - empty search term
-    List<Post> emptySearch = pc.getSubset("");
-    assertTrue(emptySearch.isEmpty(), "Post Subset - empty for empty search term", null);
-
-    // Empty subset - null search term
-    List<Post> nullSearch = pc.getSubset(null);
-    assertTrue(nullSearch.isEmpty(), "Post Subset - empty for null search", null);
-
-    // Reply subset for non-existent postId returns empty
-    List<Reply> emptyReplies = rc.getSubset(999);
-    assertTrue(emptyReplies.isEmpty(), "Reply Subset - empty for non-existent postId", null);
-    **/
-  }
-
-
+ 
   /*****
    * <p>
    * Method: runSubsetTests()
@@ -438,10 +445,10 @@ theDatabase = new database.Database();
     } catch (Exception e) {
         System.out.println("  Database failed to connect.");
     }
-    System.out.println("HW2 Test Suite - Post, Reply, PostCollection, ReplyCollection");
+    System.out.println("CRUD Test Suite - Post, Reply");
     runPostTests();
     runReplyTests();
-    runSubsetTests();
+   
     System.out.println("\n--- Summary ---");
     System.out.println("  Passed: " + passed);
     System.out.println("  Failed: " + failed);

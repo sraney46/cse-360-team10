@@ -548,7 +548,7 @@ public class Database {
 	                {postIDs.get(19), "instructor1", "Staff",  "TableView works but a custom VBox gives you more control over the row styling.",   System.currentTimeMillis() - 9000},
 	                {postIDs.get(19), "user3",       "Student","I tried TableView first but switched to VBox after seeing the TP1 examples.",      System.currentTimeMillis() - 8000},
 	            };
-
+     
 	            for (Object[] reply : replies) {
 	                pstmt.setInt(1,    (Integer) reply[0]);
 	                pstmt.setString(2, (String)  reply[1]);
@@ -560,6 +560,12 @@ public class Database {
 	            pstmt.executeBatch();
 	            System.out.println("Inserted replies into replyDB successfully.");
 	        }
+            // Get the actual postIDs after insertion
+          List<Integer> replyIDs = new ArrayList<>();
+	       ResultSet rsr_init = statement.executeQuery("SELECT replyID FROM replyDB ORDER BY replyID");
+        while (rsr_init.next()) {
+           replyIDs.add(rsr_init.getInt("replyID"));
+      }
 
 	       
 

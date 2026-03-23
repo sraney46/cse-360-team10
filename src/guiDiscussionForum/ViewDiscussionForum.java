@@ -809,7 +809,7 @@ public class ViewDiscussionForum {
                 alertValidation.setContentText(error);
                 alertValidation.showAndWait();
             } else {
-            	model.addReply(newReply);
+            	model.addReply(newReply,post.getPostID());
                 loadPostDetail(post);
             }
         }

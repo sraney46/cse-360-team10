@@ -1,8 +1,6 @@
-module TP2 {
-  requires javafx.controls;
-  requires java.sql;
-  requires javafx.graphics;
-  requires javafx.base;
-
-  opens applicationMain to javafx.graphics, javafx.fxml;
+module cse360team10 {
+    requires javafx.controls;
+    requires javafx.fxml;
+    requires java.sql;
+    requires org.junit.jupiter.api;
 }

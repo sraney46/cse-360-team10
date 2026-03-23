@@ -7,6 +7,7 @@ import guiDiscussionForum.ModelDiscussionForum;
 import entityClasses.Post;
 import entityClasses.Reply;
 import validation.ValidationResult;
+import java.sql.SQLException;
 
 /*******
  * <p>
@@ -48,6 +49,34 @@ public class PostTests {
   public PostTests() {
     this.passed = 0;
     this.failed = 0;
+  }
+  
+  /*****
+   * <p>
+   * Method: clearTestData()
+   * </p>
+   *
+   * <p>
+   * Description: This method clears all data from all database tables
+   * and resets the auto-increment ID counters back to 1 before tests are run,
+   * ensuring a clean state for each test execution.
+   * </p>
+   */
+  // Deletes all rows from all tables and resets ID counters to 1 so tests
+  // are repeatable and not affected by stale data or climbing primary key values.
+  private void clearTestData() {
+      try {
+          theDatabase.getConnection().createStatement().executeUpdate("DELETE FROM replyDB");
+          theDatabase.getConnection().createStatement().executeUpdate("DELETE FROM postDB");
+          theDatabase.getConnection().createStatement().executeUpdate("DELETE FROM InvitationCodes");
+          theDatabase.getConnection().createStatement().executeUpdate("DELETE FROM userDB");
+          theDatabase.getConnection().createStatement().executeUpdate("ALTER TABLE replyDB ALTER COLUMN replyID RESTART WITH 1");
+          theDatabase.getConnection().createStatement().executeUpdate("ALTER TABLE postDB ALTER COLUMN postID RESTART WITH 1");
+          theDatabase.getConnection().createStatement().executeUpdate("ALTER TABLE userDB ALTER COLUMN id RESTART WITH 1");
+          System.out.println("   Test data cleared.");
+      } catch (SQLException e) {
+          System.out.println("  Failed to clear test data: " + e.getMessage());
+      }
   }
 
   /*****
@@ -440,7 +469,7 @@ theDatabase = new database.Database();
     try {
         theDatabase.connectToDatabase();
         applicationMain.FoundationsMain.database = theDatabase; 
-        
+        clearTestData();
         System.out.println("   Database Connection Established.");
     } catch (Exception e) {
         System.out.println("  Database failed to connect.");

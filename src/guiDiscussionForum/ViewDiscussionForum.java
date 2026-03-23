@@ -186,8 +186,11 @@ public class ViewDiscussionForum {
         });
         
         // Andrew C -- Data for the text search bar
-        setupLabelUI(label_searchText, "Arial", 18, 64, Pos.BASELINE_LEFT, 336, 48);
+        setupLabelUI(label_searchText, "Arial", 18, 64, Pos.BASELINE_LEFT, 355, 60);
         label_searchText.setText("Search For:");
+        label_searchText.setStyle(
+        		"-fx-font-size: 14px;"
+        );
         
         setupTextFieldUI(textField_searchCriteria, "Dialog", 18, 600, Pos.BASELINE_LEFT, 460, 52);
         textField_searchCriteria.textProperty().addListener(_ -> {

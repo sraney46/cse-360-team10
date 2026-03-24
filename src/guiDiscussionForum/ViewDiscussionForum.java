@@ -367,8 +367,10 @@ public class ViewDiscussionForum {
     /**********
      * <p>Method: refreshPostList()</p>
      *
-     * <p>Description: Fetches all posts from the database and repopulates
-     * the left panel post list. Called on page load and after any CRUD operation.</p>
+     * <p>Description: Fetches posts from the database based on the current filter
+     * selections and repopulates the left panel post list. Applies category filtering,
+     * text search filtering by title, content, or author, and read status filtering
+     * client side. Called on page load and after any CRUD operation.</p>
      */
     private static void refreshPostList() {
         List<String> args = new ArrayList<>();
@@ -410,15 +412,17 @@ public class ViewDiscussionForum {
     }
 
     /**********
-     * <p>Method: populatePostList(List<Post> posts)</p>
+     * <p>Method: populatePostList(List Post posts)</p>
      *
      * <p>Description: Clears the left panel and rebuilds it using the provided
      * list of posts. Each post becomes a clickable row. Extracted from refreshPostList
-     * so subset filter results can also use this method.</p>
+     * so subset filter results can also use this method. Displays a "No posts found"
+     * message if the list is null or empty.</p>
      *
      * @param posts the list of Post objects to display
      */
     private static void populatePostList(List<Post> posts) {
+
         vbox_PostList.getChildren().clear();
 
         if (posts == null || posts.isEmpty()) {
@@ -438,14 +442,16 @@ public class ViewDiscussionForum {
      * <p>Method: createPostRow(Post post)</p>
      *
      * <p>Description: Builds a single clickable row for the left panel representing
-     * one post. Displays the post author, a truncated preview of the content, and
-     * the category. Clicking the row loads the full post in the right panel and
-     * marks the post as read for the current user.</p>
+     * one post. Displays the post author, category badge, a read or unread status pill,
+     * and a truncated preview of the title and content. Clicking the row marks the post
+     * as read in the database, updates the pill instantly, and loads the full post
+     * in the right panel.</p>
      *
      * @param post the Post object to represent as a row
      * @return the configured HBox row
      */
     private static HBox createPostRow(Post post) {
+
         HBox row = new HBox(8);
         row.setAlignment(Pos.CENTER_LEFT);
         row.setPadding(new Insets(10, 14, 10, 14));
@@ -541,11 +547,13 @@ public class ViewDiscussionForum {
     /**********
      * <p>Method: loadPostDetail(Post post)</p>
      *
-     * <p>Description: Populates the right panel with the full content of the selected post
-     * and all of its replies. Also renders Edit and Delete buttons if the logged-in user
-     * is the author of the post, and a Reply button for all users.</p>
+     * <p>Description: Populates the right panel with the full content of the selected
+     * post and all of its replies. Renders a Reply button for all users and Edit and
+     * Delete buttons only if the logged-in user is the author of the post. If the post
+     * is null, a deleted message is shown instead. Includes a role filter combo box
+     * to filter replies by author role.</p>
      *
-     * @param post the Post to display in full detail
+     * @param post the Post to display in full detail, or null if the post was deleted
      */
     private static void loadPostDetail(Post post) {
         vbox_PostDetail.getChildren().clear();
@@ -680,7 +688,7 @@ public class ViewDiscussionForum {
      * <p>Method: createReplyCard(Reply reply)</p>
      *
      * <p>Description: Builds a styled card representing a single reply, including
-     * the author name, their role badge, and the reply content.</p>
+     * the author name, their role badge colored by role type, and the reply content.</p>
      *
      * @param reply the Reply object to render
      * @return a configured VBox card
@@ -732,7 +740,8 @@ public class ViewDiscussionForum {
      * <p>Method: showNewPostDialog()</p>
      *
      * <p>Description: Opens a dialog allowing the user to create a new post.
-     * Collects content and category input, validates, and calls postList.addPost().</p>
+     * Collects category, title, and content input, validates using Post.checkValidation(),
+     * and inserts the post into the database via the model if valid.</p>
      */
     private static void showNewPostDialog() {
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -789,8 +798,10 @@ public class ViewDiscussionForum {
     /**********
      * <p>Method: showEditPostDialog(Post post)</p>
      *
-     * <p>Description: Opens a dialog pre-filled with the selected post's current content
-     * and category. On submit, updates the post in the database and refreshes the view.</p>
+     * <p>Description: Opens a dialog pre-filled with the selected post's current title,
+     * content, and category. On submit, validates the updated values using
+     * Post.checkValidation() and updates the post in the database via the model if valid.
+     * Refreshes the post list and reloads the post detail panel on success.</p>
      *
      * @param post the Post to be edited
      */
@@ -844,11 +855,14 @@ public class ViewDiscussionForum {
      * <p>Method: showReplyDialog(Post post)</p>
      *
      * <p>Description: Opens a dialog for the user to write a reply to the selected post.
-     * Collects reply content, creates a Reply object, and calls replyList.addReply().</p>
+     * Collects reply content, validates using Reply.checkValidation(), and inserts the
+     * reply via the model if valid. After a successful reply, marks the post as unread
+     * for all other users so they are notified of new activity.</p>
      *
      * @param post the Post being replied to
      */
     private static void showReplyDialog(Post post) {
+
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Reply");
         dialog.setHeaderText("Reply to " + post.getAuthor() + "'s post");
@@ -882,7 +896,8 @@ public class ViewDiscussionForum {
                 alertValidation.setContentText(error);
                 alertValidation.showAndWait();
             } else {
-            	model.addReply(newReply,post.getPostID());
+                model.addReply(newReply, post.getPostID());
+                model.markPostAsUnread(post.getPostID(), theUser.getUserName()); // add this
                 loadPostDetail(post);
             }
         }
@@ -891,10 +906,12 @@ public class ViewDiscussionForum {
     /**********
      * <p>Method: handleDeletePost(Post post)</p>
      *
-     * <p>Description: Shows a confirmation dialog before deleting the selected post.
-     * If confirmed, calls postList.deletePost() and clears the right panel.</p>
+     * <p>Description: Shows a confirmation dialog before soft deleting the selected post.
+     * If confirmed, calls softDeletePost() which overwrites the post content with a
+     * deleted placeholder instead of removing the row, allowing replies to remain visible.
+     * Clears the right panel and refreshes the post list on confirmation.</p>
      *
-     * @param post the Post to be deleted
+     * @param post the Post to be soft deleted
      */
     private static void handleDeletePost(Post post) {
         Optional<ButtonType> result = alertDeleteConfirm.showAndWait();
@@ -906,6 +923,14 @@ public class ViewDiscussionForum {
         }
     }
     
+    /**********
+     * <p>Method: showNewThreadDialog()</p>
+     *
+     * <p>Description: Opens a text input dialog allowing a staff user to create a new
+     * thread category. On submit, adds the new category to the shared threadCategories
+     * list and to the category filter combo box so it is immediately available for
+     * filtering and post creation. Only accessible by staff users.</p>
+     */
     private static void showNewThreadDialog() {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("New Thread");

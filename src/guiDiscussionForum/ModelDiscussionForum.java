@@ -219,10 +219,13 @@ public class ModelDiscussionForum {
     /**********
      * <p>Method: hardDeletePost(int postID)</p>
      *
-     * <p>Description: Deletes a post from the postDB table by its postID.
-     * The "Are you sure?" confirmation is handled by the GUI before this method is called.</p>
+     * <p>Description: Permanently removes a post from the postDB table by its postID.
+     * This method is intended for use in testing only. The GUI should use softDeletePost()
+     * which marks the post as deleted instead of removing it, allowing replies to
+     * remain visible. The "Are you sure?" confirmation is handled by the caller
+     * before this method is called.</p>
      *
-     * @param postID the ID of the post to delete
+     * @param postID the ID of the post to permanently delete
      * @return true if the deletion was successful, false otherwise
      */
     public boolean hardDeletePost(int postID) {
@@ -236,18 +239,19 @@ public class ModelDiscussionForum {
             return false;
         }
     }
-    
+
     /**********
-     * <p>Method: hardDeletePost(int postID)</p>
+     * <p>Method: softDeletePost(int postID)</p>
      *
-     * <p>Description: Permanently deletes a post from the postDB table by its postID.
-     * Unlike deletePost(), this method fully removes the row from the database.
-     * This method is intended for use in testing only. The GUI should use deletePost()
-     * which performs a soft delete by marking the post as deleted instead of
-     * removing it, allowing replies to remain visible.</p>
+     * <p>Description: Soft deletes a post by overwriting its content, title, and author
+     * with placeholder deleted values instead of removing the row from the database.
+     * This allows any replies attached to the post to remain visible in the GUI,
+     * where a message indicating the original post was deleted will be shown.
+     * This is the method the GUI should use for deletion. For permanent removal,
+     * use hardDeletePost() which is intended for testing only.</p>
      *
-     * @param postID the ID of the post to permanently delete
-     * @return true if the deletion was successful, false otherwise
+     * @param postID the ID of the post to soft delete
+     * @return true if the soft deletion was successful, false otherwise
      */
     public boolean softDeletePost(int postID) {
         String query = "UPDATE postDB SET content = 'This post has been deleted.', title = '[Deleted]', author = '[deleted]' WHERE postID = ?";
@@ -474,31 +478,77 @@ public class ModelDiscussionForum {
     
 
 
-    public boolean markPostAsRead(String userName, int postID) {
-        String query = "MERGE INTO postReadStatus (userName, postID) VALUES (?, ?)";
-        try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
-            pstmt.setString(1, userName);
-            pstmt.setInt(2, postID);
-            pstmt.executeUpdate();
-            return true;
-        } catch (SQLException e) {
-            System.out.println("*** ERROR *** Failed to mark post as read: " + e.getMessage());
-            return false;
-        }
-    }
+   /**********
+    * <p>Method: markPostAsRead(String userName, int postID)</p>
+    *
+    * <p>Description: Marks a post as read for a specific user by inserting a row
+    * into the postReadStatus table. Uses MERGE so duplicate reads do not cause
+    * errors. Called when a user clicks on a post in the scroll pane.</p>
+    *
+    * @param userName the username of the user who read the post
+    * @param postID the ID of the post that was read
+    * @return true if the operation was successful, false otherwise
+    */
+   public boolean markPostAsRead(String userName, int postID) {
+       String query = "MERGE INTO postReadStatus (userName, postID) VALUES (?, ?)";
+       try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
+           pstmt.setString(1, userName);
+           pstmt.setInt(2, postID);
+           pstmt.executeUpdate();
+           return true;
+       } catch (SQLException e) {
+           System.out.println("*** ERROR *** Failed to mark post as read: " + e.getMessage());
+           return false;
+       }
+   }
 
-    public boolean isPostRead(String userName, int postID) {
-        String query = "SELECT 1 FROM postReadStatus WHERE userName = ? AND postID = ?";
-        try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
-            pstmt.setString(1, userName);
-            pstmt.setInt(2, postID);
-            ResultSet rs = pstmt.executeQuery();
-            return rs.next();
-        } catch (SQLException e) {
-            System.out.println("*** ERROR *** Failed to check read status: " + e.getMessage());
-            return false;
-        }
-    }
+   /**********
+    * <p>Method: isPostRead(String userName, int postID)</p>
+    *
+    * <p>Description: Checks whether a specific user has read a specific post by
+    * looking for a matching row in the postReadStatus table. The absence of a row
+    * means the post is unread. Called when building each post row in the scroll pane.</p>
+    *
+    * @param userName the username of the user to check
+    * @param postID the ID of the post to check
+    * @return true if the user has read the post, false otherwise
+    */
+   public boolean isPostRead(String userName, int postID) {
+       String query = "SELECT 1 FROM postReadStatus WHERE userName = ? AND postID = ?";
+       try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
+           pstmt.setString(1, userName);
+           pstmt.setInt(2, postID);
+           ResultSet rs = pstmt.executeQuery();
+           return rs.next();
+       } catch (SQLException e) {
+           System.out.println("*** ERROR *** Failed to check read status: " + e.getMessage());
+           return false;
+       }
+   }
+
+   /**********
+    * <p>Method: markPostAsUnread(int postID, String exceptUserName)</p>
+    *
+    * <p>Description: Marks a post as unread for all users except the specified user
+    * by deleting their rows from the postReadStatus table. Called when a new reply
+    * is added to a post so that all other users are notified of new activity.</p>
+    *
+    * @param postID the ID of the post to mark as unread
+    * @param exceptUserName the username of the user who should remain marked as read
+    * @return true if the operation was successful, false otherwise
+    */
+   public boolean markPostAsUnread(int postID, String exceptUserName) {
+       String query = "DELETE FROM postReadStatus WHERE postID = ? AND userName != ?";
+       try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
+           pstmt.setInt(1, postID);
+           pstmt.setString(2, exceptUserName);
+           pstmt.executeUpdate();
+           return true;
+       } catch (SQLException e) {
+           System.out.println("*** ERROR *** Failed to mark post as unread: " + e.getMessage());
+           return false;
+       }
+   }
 
     /**********************************************************************************************
      * Helper Methods

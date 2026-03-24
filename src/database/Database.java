@@ -406,7 +406,7 @@ public class Database {
 	        try (PreparedStatement pstmt = connection.prepareStatement(postSQL)) {
 
 	        	Object[][] posts = {
-	        		    {"user1",  "STACK/QUEUE",      "What is the difference between a stack and a queue?",                               "General",     System.currentTimeMillis() - 200000},
+	        		    {"first_user",  "STACK/QUEUE",      "What is the difference between a stack and a queue?",                               "General",     System.currentTimeMillis() - 200000},
 	        		    {"user2",  "INTERFACES",       "Can someone explain how interfaces work in Java?",                                   "Lectures",    System.currentTimeMillis() - 190000},
 	        		    {"user3",  "HW2 CLARIFY",      "I am confused about HW2 requirements, can someone clarify?",                        "Homework",    System.currentTimeMillis() - 180000},
 	        		    {"user4",  "MIDTERM TOPICS",   "What topics will be covered on the midterm?",                                        "Exams",       System.currentTimeMillis() - 170000},
@@ -419,7 +419,7 @@ public class Database {
 	        		    {"user2",  "ABSTRACT VS INTERFACE", "Can someone explain the difference between abstract classes and interfaces?", "Lectures",    System.currentTimeMillis() - 100000},
 	        		    {"user4",  "GIT MERGE",        "How do we handle merge conflicts in Git when two people edit the same file?",       "General",     System.currentTimeMillis() - 90000},
 	        		    {"user6",  "SEQUENCE DIAGRAM", "Is the sequence diagram required for every use case or just the main one?",        "Assignments", System.currentTimeMillis() - 80000},
-	        		    {"user1",  "CRUD TEST",        "What is the best way to test CRUD operations without a GUI?",                       "Homework",    System.currentTimeMillis() - 70000},
+	        		    {"first_user",  "CRUD TEST",        "What is the best way to test CRUD operations without a GUI?",                       "Homework",    System.currentTimeMillis() - 70000},
 	        		    {"user8",  "PROJECT STYLE",    "Does the team project need to follow the FoundationsF25 documentation style?",     "Assignments", System.currentTimeMillis() - 60000},
 	        		    {"user3",  "H2 DRIVER ERROR",  "I am getting a ClassNotFoundException for the H2 driver, how do I fix this?",      "General",     System.currentTimeMillis() - 50000},
 	        		    {"user5",  "EPICS VS STORIES", "What is the difference between epics and user stories?",                            "Lectures",    System.currentTimeMillis() - 40000},
@@ -468,7 +468,7 @@ public class Database {
 	                // Post 2 — 6 replies
 	                {postIDs.get(2), "admin1",      "Admin",   "Please refer to the Canvas assignment page for the full requirements breakdown.",    System.currentTimeMillis() - 179000},
 	                {postIDs.get(2), "user7",       "Student", "The PDF on Canvas has a much clearer breakdown than the website.",                  System.currentTimeMillis() - 178000},
-	                {postIDs.get(2), "user1",       "Student", "I was confused too, focus on the CRUD and input validation sections.",              System.currentTimeMillis() - 177000},
+	                {postIDs.get(2), "first_user",       "Student", "I was confused too, focus on the CRUD and input validation sections.",              System.currentTimeMillis() - 177000},
 	                {postIDs.get(2), "instructor1", "Staff",   "Good advice. Remember you only need CRUD and validation for this assignment.",       System.currentTimeMillis() - 176000},
 	                {postIDs.get(2), "user9",       "Student", "Does the user story document need to be a PDF or can it be a Word doc?",            System.currentTimeMillis() - 175000},
 	                {postIDs.get(2), "admin1",      "Admin",   "It must be submitted as a PDF as stated in the deliverables section.",              System.currentTimeMillis() - 174000},
@@ -485,7 +485,7 @@ public class Database {
 	                {postIDs.get(4), "user5",       "Student", "Got it working, the build path was the issue. Thanks everyone!",                    System.currentTimeMillis() - 156000},
 
 	                // Post 5 — 2 replies
-	                {postIDs.get(5), "user1",       "Student", "Check that you are not calling a method on a null object before it is initialized.", System.currentTimeMillis() - 149000},
+	                {postIDs.get(5), "first_user",       "Student", "Check that you are not calling a method on a null object before it is initialized.", System.currentTimeMillis() - 149000},
 	                {postIDs.get(5), "instructor1", "Staff",   "Add a null check before calling theDatabase.getConnection() in your PostList.",     System.currentTimeMillis() - 148000},
 
 	                // Post 6 — 2 replies
@@ -499,7 +499,7 @@ public class Database {
 
 	                // Post 8 — 10 replies
 	                {postIDs.get(8), "instructor1", "Staff",   "Neither is always better. Prefer composition for flexibility and loose coupling.",   System.currentTimeMillis() - 119000},
-	                {postIDs.get(8), "user1",       "Student", "I read that composition is preferred in most modern OOP design patterns.",          System.currentTimeMillis() - 118000},
+	                {postIDs.get(8), "first_user",       "Student", "I read that composition is preferred in most modern OOP design patterns.",          System.currentTimeMillis() - 118000},
 	                {postIDs.get(8), "user3",       "Student", "Inheritance makes sense when there is a true is-a relationship between classes.",   System.currentTimeMillis() - 117000},
 	                {postIDs.get(8), "user5",       "Student", "Composition gives you more flexibility at runtime which is usually what you want.", System.currentTimeMillis() - 116000},
 	                {postIDs.get(8), "user7",       "Student", "Does this mean we should avoid inheritance entirely in our team project?",          System.currentTimeMillis() - 115000},
@@ -545,7 +545,7 @@ public class Database {
 
 	                // Post 17 — 2 replies
 	                {postIDs.get(17), "instructor1", "Staff",  "Composition is preferred here. PostList should contain a list, not extend one.",   System.currentTimeMillis() - 29000},
-	                {postIDs.get(17), "user1",       "Student","That makes sense, extending ArrayList would expose too many unrelated methods.",    System.currentTimeMillis() - 28000},
+	                {postIDs.get(17), "first_user",       "Student","That makes sense, extending ArrayList would expose too many unrelated methods.",    System.currentTimeMillis() - 28000},
 
 	                // Post 18 — 2 replies
 	                {postIDs.get(18), "admin1",      "Admin",  "HW2 requires 7 screencasts total. See the deliverables section for details.",      System.currentTimeMillis() - 19000},

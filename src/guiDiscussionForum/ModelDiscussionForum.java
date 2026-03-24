@@ -436,13 +436,15 @@ public class ModelDiscussionForum {
     /**********
      * <p>Method: updateReply(Reply reply)</p>
      *
-     * <p>Description: Updates the content and category of an existing post in the postDB table.
-     * Matches the record by postID. Validates the post before attempting the update.</p>
+     * <p>Description: Updates the content, author, and authorRole of an existing reply
+     * in the replyDB table. Matches the record by both postID and replyID. Validates
+     * the reply before attempting the update and returns false if validation fails.
+     * Also returns false if no matching reply is found in the database.</p>
      *
-     * @param post the Post object containing the updated values and the postID to match
+     * @param reply the Reply object containing the updated values, postID, and replyID to match
      * @return true if the update was successful, false otherwise
      */
-   public boolean updateReply(Reply reply) {
+    public boolean updateReply(Reply reply) {
     String error = reply.checkValidation(); 
     if (!error.isEmpty()) {
         System.out.println("*** ERROR *** Cannot update reply: " + error);

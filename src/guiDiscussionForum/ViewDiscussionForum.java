@@ -209,7 +209,7 @@ public class ViewDiscussionForum {
         });
         
         combo_ReadStatus.setItems(FXCollections.observableArrayList(
-        	    "All", "Read", "Unread"
+        	    "Read Status", "All", "Read", "Unread"
         	));
     	combo_ReadStatus.setValue("Read Status");
     	combo_ReadStatus.getStyleClass().add("default-combo-box");
@@ -401,7 +401,7 @@ public class ViewDiscussionForum {
         List<Post> allPosts = model.getAllPosts(args);
 
         // Filter by read status client side
-        if (allPosts != null && !readStatusFilter.equals("All")) {
+        if (allPosts != null && !readStatusFilter.equals("All") && !readStatusFilter.equals("Read Status")) {
             boolean filterRead = readStatusFilter.equals("Read");
             allPosts = allPosts.stream()
                 .filter(p -> model.isPostRead(theUser.getUserName(), p.getPostID()) == filterRead)

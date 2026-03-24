@@ -468,7 +468,37 @@ public class ModelDiscussionForum {
         System.out.println("*** ERROR *** Failed to update reply: " + e.getMessage());
         return false;
     }
-}
+    
+   }
+    
+    
+
+
+    public boolean markPostAsRead(String userName, int postID) {
+        String query = "MERGE INTO postReadStatus (userName, postID) VALUES (?, ?)";
+        try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
+            pstmt.setString(1, userName);
+            pstmt.setInt(2, postID);
+            pstmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.out.println("*** ERROR *** Failed to mark post as read: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean isPostRead(String userName, int postID) {
+        String query = "SELECT 1 FROM postReadStatus WHERE userName = ? AND postID = ?";
+        try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
+            pstmt.setString(1, userName);
+            pstmt.setInt(2, postID);
+            ResultSet rs = pstmt.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            System.out.println("*** ERROR *** Failed to check read status: " + e.getMessage());
+            return false;
+        }
+    }
 
     /**********************************************************************************************
      * Helper Methods

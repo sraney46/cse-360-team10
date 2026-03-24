@@ -182,6 +182,13 @@ public class Database {
         + "content LONGTEXT, "
         + "timestamp BIGINT)";
     statement.execute(replyTable);
+    
+    String readStatusTable = "CREATE TABLE IF NOT EXISTS postReadStatus ("
+	    + "userName VARCHAR(255), "
+	    + "postID INT, "
+	    + "PRIMARY KEY (userName, postID))";
+	statement.execute(readStatusTable);
+
   }
 
   /*******

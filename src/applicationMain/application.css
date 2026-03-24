@@ -348,3 +348,71 @@
     -fx-pref-height: 0;
     visibility: hidden;
 }
+
+.thread-combo-box {
+    -fx-background-color: #000;         
+    -fx-border-color: transparent;     
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-padding: 0 5 0 5;               
+}
+
+
+.thread-combo-box .text {
+    -fx-fill: #fff;                     
+    -fx-font-family: 'Montserrat Regular';
+    -fx-font-size: 12px;
+    -fx-alignment: center-left;
+}
+
+
+.thread-combo-box .arrow-button {
+    -fx-background-color: #000;         
+    -fx-padding: 0;
+    -fx-padding: 0 10 0 0;    
+}
+
+
+.thread-combo-box .arrow {
+    -fx-fill: #fff;     
+      
+}
+
+
+.thread-combo-box .list-view {
+    -fx-background-color: #000;        
+    -fx-border-color: #444;             
+    -fx-padding: 0;          
+    -fx-min-width: 90px;
+    -fx-max-width: 90px;
+    -fx-max-height: 120px;             
+}
+
+
+.thread-combo-box .list-cell {
+    -fx-background-color: #000;         
+    -fx-text-fill: #fff;                
+    -fx-font-family: 'Montserrat Regular';
+    -fx-font-size: 12px;
+}
+
+
+.thread-combo-box .list-cell:hover {
+    -fx-background-color: #1a1a1a;
+}
+
+.thread-combo-box .list-cell:selected {
+    -fx-text-fill: #fff;
+}
+
+
+.thread-combo-box .combo-box-popup > .list-view .scroll-bar:vertical,
+.thread-combo-box .combo-box-popup > .list-view .scroll-bar:horizontal {
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    
+}
+
+
+

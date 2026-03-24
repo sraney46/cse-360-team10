@@ -16,6 +16,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import database.Database;
+import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,12 +43,17 @@ public class ViewDiscussionForum {
     protected static Label label_PageTitle = new Label("Discussion Forum");
     protected static Label label_UserDetails = new Label();
     protected static Button button_NewPost = new Button("+ New Post");
+    protected static Button button_NewThread = new Button("+ New Thread");
     protected static Button button_PopulateDatabase = new Button("Populate Database");
     protected static Button button_UpdateThisUser = new Button("Account Update");
     protected static ComboBox<String> combo_Category = new ComboBox<>();
     protected static ComboBox<String> combo_SearchCriteria = new ComboBox<>();
     protected static TextField textField_searchCriteria = new TextField();
     protected static Label label_searchText = new Label();
+    protected static ObservableList<String> threadCategories = FXCollections.observableArrayList(
+    	    "General", "Homework", "Lectures", "Assignments", "Exams"
+    	);
+    protected static ComboBox<String> combo_ReadStatus = new ComboBox<>();
 
     protected static Line line_Separator1 = new Line();
 
@@ -105,6 +111,18 @@ public class ViewDiscussionForum {
         returnPage = returnPageStr;
 
         if (theView == null) theView = new ViewDiscussionForum();
+        
+        // Only show if user is staff
+        if (returnPage.equals("Staff")) {
+        	  button_NewThread.setVisible(true);
+              button_NewThread.setManaged(true);
+        } else {
+        	  button_NewThread.setVisible(false);
+              button_NewThread.setManaged(false);
+        }
+        
+        combo_ReadStatus.setValue("Read Status");
+      
 
         label_UserDetails.setText("User: " + theUser.getUserName());
         refreshPostList();
@@ -152,6 +170,11 @@ public class ViewDiscussionForum {
         setupButtonUI(button_NewPost, "Dialog", 16, 100, Pos.BASELINE_LEFT, width/2 - 475, 55);
         button_NewPost.setOnAction(_ -> showNewPostDialog());
         
+        setupButtonUI(button_NewThread, "Dialog", 16, 100, Pos.BASELINE_LEFT, width/2 - 475, 20);
+        button_NewThread.setOnAction(_ -> showNewThreadDialog());
+        
+
+        
         setupButtonUI(button_PopulateDatabase, "Dialog", 16, 100, Pos.BASELINE_LEFT, width/2 - 75, 55);
         button_PopulateDatabase.setOnAction((_) -> { 
         
@@ -170,20 +193,31 @@ public class ViewDiscussionForum {
         
         button_PopulateDatabase.setVisible(false);
         button_PopulateDatabase.setManaged(false);
+        
+        ObservableList<String> filterCategories = FXCollections.observableArrayList("All Threads");
+        filterCategories.addAll(threadCategories);
+        combo_Category.setItems(filterCategories);
 
-        // Category filter combo
-        combo_Category.setItems(FXCollections.observableArrayList(
-            "All", "General", "Homework", "Lectures", "Assignments", "Exams"
-        ));
-        combo_Category.setValue("All");
-        combo_Category.getStyleClass().add("default-combo-box");
-        combo_Category.setLayoutX(width/2 - 600);
+        combo_Category.setValue("All Threads");
+        combo_Category.getStyleClass().add("thread-combo-box");
+        combo_Category.setLayoutX((width/2 - 600) - 50);
         combo_Category.setLayoutY(55);
-        combo_Category.setPrefWidth(100);
+        combo_Category.setPrefWidth(150);
         combo_Category.setPrefHeight(16);
         combo_Category.setOnAction(_ -> {     
             refreshPostList();
         });
+        
+        combo_ReadStatus.setItems(FXCollections.observableArrayList(
+        	    "All", "Read", "Unread"
+        	));
+    	combo_ReadStatus.setValue("Read Status");
+    	combo_ReadStatus.getStyleClass().add("default-combo-box");
+    	combo_ReadStatus.setLayoutX(width/2 - 490 + 150);  // adjust x to sit next to combo_Category
+    	combo_ReadStatus.setLayoutY(18);
+    	combo_ReadStatus.setPrefWidth(130);
+    	combo_ReadStatus.setPrefHeight(16);
+    	combo_ReadStatus.setOnAction(_ -> refreshPostList());
         
         // Andrew C -- Data for the text search bar
         setupLabelUI(label_searchText, "Arial", 18, 64, Pos.BASELINE_LEFT, 355, 60);
@@ -318,6 +352,8 @@ public class ViewDiscussionForum {
             line_Separator1,
             scrollPane_PostList,
             scrollPane_PostDetail,
+            button_NewThread,
+            combo_ReadStatus,
             line_Separator4,
             button_Return, button_Logout, button_Quit,
             textField_searchCriteria, combo_SearchCriteria, label_searchText
@@ -335,36 +371,42 @@ public class ViewDiscussionForum {
      * the left panel post list. Called on page load and after any CRUD operation.</p>
      */
     private static void refreshPostList() {
-    	//This list holds the arguments used for the search
-    	List<String> args = new ArrayList<>();
-    	String selectedCategory = combo_Category.getValue();
-    	String searchFilterMode = combo_SearchCriteria.getValue();
-    	String textFilterContent = textField_searchCriteria.textProperty().getValue();
-    	
-    	//Add category filter, but only if it's special
-    	if(selectedCategory != null && combo_Category.getSelectionModel().getSelectedIndex() > 0)
-    		args.add("category = " + selectedCategory);
-    	
-    	switch(searchFilterMode)
-    	{
-    		default:
-    		case "Title":
-    			if(textFilterContent.length() > 0)
-    	    		args.add("UPPER(title) LIKE %" + textFilterContent.toUpperCase() + "%");
-    		break;
-    		case "Content":
-    			if(textFilterContent.length() > 0)
-    	    		args.add("UPPER(content) LIKE %" + textFilterContent.toUpperCase() + "%");
-    		break;
-    		case "Author":
-    			if(textFilterContent.length() > 0)
-    	    		args.add("UPPER(author) = " + textFilterContent.toUpperCase());
-    		break;
-    	}
-    	
-    	
-        List<Post> subset = model.getAllPosts(args);
-        populatePostList(subset);
+        List<String> args = new ArrayList<>();
+        String selectedCategory = combo_Category.getValue();
+        String searchFilterMode = combo_SearchCriteria.getValue();
+        String textFilterContent = textField_searchCriteria.textProperty().getValue();
+        String readStatusFilter = combo_ReadStatus.getValue();
+
+        if (selectedCategory != null && combo_Category.getSelectionModel().getSelectedIndex() > 0)
+            args.add("category = " + selectedCategory);
+
+        switch (searchFilterMode) {
+            default:
+            case "Title":
+                if (textFilterContent.length() > 0)
+                    args.add("UPPER(title) LIKE %" + textFilterContent.toUpperCase() + "%");
+                break;
+            case "Content":
+                if (textFilterContent.length() > 0)
+                    args.add("UPPER(content) LIKE %" + textFilterContent.toUpperCase() + "%");
+                break;
+            case "Author":
+                if (textFilterContent.length() > 0)
+                    args.add("UPPER(author) = " + textFilterContent.toUpperCase());
+                break;
+        }
+
+        List<Post> allPosts = model.getAllPosts(args);
+
+        // Filter by read status client side
+        if (allPosts != null && !readStatusFilter.equals("All")) {
+            boolean filterRead = readStatusFilter.equals("Read");
+            allPosts = allPosts.stream()
+                .filter(p -> model.isPostRead(theUser.getUserName(), p.getPostID()) == filterRead)
+                .collect(java.util.stream.Collectors.toList());
+        }
+
+        populatePostList(allPosts);
     }
 
     /**********
@@ -397,7 +439,8 @@ public class ViewDiscussionForum {
      *
      * <p>Description: Builds a single clickable row for the left panel representing
      * one post. Displays the post author, a truncated preview of the content, and
-     * the category. Clicking the row loads the full post in the right panel.</p>
+     * the category. Clicking the row loads the full post in the right panel and
+     * marks the post as read for the current user.</p>
      *
      * @param post the Post object to represent as a row
      * @return the configured HBox row
@@ -416,7 +459,7 @@ public class ViewDiscussionForum {
         VBox textCol = new VBox(4);
         HBox.setHgrow(textCol, Priority.ALWAYS);
 
-        // Author + category badge on one line
+        // Author + category badge + read status pill on one line
         HBox topLine = new HBox(8);
         topLine.setAlignment(Pos.CENTER_LEFT);
         Label authorLabel = new Label(post.getAuthor());
@@ -428,7 +471,17 @@ public class ViewDiscussionForum {
             "-fx-background-color: #5865f2; -fx-text-fill: white;" +
             "-fx-font-size: 10px; -fx-padding: 2 8; -fx-background-radius: 999;"
         );
-        topLine.getChildren().addAll(authorLabel, categoryBadge);
+
+        // Read status pill — checks database for current user's read status
+        boolean isRead = model.isPostRead(theUser.getUserName(), post.getPostID());
+        Label readPill = new Label(isRead ? "Read" : "Unread");
+        readPill.setStyle(
+            "-fx-background-color: " + (isRead ? "#2ecc71" : "#e74c3c") + ";" +
+            "-fx-text-fill: white;" +
+            "-fx-font-size: 10px; -fx-padding: 2 8; -fx-background-radius: 999;"
+        );
+
+        topLine.getChildren().addAll(authorLabel, categoryBadge, readPill);
 
         // Title + content preview
         String titlePart = post.getTitle() != null ? post.getTitle() : "";
@@ -439,7 +492,7 @@ public class ViewDiscussionForum {
             : combined;
         Label previewLabel = new Label(preview);
         previewLabel.setStyle(
-        	"-fx-font-family: 'Montserrat SemiBold'; -fx-font-size: 13px; -fx-text-fill: #fff;"
+            "-fx-font-family: 'Montserrat SemiBold'; -fx-font-size: 13px; -fx-text-fill: #fff;"
         );
         previewLabel.setWrapText(false);
 
@@ -460,8 +513,14 @@ public class ViewDiscussionForum {
             )
         );
 
-        // Click to load full post on right
+        // Click to load full post, mark as read, and update pill instantly
         row.setOnMouseClicked(_ -> {
+            model.markPostAsRead(theUser.getUserName(), post.getPostID());
+            readPill.setText("Read");
+            readPill.setStyle(
+                "-fx-background-color: #2ecc71; -fx-text-fill: white;" +
+                "-fx-font-size: 10px; -fx-padding: 2 8; -fx-background-radius: 999;"
+            );
             Post freshPost = model.getPostByID(post.getPostID());
             if (freshPost == null) {
                 theSelectedPost = null;
@@ -684,9 +743,8 @@ public class ViewDiscussionForum {
         dialog.getDialogPane().getButtonTypes().addAll(submitType, ButtonType.CANCEL);
         
         ComboBox<String> categoryCombo = new ComboBox<>();
-        categoryCombo.setItems(FXCollections.observableArrayList(
-            "General", "Homework", "Lectures", "Assignments", "Exams"
-        ));
+        
+        categoryCombo.setItems(threadCategories);
         categoryCombo.setValue("General");
         
         TextArea titleArea = new TextArea();
@@ -745,9 +803,7 @@ public class ViewDiscussionForum {
         dialog.getDialogPane().getButtonTypes().addAll(saveType, ButtonType.CANCEL);
         
         ComboBox<String> categoryCombo = new ComboBox<>();
-        categoryCombo.setItems(FXCollections.observableArrayList(
-            "General", "Homework", "Lectures", "Assignments", "Exams"
-        ));
+        categoryCombo.setItems(threadCategories);
         categoryCombo.setValue(post.getCategory());
         
         TextArea titleArea = new TextArea(post.getTitle());
@@ -848,6 +904,24 @@ public class ViewDiscussionForum {
             vbox_PostDetail.getChildren().clear();
             refreshPostList();
         }
+    }
+    
+    private static void showNewThreadDialog() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("New Thread");
+        dialog.setHeaderText("Create a new thread category");
+        dialog.setContentText("Thread name:");
+
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(threadName -> {
+            if (threadName.trim().isEmpty()) {
+                alertValidation.setContentText("Thread name cannot be empty.");
+                alertValidation.showAndWait();
+            } else {
+                threadCategories.add(threadName.trim());
+                combo_Category.getItems().add(threadName.trim());
+            }
+        });
     }
 
     /*-*******************************************************************************************

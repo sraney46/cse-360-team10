@@ -241,63 +241,59 @@ public class ModelDiscussionForum {
      * REPLY - CREATE
      **********************************************************************************************/
 
-      /**********
-     * <p>Method: addReply(Reply reply)</p>
+    /**********
+     * <p>Method: addReply(Reply reply, int id)</p>
      *
      * <p>Description: Inserts a new Reply object into the replyDB table.
      * Validates the reply before attempting insertion and returns false
-     * with a printed error if validation fails.</p>
+     * with a printed error if validation fails. Verifies that the specified
+     * postID exists in the database before inserting. On successful insert,
+     * the database-generated replyID and the provided postID are stamped
+     * back onto the Reply object.</p>
      *
      * @param reply the Reply object to insert into the database
+     * @param id the postID that this reply belongs to
      * @return true if the reply was successfully inserted, false otherwise
      */
-    public boolean addReply(Reply reply,int id) {
+    public boolean addReply(Reply reply, int id) {
         String error = reply.checkValidation();
         if (!error.isEmpty()) {
             System.out.println("*** ERROR *** Cannot add reply: " + error);
             return false;
-              }
-    String checkPostQuery = "SELECT postID FROM postDB WHERE postID = ?";
-    try (PreparedStatement checkStmt = theDatabase.getConnection().prepareStatement(checkPostQuery)) {
-        checkStmt.setInt(1, id);
-        ResultSet rs = checkStmt.executeQuery();
-        if (!rs.next()) {
-            System.out.println("*** ERROR *** Cannot add reply: Post ID " + id + " does not exist.");
+        }
+        
+        // Check if post exists
+        String checkPostQuery = "SELECT postID FROM postDB WHERE postID = ?";
+        try (PreparedStatement checkStmt = theDatabase.getConnection().prepareStatement(checkPostQuery)) {
+            checkStmt.setInt(1, id);
+            ResultSet rs = checkStmt.executeQuery();
+            if (!rs.next()) {
+                System.out.println("*** ERROR *** Cannot add reply: Post ID " + id + " does not exist.");
+                return false;
+            }
+        } catch (SQLException e) {
+            System.out.println("*** ERROR *** Database error during post existence check: " + e.getMessage());
             return false;
         }
-    } catch (SQLException e) {
-        System.out.println("*** ERROR *** Database error during post existence check: " + e.getMessage());
-        return false;
-    }
 
-    int nextID = 1; 
-    String idQuery = "SELECT MAX(replyID) FROM replyDB WHERE postID = ?";
-    try (PreparedStatement idStmt = theDatabase.getConnection().prepareStatement(idQuery)) {
-        idStmt.setInt(1, id);
-        ResultSet rs = idStmt.executeQuery();
-        if (rs.next()) {
-            nextID = rs.getInt(1) + 1;
-        }
-    } catch (SQLException e) {
-        System.out.println("*** ERROR *** Could not determine next replyID: " + e.getMessage());
-        return false;
-    }
-      String query = "INSERT INTO replyDB (replyID, postID, author, authorRole, content, timestamp) VALUES (?, ?, ?, ?, ?, ?)";
-    
-    try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
-        pstmt.setInt(1, nextID);      
-      pstmt.setInt(2, id);          
-        pstmt.setString(3, reply.getAuthor());
-        pstmt.setString(4, reply.getAuthorRole());
-        pstmt.setString(5, reply.getContent());
-        pstmt.setLong(6, reply.getTimestamp());
-        
-        pstmt.executeUpdate();
-
-        reply.setReplyID(nextID);
-        reply.setPostID(id);
-
-        return true;
+        // Let database handle ID auto increment
+        String query = "INSERT INTO replyDB (postID, author, authorRole, content, timestamp) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setInt(1, id);
+            pstmt.setString(2, reply.getAuthor());
+            pstmt.setString(3, reply.getAuthorRole());
+            pstmt.setString(4, reply.getContent());
+            pstmt.setLong(5, reply.getTimestamp());
+            pstmt.executeUpdate();
+            
+            // Stamp the generated ID back onto the reply object
+            ResultSet generatedKeys = pstmt.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                reply.setReplyID(generatedKeys.getInt(1));
+            }
+            reply.setPostID(id);
+            
+            return true;
         } catch (SQLException e) {
             System.out.println("*** ERROR *** Failed to add reply: " + e.getMessage());
             return false;

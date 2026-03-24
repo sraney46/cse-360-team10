@@ -363,7 +363,7 @@ public class PostTests {
     assertNull(notFound, "Post Read - non-existent id", null);
 
     // Positive: Delete existing
-    boolean delete = pc.deletePost(1);
+    boolean delete = pc.hardDeletePost(1);
     if(delete){
       isValid=true;
       assertTrue(isValid, "Post Delete - valid", "post deleted successfully");

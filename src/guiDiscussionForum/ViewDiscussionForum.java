@@ -462,8 +462,14 @@ public class ViewDiscussionForum {
 
         // Click to load full post on right
         row.setOnMouseClicked(_ -> {
-            theSelectedPost = post;
-            loadPostDetail(post);
+            Post freshPost = model.getPostByID(post.getPostID());
+            if (freshPost == null) {
+                theSelectedPost = null;
+                loadPostDetail(null);
+            } else {
+                theSelectedPost = freshPost;
+                loadPostDetail(freshPost);
+            }
         });
 
         return row;
@@ -484,6 +490,14 @@ public class ViewDiscussionForum {
      */
     private static void loadPostDetail(Post post) {
         vbox_PostDetail.getChildren().clear();
+        
+        // Handle deleted post
+        if (post == null) {
+            Label deletedLabel = new Label("This post has been deleted.");
+            deletedLabel.setStyle("-fx-text-fill: #888; -fx-font-size: 16px;");
+            vbox_PostDetail.getChildren().add(deletedLabel);
+            return;
+        }
 
         // Post header
         Label authorLabel = new Label(post.getAuthor());
@@ -829,7 +843,7 @@ public class ViewDiscussionForum {
     private static void handleDeletePost(Post post) {
         Optional<ButtonType> result = alertDeleteConfirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-        	model.deletePost(post.getPostID());
+        	model.softDeletePost(post.getPostID());
             theSelectedPost = null;
             vbox_PostDetail.getChildren().clear();
             refreshPostList();

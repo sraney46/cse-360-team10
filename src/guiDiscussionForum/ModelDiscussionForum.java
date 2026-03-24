@@ -217,7 +217,7 @@ public class ModelDiscussionForum {
      **********************************************************************************************/
 
     /**********
-     * <p>Method: deletePost(int postID)</p>
+     * <p>Method: hardDeletePost(int postID)</p>
      *
      * <p>Description: Deletes a post from the postDB table by its postID.
      * The "Are you sure?" confirmation is handled by the GUI before this method is called.</p>
@@ -225,8 +225,32 @@ public class ModelDiscussionForum {
      * @param postID the ID of the post to delete
      * @return true if the deletion was successful, false otherwise
      */
-    public boolean deletePost(int postID) {
+    public boolean hardDeletePost(int postID) {
         String query = "DELETE FROM postDB WHERE postID = ?";
+        try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
+            pstmt.setInt(1, postID);
+            pstmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.out.println("*** ERROR *** Failed to delete post: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    /**********
+     * <p>Method: hardDeletePost(int postID)</p>
+     *
+     * <p>Description: Permanently deletes a post from the postDB table by its postID.
+     * Unlike deletePost(), this method fully removes the row from the database.
+     * This method is intended for use in testing only. The GUI should use deletePost()
+     * which performs a soft delete by marking the post as deleted instead of
+     * removing it, allowing replies to remain visible.</p>
+     *
+     * @param postID the ID of the post to permanently delete
+     * @return true if the deletion was successful, false otherwise
+     */
+    public boolean softDeletePost(int postID) {
+        String query = "UPDATE postDB SET content = 'This post has been deleted.', title = '[Deleted]', author = '[deleted]' WHERE postID = ?";
         try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
             pstmt.setInt(1, postID);
             pstmt.executeUpdate();

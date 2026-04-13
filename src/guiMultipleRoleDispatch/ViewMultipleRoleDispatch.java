@@ -103,7 +103,7 @@ public class ViewMultipleRoleDispatch {
 		if (theView == null) theView = new ViewMultipleRoleDispatch();
 
 		List<String> list = new ArrayList<String>();	// Create a new list empty list
-		theDatabase.getUserAccountDetails(theUser.getUserName());
+		theDatabase.getUserAccountDetails(theUser.getUserName(), theUser.getPassword());
 		
 		label_UserDetails.setText("User: " + theUser.getUserName() + "   Select which role");
 		setupLabelUI(label_UserDetails, "Arial", 20, width, Pos.CENTER, 0, 50);

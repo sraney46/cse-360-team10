@@ -295,24 +295,6 @@ public class ViewAddRemoveRoles {
 
     scrollPane.getStyleClass().add("custom-scroll");
 
-    List<String> allUsernames = theDatabase.getUserList();
-
-    for (String username : allUsernames) {
-
-      theDatabase.getUserAccountDetails(username);
-
-      User user = new User();
-      user.setUserName(username);
-      user.setAdminRole(theDatabase.getCurrentAdminRole());
-      user.setRole1User(theDatabase.getCurrentNewRole1());
-      user.setRole2User(theDatabase.getCurrentNewRole2());
-
-      HBox userRow = createUserRow(user);
-
-      userListBox.getChildren().add(userRow);
-
-    }
-
     // GUI Area 3
     setupButtonUI(button_Return, "Dialog", 18, 210, Pos.CENTER, 20, 540);
     button_Return.setOnAction((_) -> {
@@ -600,7 +582,7 @@ public class ViewAddRemoveRoles {
       if (addCombo.isVisible() && addCombo.getValue() != null) {
 
         String roleToAdd = addCombo.getValue();
-        theDatabase.updateUserRole(user.getUserName(), roleToAdd, "true");
+        theDatabase.updateUserRole(user.getUserId(), roleToAdd, "true");
 
         if (roleToAdd.equals("Admin"))
           user.setAdminRole(true);
@@ -631,7 +613,7 @@ public class ViewAddRemoveRoles {
       } else if (removeCombo.isVisible() && removeCombo.getValue() != null) {
 
         String roleToRemove = removeCombo.getValue();
-        theDatabase.updateUserRole(user.getUserName(), roleToRemove, "false");
+        theDatabase.updateUserRole(user.getUserId(), roleToRemove, "false");
 
         if (roleToRemove.equals("Admin"))
           user.setAdminRole(false);
@@ -747,7 +729,7 @@ public class ViewAddRemoveRoles {
    * <p>
    * Description: Clears and repopulates the user list displayed in the Add/Remove
    * Roles page.
-   * This method fetches the latest list of usernames from the database, retrieves
+   * This method fetches the latest list of id numbers from the database, retrieves
    * each user's
    * account details, constructs a new HBox row for each user using
    * `createUserRow(User user)`,
@@ -773,20 +755,14 @@ public class ViewAddRemoveRoles {
     // Clear current list
     userListBox.getChildren().clear();
 
-    // Get updated usernames from the database
-    List<String> allUsernames = theDatabase.getUserList();
+    // Get id numbers from the database
+    List<Integer> allUsers = theDatabase.getUserList();
 
-    for (String username : allUsernames) {
-      theDatabase.getUserAccountDetails(username);
-
-      User user = new User();
-      user.setUserName(username);
-      user.setAdminRole(theDatabase.getCurrentAdminRole());
-      user.setRole1User(theDatabase.getCurrentNewRole1());
-      user.setRole2User(theDatabase.getCurrentNewRole2());
-
+    for (int identity : allUsers) {
+      User user = theDatabase.getUserAsObject(identity);
       HBox userRow = createUserRow(user);
       userListBox.getChildren().add(userRow);
+
     }
   }
 

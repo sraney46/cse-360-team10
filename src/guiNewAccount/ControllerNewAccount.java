@@ -141,13 +141,13 @@ public class ControllerNewAccount {
         // information provided in the invitation
         if (ViewNewAccount.theRole.compareTo("Admin") == 0) {
           roleCode = 1;
-          user = new User(username, password, "", "", "", "", "", "", true, false, false, false);
+          user = new User(0, username, password, "", "", "", "", "", "", true, false, false, false);
         } else if (ViewNewAccount.theRole.compareTo("Staff") == 0) {
           roleCode = 2;
-          user = new User(username, password, "", "", "", "", "", "", false, true, false, false);
+          user = new User(0, username, password, "", "", "", "", "", "", false, true, false, false);
         } else if (ViewNewAccount.theRole.compareTo("Student") == 0) {
           roleCode = 3;
-          user = new User(username, password, "", "", "", "", "", "", false, false, true, false);
+          user = new User(0, username, password, "", "", "", "", "", "", false, false, true, false);
         } else {
           System.out.println(
               "**** Trying to create a New Account for a role that does not exist!");
@@ -176,7 +176,7 @@ public class ControllerNewAccount {
             ViewNewAccount.text_Invitation.getText());
 
         // Set the database so it has this user and the current user
-        theDatabase.getUserAccountDetails(username);
+        theDatabase.getUserAccountDetails(username, password);
 
         // Navigate to the Welcome Login Page
         guiUserUpdate.ViewUserUpdate.displayUserUpdate(ViewNewAccount.theStage, user);

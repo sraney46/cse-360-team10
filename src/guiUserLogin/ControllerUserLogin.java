@@ -101,7 +101,7 @@ public class ControllerUserLogin {
     boolean loginResult = false;
 
     // Fetch the user and verify the username
-    if (theDatabase.getUserAccountDetails(username) == false) {
+    if (theDatabase.getUserAccountDetails(username, password) == false) {
       // Don't provide too much information. Don't say the username is invalid or the
       // password is invalid. Just say the pair is invalid.
       ViewUserLogin.alertUsernamePasswordError.setContentText(
@@ -128,7 +128,7 @@ public class ControllerUserLogin {
     // System.out.println("*** Password is valid for this user");
 
     // Establish this user's details
-    User user = new User(username, password, theDatabase.getCurrentOTP(), theDatabase.getCurrentFirstName(),
+    User user = new User(theDatabase.getCurrentId(), username, password, theDatabase.getCurrentOTP(), theDatabase.getCurrentFirstName(),
         theDatabase.getCurrentMiddleName(), theDatabase.getCurrentLastName(),
         theDatabase.getCurrentPreferredFirstName(), theDatabase.getCurrentEmailAddress(),
         theDatabase.getCurrentAdminRole(),

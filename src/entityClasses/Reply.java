@@ -20,11 +20,8 @@ public class Reply {
     /** The ID of the post this reply belongs to */
     private int postID;
 
-    /** The username of the user who created the reply */
-    private String author;
-
-    /** The role of the author (e.g., "Admin", "Staff", "Student") */
-    private String authorRole;
+    /** The identification of the user who created the reply */
+    private int author;
 
     /** The body content of the reply */
     private String content;
@@ -48,21 +45,19 @@ public class Reply {
     public Reply() {}
 
     /**********
-     * <p>Constructor: Reply(int postID, String author, String authorRole, String content)</p>
+     * <p>Constructor: Reply(int postID, int author, int authorRole, String content)</p>
      *
      * <p>Description: Creates a new Reply with the provided postID, author, authorRole,
      * and content. Timestamp is set automatically to the current system time.
      * ReplyID is left as default (0) until assigned by the database.</p>
      *
      * @param postID     the ID of the post this reply is responding to
-     * @param author     the username of the user creating the reply
-     * @param authorRole the role of the author (e.g., "Admin", "Staff", "Student")
+     * @param author     the identification of the user creating the reply
      * @param content    the body text of the reply
      */
-    public Reply(int postID, String author, String authorRole, String content) {
+    public Reply(int postID, int author, String content) {
         this.postID = postID;
         this.author = author;
-        this.authorRole = authorRole;
         this.content = content;
         this.timestamp = System.currentTimeMillis();
     }
@@ -85,15 +80,9 @@ public class Reply {
 
     /**********
      * <p>Method: getAuthor()</p>
-     * @return the username of the reply's author
+     * @return the identification of the reply's author
      */
-    public String getAuthor() { return author; }
-
-    /**********
-     * <p>Method: getAuthorRole()</p>
-     * @return the role of the reply's author
-     */
-    public String getAuthorRole() { return authorRole; }
+    public int getAuthor() { return author; }
 
     /**********
      * <p>Method: getContent()</p>
@@ -124,16 +113,10 @@ public class Reply {
     public void setPostID(int postID) { this.postID = postID; }
 
     /**********
-     * <p>Method: setAuthor(String author)</p>
-     * @param author the username to set as the author
+     * <p>Method: setAuthor(int author)</p>
+     * @param author the identification to set as the author
      */
-    public void setAuthor(String author) { this.author = author; }
-
-    /**********
-     * <p>Method: setAuthorRole(String authorRole)</p>
-     * @param authorRole the role to assign to the author
-     */
-    public void setAuthorRole(String authorRole) { this.authorRole = authorRole; }
+    public void setAuthor(int author) { this.author = author; }
 
     /**********
      * <p>Method: setContent(String content)</p>

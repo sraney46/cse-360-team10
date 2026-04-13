@@ -446,7 +446,7 @@ public class ViewUserUpdate {
           }
         }
 
-        theDatabase.updateUserName(oldUserName, newUserName);
+        theDatabase.updateUserName(theUser.getUserId(), newUserName);
         theUser.setUserName(newUserName);
         label_CurrentUsername.setText(newUserName);
         dialogUpdateUserName.setHeaderText("Update your User Name");
@@ -533,7 +533,7 @@ public class ViewUserUpdate {
 
         }
 
-        theDatabase.updatePassword(theUser.getUserName(), password1);
+        theDatabase.updatePassword(theUser.getUserId(), password1);
         theUser.setPassword(password1);
         label_CurrentPassword.setText(password1);
 
@@ -559,10 +559,10 @@ public class ViewUserUpdate {
     	    if (!validateLength(input, "First Name")) return; // 32-char check
 
     	    // Only update if non-empty and valid length
-    	    theDatabase.updateFirstName(theUser.getUserName(), input);
+    	    theDatabase.updateFirstName(theUser.getUserId(), input);
     	    
     	    // Refresh display
-    	    theDatabase.getUserAccountDetails(theUser.getUserName());
+    	    theDatabase.getUserAccountDetails(theUser.getUserName(), theUser.getPassword());
     	    String newName = theDatabase.getCurrentFirstName();
     	    theUser.setFirstName(newName);
     	    label_CurrentFirstName.setText((newName == null || newName.isEmpty()) ? "<none>" : newName);
@@ -586,10 +586,10 @@ public class ViewUserUpdate {
 	  	    if (!validateLength(input, "Middle Name")) return; // 32-char check
 	
 	  	    // Only update if non-empty and valid length
-	  	    theDatabase.updateMiddleName(theUser.getUserName(), input);
+	  	    theDatabase.updateMiddleName(theUser.getUserId(), input);
 	  	    
 	  	    // Refresh display
-	  	    theDatabase.getUserAccountDetails(theUser.getUserName());
+	  	    theDatabase.getUserAccountDetails(theUser.getUserName(), theUser.getPassword());
 	  	    String newName = theDatabase.getCurrentMiddleName();
 	  	    theUser.setMiddleName(newName);
 	  	    label_CurrentMiddleName.setText((newName == null || newName.isEmpty()) ? "<none>" : newName);
@@ -612,10 +612,10 @@ public class ViewUserUpdate {
 	  	    if (!validateLength(input, "Last Name")) return; // 32-char check
 	
 	  	    // Only update if non-empty and valid length
-	  	    theDatabase.updateLastName(theUser.getUserName(), input);
+	  	    theDatabase.updateLastName(theUser.getUserId(), input);
 	  	    
 	  	    // Refresh display
-	  	    theDatabase.getUserAccountDetails(theUser.getUserName());
+	  	    theDatabase.getUserAccountDetails(theUser.getUserName(), theUser.getPassword());
 	  	    String newName = theDatabase.getCurrentLastName();
 	  	    theUser.setLastName(newName);
 	  	    label_CurrentLastName.setText((newName == null || newName.isEmpty()) ? "<none>" : newName);
@@ -640,10 +640,10 @@ public class ViewUserUpdate {
 	  	    if (!validateLength(input, "Preferred Name")) return; // 32-char check
 	
 	  	    // Only update if non-empty and valid length
-	  	    theDatabase.updatePreferredFirstName(theUser.getUserName(), input);
+	  	    theDatabase.updatePreferredFirstName(theUser.getUserId(), input);
 	  	    
 	  	    // Refresh display
-	  	    theDatabase.getUserAccountDetails(theUser.getUserName());
+	  	    theDatabase.getUserAccountDetails(theUser.getUserName(), theUser.getPassword());
 	  	    String newName = theDatabase.getCurrentPreferredFirstName();
 	  	    theUser.setPreferredFirstName(newName);
 	  	    label_CurrentPreferredFirstName.setText((newName == null || newName.isEmpty()) ? "<none>" : newName);
@@ -667,10 +667,10 @@ public class ViewUserUpdate {
 	  	    if (!validateLength(input, "Email Address")) return; // 32-char check
 	
 	  	    // Only update if non-empty and valid length
-	  	    theDatabase.updateEmailAddress(theUser.getUserName(), input);
+	  	    theDatabase.updateEmailAddress(theUser.getUserId(), input);
 	  	    
 	  	    // Refresh display
-	  	    theDatabase.getUserAccountDetails(theUser.getUserName());
+	  	    theDatabase.getUserAccountDetails(theUser.getUserName(), theUser.getPassword());
 	  	    String newName = theDatabase.getCurrentEmailAddress();
 	  	    theUser.setEmailAddress(newName);
 	  	    label_CurrentEmailAddress.setText((newName == null || newName.isEmpty()) ? "<none>" : newName);

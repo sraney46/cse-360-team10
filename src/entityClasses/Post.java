@@ -17,8 +17,8 @@ public class Post {
     /** Unique identifier for the post, assigned by the database */
     private int postID;
 
-    /** The username of the student who created the post */
-    private String author;
+    /** The id of the student who created the post */
+    private int author;
     
     private String title;
 
@@ -50,17 +50,17 @@ public class Post {
     public Post() {}
 
     /**********
-     * <p>Constructor: Post(String author, String content, String category)</p>
+     * <p>Constructor: Post(int author, String content, String category)</p>
      *
      * <p>Description: Creates a new Post with the provided author, content, and category.
      * Timestamp is set automatically to the current system time.
      * PostID is left as default (0) until assigned by the database.</p>
      *
-     * @param author   the username of the student creating the post
+     * @param author   the identification of the student creating the post
      * @param content  the body text of the post
      * @param category the category the post belongs to
      */
-    public Post(String author, String title, String content, String category) {
+    public Post(int author, String title, String content, String category) {
         this.author = author;
         this.title = title;
         this.content = content;
@@ -80,9 +80,9 @@ public class Post {
 
     /**********
      * <p>Method: getAuthor()</p>
-     * @return the username of the post's author
+     * @return the identification of the post's author
      */
-    public String getAuthor() { return author; }
+    public int getAuthor() { return author; }
     
     /**********
      * <p>Method: getTitle()</p>
@@ -119,14 +119,14 @@ public class Post {
     public void setPostID(int postID) { this.postID = postID; }
 
     /**********
-     * <p>Method: setAuthor(String author)</p>
-     * @param author the username to set as the author
+     * <p>Method: setAuthor(int author)</p>
+     * @param author the identification to set as the author
      */
-    public void setAuthor(String author) { this.author = author; }
+    public void setAuthor(int author) { this.author = author; }
     
     /**********
      * <p>Method: setTitle(String title)</p>
-     * @param author the username to set as the author
+     * @param author the identification to set as the author
      */
     public void setTitle(String title) { this.title = title; }
 
@@ -163,16 +163,16 @@ public class Post {
      * @return a String describing the validation error, or empty string if valid
      */
 	public String checkValidation() {
-	    if (author == null) return "Post author cannot be null.";
+	    if (author <= 0) return "Post author cannot be null.";
 	    if (title == null) return "Post title cannot be null."; // Added title null check
 	    if (content == null) return "Post body cannot be null.";
 	    if (category == null) return "Post category cannot be null.";
 	
-	    if (author.isEmpty() && title.isEmpty() && content.isEmpty() && category.isEmpty()) {
+	    if (author <= 0 && title.isEmpty() && content.isEmpty() && category.isEmpty()) {
 	        return "All fields can not be empty.";
 	    }
 	
-	    if (author.isEmpty()) return "Post author cannot be empty.";
+	    if (author <= 0) return "Post author cannot be empty.";
 	    if (title.isEmpty()) return "Post title cannot be empty.";
 	    if (content.isEmpty()) return "Post body cannot be empty.";
 	    
@@ -182,7 +182,19 @@ public class Post {
 	    }
 	
 	    boolean hasSpecial = false;
-	    for (char c : author.toCharArray()) {
+	    for (char c : title.toCharArray()) {
+	        if (SPECIAL_CHARS.indexOf(c) >= 0) {
+	            hasSpecial = true;
+	            break; 
+	      }
+	    }
+	    for (char c : content.toCharArray()) {
+	        if (SPECIAL_CHARS.indexOf(c) >= 0) {
+	            hasSpecial = true;
+	            break; 
+	      }
+	    }
+	    for (char c : category.toCharArray()) {
 	        if (SPECIAL_CHARS.indexOf(c) >= 0) {
 	            hasSpecial = true;
 	            break; 
@@ -190,7 +202,7 @@ public class Post {
 	    }
 	    
 	    if (hasSpecial) {
-	        return "Post author and/or category cannot be special character.";
+	        return "Post content, title and/or category cannot be special character.";
 	    }
 	
 	    return "";

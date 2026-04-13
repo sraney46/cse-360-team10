@@ -61,6 +61,7 @@ public class Database {
 
   // These are the easily accessible attributes of the currently logged-in user
   // This is only useful for single user applications
+  private int	 currentIdentification;
   private String currentUsername;
   private String currentPassword;
   private String currentOTP;
@@ -110,7 +111,7 @@ public class Database {
       connection = DriverManager.getConnection(DB_URL, USER, PASS);
       statement = connection.createStatement();
       // You can use this command to clear the database and restart from fresh.
-//       statement.execute("DROP ALL OBJECTS");
+      // statement.execute("DROP ALL OBJECTS");
 
       createTables(); // Create the necessary tables if they don't exist
     } catch (ClassNotFoundException e) {
@@ -167,7 +168,7 @@ public class Database {
     
     String postTable = "CREATE TABLE IF NOT EXISTS postDB ("
         + "postID INT AUTO_INCREMENT PRIMARY KEY, "
-        + "author VARCHAR(255), "
+        + "author INT, "
         + "title VARCHAR(255), "
         + "content LONGTEXT, "
         + "category VARCHAR(50), "
@@ -177,8 +178,7 @@ public class Database {
     String replyTable = "CREATE TABLE IF NOT EXISTS replyDB ("
         + "replyID INT AUTO_INCREMENT PRIMARY KEY, "
         + "postID INT, "
-        + "author VARCHAR(255), "
-        + "authorRole VARCHAR(50), "
+        + "author INT, "
         + "content LONGTEXT, "
         + "timestamp BIGINT)";
     statement.execute(replyTable);
@@ -188,6 +188,23 @@ public class Database {
 	    + "postID INT, "
 	    + "PRIMARY KEY (userName, postID))";
 	statement.execute(readStatusTable);
+	
+	String ticketTable = "CREATE TABLE IF NOT EXISTS ticketDB ("
+        + "postID INT AUTO_INCREMENT PRIMARY KEY, "
+        + "author INT, "
+        + "title VARCHAR(255), "
+        + "content LONGTEXT, "
+        + "category VARCHAR(50), "
+        + "timestamp BIGINT)";
+    statement.execute(ticketTable);
+
+    String ticketReplyTable = "CREATE TABLE IF NOT EXISTS ticketreplyDB ("
+        + "replyID INT AUTO_INCREMENT PRIMARY KEY, "
+        + "postID INT, "
+        + "author INT, "
+        + "content LONGTEXT, "
+        + "timestamp BIGINT)";
+    statement.execute(ticketReplyTable);
 
   }
 
@@ -276,6 +293,16 @@ public class Database {
       pstmt.setBoolean(12, user.isTemporaryPassword());
       pstmt.executeUpdate();
     }
+    //AC - let's update the user object to use this id, when registering
+    String getIDQuery = "SELECT * FROM userDB WHERE id=(SELECT max(id) FROM userDB);";
+    try {
+    	ResultSet resultSet = statement.executeQuery(getIDQuery);
+        if (resultSet.next()) {
+        	System.out.println(resultSet.getInt("id"));
+        	user.setId(resultSet.getInt("id"));
+        }
+      }
+    catch(SQLException e) { e.printStackTrace(); }
   }
 
   /*******
@@ -406,30 +433,30 @@ public class Database {
 	        try (PreparedStatement pstmt = connection.prepareStatement(postSQL)) {
 
 	        	Object[][] posts = {
-	        		    {"first_user",  "STACK/QUEUE",      "What is the difference between a stack and a queue?",                               "General",     System.currentTimeMillis() - 200000},
-	        		    {"user2",  "INTERFACES",       "Can someone explain how interfaces work in Java?",                                   "Lectures",    System.currentTimeMillis() - 190000},
-	        		    {"user3",  "HW2 CLARIFY",      "I am confused about HW2 requirements, can someone clarify?",                        "Homework",    System.currentTimeMillis() - 180000},
-	        		    {"user4",  "MIDTERM TOPICS",   "What topics will be covered on the midterm?",                                        "Exams",       System.currentTimeMillis() - 170000},
-	        		    {"user5",  "H2 SETUP",         "Does anyone know how to set up the H2 database in Eclipse?",                        "General",     System.currentTimeMillis() - 160000},
-	        		    {"user6",  "NULL POINTER",     "I keep getting a NullPointerException in my PostList class, any ideas?",            "Homework",    System.currentTimeMillis() - 150000},
-	        		    {"user7",  "PROJECT DEADLINE", "What is the deadline for the team project phase 2?",                                 "Assignments", System.currentTimeMillis() - 140000},
-	        		    {"user8",  "SCREENCAST TIPS",  "Can someone share tips for recording screencasts on Mac?",                          "General",     System.currentTimeMillis() - 130000},
-	        		    {"user9",  "INHERITANCE",      "Is inheritance always better than composition in OOP?",                             "Lectures",    System.currentTimeMillis() - 120000},
-	        		    {"user10", "HW2 SUBMISSION",   "Where do we submit the HW2 zip file, Canvas or email?",                            "Homework",    System.currentTimeMillis() - 110000},
-	        		    {"user2",  "ABSTRACT VS INTERFACE", "Can someone explain the difference between abstract classes and interfaces?", "Lectures",    System.currentTimeMillis() - 100000},
-	        		    {"user4",  "GIT MERGE",        "How do we handle merge conflicts in Git when two people edit the same file?",       "General",     System.currentTimeMillis() - 90000},
-	        		    {"user6",  "SEQUENCE DIAGRAM", "Is the sequence diagram required for every use case or just the main one?",        "Assignments", System.currentTimeMillis() - 80000},
-	        		    {"first_user",  "CRUD TEST",        "What is the best way to test CRUD operations without a GUI?",                       "Homework",    System.currentTimeMillis() - 70000},
-	        		    {"user8",  "PROJECT STYLE",    "Does the team project need to follow the FoundationsF25 documentation style?",     "Assignments", System.currentTimeMillis() - 60000},
-	        		    {"user3",  "H2 DRIVER ERROR",  "I am getting a ClassNotFoundException for the H2 driver, how do I fix this?",      "General",     System.currentTimeMillis() - 50000},
-	        		    {"user5",  "EPICS VS STORIES", "What is the difference between epics and user stories?",                            "Lectures",    System.currentTimeMillis() - 40000},
-	        		    {"user9",  "ARRAYLIST/COMPOSITION", "Should our PostList class extend ArrayList or use composition instead?",        "Homework",    System.currentTimeMillis() - 30000},
-	        		    {"user7",  "HW2 SCREENCASTS",  "How many screencasts do we need to submit for HW2?",                               "Assignments", System.currentTimeMillis() - 20000},
-	        		    {"user10", "JAVA FX",          "Can we use JavaFX TableView instead of a custom VBox list for displaying posts?",  "General",     System.currentTimeMillis() - 10000},
+	        		    {generateRandomUser(),  "STACK/QUEUE",      "What is the difference between a stack and a queue?",                               "General",     System.currentTimeMillis() - 200000},
+	        		    {generateRandomUser(),  "INTERFACES",       "Can someone explain how interfaces work in Java?",                                   "Lectures",    System.currentTimeMillis() - 190000},
+	        		    {generateRandomUser(),  "HW2 CLARIFY",      "I am confused about HW2 requirements, can someone clarify?",                        "Homework",    System.currentTimeMillis() - 180000},
+	        		    {generateRandomUser(),  "MIDTERM TOPICS",   "What topics will be covered on the midterm?",                                        "Exams",       System.currentTimeMillis() - 170000},
+	        		    {generateRandomUser(),  "H2 SETUP",         "Does anyone know how to set up the H2 database in Eclipse?",                        "General",     System.currentTimeMillis() - 160000},
+	        		    {generateRandomUser(),  "NULL POINTER",     "I keep getting a NullPointerException in my PostList class, any ideas?",            "Homework",    System.currentTimeMillis() - 150000},
+	        		    {generateRandomUser(),  "PROJECT DEADLINE", "What is the deadline for the team project phase 2?",                                 "Assignments", System.currentTimeMillis() - 140000},
+	        		    {generateRandomUser(),  "SCREENCAST TIPS",  "Can someone share tips for recording screencasts on Mac?",                          "General",     System.currentTimeMillis() - 130000},
+	        		    {generateRandomUser(),  "INHERITANCE",      "Is inheritance always better than composition in OOP?",                             "Lectures",    System.currentTimeMillis() - 120000},
+	        		    {generateRandomUser(), "HW2 SUBMISSION",   "Where do we submit the HW2 zip file, Canvas or email?",                            "Homework",    System.currentTimeMillis() - 110000},
+	        		    {generateRandomUser(),  "ABSTRACT VS INTERFACE", "Can someone explain the difference between abstract classes and interfaces?", "Lectures",    System.currentTimeMillis() - 100000},
+	        		    {generateRandomUser(),  "GIT MERGE",        "How do we handle merge conflicts in Git when two people edit the same file?",       "General",     System.currentTimeMillis() - 90000},
+	        		    {generateRandomUser(),  "SEQUENCE DIAGRAM", "Is the sequence diagram required for every use case or just the main one?",        "Assignments", System.currentTimeMillis() - 80000},
+	        		    {generateRandomUser(),  "CRUD TEST",        "What is the best way to test CRUD operations without a GUI?",                       "Homework",    System.currentTimeMillis() - 70000},
+	        		    {generateRandomUser(),  "PROJECT STYLE",    "Does the team project need to follow the FoundationsF25 documentation style?",     "Assignments", System.currentTimeMillis() - 60000},
+	        		    {generateRandomUser(),  "H2 DRIVER ERROR",  "I am getting a ClassNotFoundException for the H2 driver, how do I fix this?",      "General",     System.currentTimeMillis() - 50000},
+	        		    {generateRandomUser(),  "EPICS VS STORIES", "What is the difference between epics and user stories?",                            "Lectures",    System.currentTimeMillis() - 40000},
+	        		    {generateRandomUser(),  "ARRAYLIST/COMPOSITION", "Should our PostList class extend ArrayList or use composition instead?",        "Homework",    System.currentTimeMillis() - 30000},
+	        		    {generateRandomUser(),  "HW2 SCREENCASTS",  "How many screencasts do we need to submit for HW2?",                               "Assignments", System.currentTimeMillis() - 20000},
+	        		    {generateRandomUser(), "JAVA FX",          "Can we use JavaFX TableView instead of a custom VBox list for displaying posts?",  "General",     System.currentTimeMillis() - 10000},
 	        		};
 
 	            for (Object[] post : posts) {
-	                pstmt.setString(1, (String) post[0]);
+	                pstmt.setInt(1, (Integer) post[0]);
 	                pstmt.setString(2, (String) post[1]);
 	                pstmt.setString(3, (String) post[2]);
 	                pstmt.setString(4, (String) post[3]);
@@ -448,120 +475,119 @@ public class Database {
 	        }
 
 	        // Insert replies — every post gets at least 2, some get up to 10
-	        String replySQL = "INSERT INTO replyDB (postID, author, authorRole, content, timestamp) VALUES (?, ?, ?, ?, ?)";
+	        String replySQL = "INSERT INTO replyDB (postID, author, content, timestamp) VALUES (?, ?, ?, ?)";
 	        try (PreparedStatement pstmt = connection.prepareStatement(replySQL)) {
 
 	            Object[][] replies = {
 	                // Post 0 — 5 replies
-	                {postIDs.get(0), "instructor1", "Staff",   "A stack is LIFO and a queue is FIFO. Great question!",                              System.currentTimeMillis() - 199000},
-	                {postIDs.get(0), "user3",       "Student", "I had the same question, this clears it up!",                                       System.currentTimeMillis() - 198000},
-	                {postIDs.get(0), "user5",       "Student", "Think of a stack like a pile of plates and a queue like a line at a store.",        System.currentTimeMillis() - 197000},
-	                {postIDs.get(0), "admin1",      "Admin",   "Great analogy user5! Both are covered in the Week 3 lecture slides.",               System.currentTimeMillis() - 196000},
-	                {postIDs.get(0), "user8",       "Student", "Thanks everyone, this makes a lot more sense now.",                                 System.currentTimeMillis() - 195000},
+	                {postIDs.get(0), generateRandomReplyUser(1), "A stack is LIFO and a queue is FIFO. Great question!",                              System.currentTimeMillis() - 199000},
+	                {postIDs.get(0), generateRandomReplyUser(1),       "I had the same question, this clears it up!",                                       System.currentTimeMillis() - 198000},
+	                {postIDs.get(0), generateRandomReplyUser(1),       "Think of a stack like a pile of plates and a queue like a line at a store.",        System.currentTimeMillis() - 197000},
+	                {postIDs.get(0), generateRandomReplyUser(1),      "Great analogy user5! Both are covered in the Week 3 lecture slides.",               System.currentTimeMillis() - 196000},
+	                {postIDs.get(0), generateRandomReplyUser(1),       "Thanks everyone, this makes a lot more sense now.",                                 System.currentTimeMillis() - 195000},
 
 	                // Post 1 — 4 replies
-	                {postIDs.get(1), "instructor1", "Staff",   "Interfaces define a contract. A class that implements it must provide all methods.", System.currentTimeMillis() - 189000},
-	                {postIDs.get(1), "user6",       "Student", "So interfaces are like a blueprint but without any implementation?",                System.currentTimeMillis() - 188000},
-	                {postIDs.get(1), "instructor1", "Staff",   "Exactly right user6! Default methods in Java 8+ are the one exception.",            System.currentTimeMillis() - 187000},
-	                {postIDs.get(1), "user2",       "Student", "That makes sense, thanks for clarifying!",                                          System.currentTimeMillis() - 186000},
+	                {postIDs.get(1), generateRandomReplyUser(2), "Interfaces define a contract. A class that implements it must provide all methods.", System.currentTimeMillis() - 189000},
+	                {postIDs.get(1), generateRandomReplyUser(2),       "So interfaces are like a blueprint but without any implementation?",                System.currentTimeMillis() - 188000},
+	                {postIDs.get(1), generateRandomReplyUser(2), "Exactly right user6! Default methods in Java 8+ are the one exception.",            System.currentTimeMillis() - 187000},
+	                {postIDs.get(1), generateRandomReplyUser(2),       "That makes sense, thanks for clarifying!",                                          System.currentTimeMillis() - 186000},
 
 	                // Post 2 — 6 replies
-	                {postIDs.get(2), "admin1",      "Admin",   "Please refer to the Canvas assignment page for the full requirements breakdown.",    System.currentTimeMillis() - 179000},
-	                {postIDs.get(2), "user7",       "Student", "The PDF on Canvas has a much clearer breakdown than the website.",                  System.currentTimeMillis() - 178000},
-	                {postIDs.get(2), "first_user",       "Student", "I was confused too, focus on the CRUD and input validation sections.",              System.currentTimeMillis() - 177000},
-	                {postIDs.get(2), "instructor1", "Staff",   "Good advice. Remember you only need CRUD and validation for this assignment.",       System.currentTimeMillis() - 176000},
-	                {postIDs.get(2), "user9",       "Student", "Does the user story document need to be a PDF or can it be a Word doc?",            System.currentTimeMillis() - 175000},
-	                {postIDs.get(2), "admin1",      "Admin",   "It must be submitted as a PDF as stated in the deliverables section.",              System.currentTimeMillis() - 174000},
+	                {postIDs.get(2), generateRandomReplyUser(3),      "Please refer to the Canvas assignment page for the full requirements breakdown.",    System.currentTimeMillis() - 179000},
+	                {postIDs.get(2), generateRandomReplyUser(3),       "The PDF on Canvas has a much clearer breakdown than the website.",                  System.currentTimeMillis() - 178000},
+	                {postIDs.get(2), generateRandomReplyUser(3),       "I was confused too, focus on the CRUD and input validation sections.",              System.currentTimeMillis() - 177000},
+	                {postIDs.get(2), generateRandomReplyUser(3), "Good advice. Remember you only need CRUD and validation for this assignment.",       System.currentTimeMillis() - 176000},
+	                {postIDs.get(2), generateRandomReplyUser(3),       "Does the user story document need to be a PDF or can it be a Word doc?",            System.currentTimeMillis() - 175000},
+	                {postIDs.get(2), generateRandomReplyUser(3),      "It must be submitted as a PDF as stated in the deliverables section.",              System.currentTimeMillis() - 174000},
 
 	                // Post 3 — 3 replies
-	                {postIDs.get(3), "instructor1", "Staff",   "Midterm covers weeks 1 through 6. Focus on OOP principles and UML diagrams.",       System.currentTimeMillis() - 169000},
-	                {postIDs.get(3), "user2",       "Student", "Will there be questions on sequence diagrams specifically?",                        System.currentTimeMillis() - 168000},
-	                {postIDs.get(3), "instructor1", "Staff",   "Yes, expect at least one sequence diagram question on the exam.",                   System.currentTimeMillis() - 167000},
+	                {postIDs.get(3), generateRandomReplyUser(4), "Midterm covers weeks 1 through 6. Focus on OOP principles and UML diagrams.",       System.currentTimeMillis() - 169000},
+	                {postIDs.get(3), generateRandomReplyUser(4),       "Will there be questions on sequence diagrams specifically?",                        System.currentTimeMillis() - 168000},
+	                {postIDs.get(3), generateRandomReplyUser(4), "Yes, expect at least one sequence diagram question on the exam.",                   System.currentTimeMillis() - 167000},
 
 	                // Post 4 — 4 replies
-	                {postIDs.get(4), "user2",       "Student", "Make sure the JDBC driver JAR is added to your build path in Eclipse.",             System.currentTimeMillis() - 159000},
-	                {postIDs.get(4), "user4",       "Student", "Right-click the project, Build Path, Add External JARs, then select h2.jar.",       System.currentTimeMillis() - 158000},
-	                {postIDs.get(4), "instructor1", "Staff",   "Good answers. Also ensure your DB URL matches the path in FoundationsMain.",        System.currentTimeMillis() - 157000},
-	                {postIDs.get(4), "user5",       "Student", "Got it working, the build path was the issue. Thanks everyone!",                    System.currentTimeMillis() - 156000},
+	                {postIDs.get(4), generateRandomReplyUser(5),       "Make sure the JDBC driver JAR is added to your build path in Eclipse.",             System.currentTimeMillis() - 159000},
+	                {postIDs.get(4), generateRandomReplyUser(5),       "Right-click the project, Build Path, Add External JARs, then select h2.jar.",       System.currentTimeMillis() - 158000},
+	                {postIDs.get(4), generateRandomReplyUser(5), "Good answers. Also ensure your DB URL matches the path in FoundationsMain.",        System.currentTimeMillis() - 157000},
+	                {postIDs.get(4), generateRandomReplyUser(5),       "Got it working, the build path was the issue. Thanks everyone!",                    System.currentTimeMillis() - 156000},
 
 	                // Post 5 — 2 replies
-	                {postIDs.get(5), "first_user",       "Student", "Check that you are not calling a method on a null object before it is initialized.", System.currentTimeMillis() - 149000},
-	                {postIDs.get(5), "instructor1", "Staff",   "Add a null check before calling theDatabase.getConnection() in your PostList.",     System.currentTimeMillis() - 148000},
+	                {postIDs.get(5), generateRandomReplyUser(6),       "Check that you are not calling a method on a null object before it is initialized.", System.currentTimeMillis() - 149000},
+	                {postIDs.get(5), generateRandomReplyUser(6), "Add a null check before calling theDatabase.getConnection() in your PostList.",     System.currentTimeMillis() - 148000},
 
 	                // Post 6 — 2 replies
-	                {postIDs.get(6), "admin1",      "Admin",   "Phase 2 is due two weeks from Friday. Check the course schedule on Canvas.",        System.currentTimeMillis() - 139000},
-	                {postIDs.get(6), "user3",       "Student", "Thanks, I had the wrong date written down!",                                        System.currentTimeMillis() - 138000},
+	                {postIDs.get(6), generateRandomReplyUser(7),      "Phase 2 is due two weeks from Friday. Check the course schedule on Canvas.",        System.currentTimeMillis() - 139000},
+	                {postIDs.get(6), generateRandomReplyUser(7),       "Thanks, I had the wrong date written down!",                                        System.currentTimeMillis() - 138000},
 
 	                // Post 7 — 3 replies
-	                {postIDs.get(7), "user4",       "Student", "I use Zoom for screencasts, just share your screen and record with audio.",         System.currentTimeMillis() - 129000},
-	                {postIDs.get(7), "user6",       "Student", "QuickTime Player on Mac also works great and requires no setup.",                   System.currentTimeMillis() - 128000},
-	                {postIDs.get(7), "instructor1", "Staff",   "Either tool is fine. Make sure your audio is clear and text is readable.",          System.currentTimeMillis() - 127000},
+	                {postIDs.get(7), generateRandomReplyUser(8),       "I use Zoom for screencasts, just share your screen and record with audio.",         System.currentTimeMillis() - 129000},
+	                {postIDs.get(7), generateRandomReplyUser(8),       "QuickTime Player on Mac also works great and requires no setup.",                   System.currentTimeMillis() - 128000},
+	                {postIDs.get(7), generateRandomReplyUser(8), "Either tool is fine. Make sure your audio is clear and text is readable.",          System.currentTimeMillis() - 127000},
 
 	                // Post 8 — 10 replies
-	                {postIDs.get(8), "instructor1", "Staff",   "Neither is always better. Prefer composition for flexibility and loose coupling.",   System.currentTimeMillis() - 119000},
-	                {postIDs.get(8), "first_user",       "Student", "I read that composition is preferred in most modern OOP design patterns.",          System.currentTimeMillis() - 118000},
-	                {postIDs.get(8), "user3",       "Student", "Inheritance makes sense when there is a true is-a relationship between classes.",   System.currentTimeMillis() - 117000},
-	                {postIDs.get(8), "user5",       "Student", "Composition gives you more flexibility at runtime which is usually what you want.", System.currentTimeMillis() - 116000},
-	                {postIDs.get(8), "user7",       "Student", "Does this mean we should avoid inheritance entirely in our team project?",          System.currentTimeMillis() - 115000},
-	                {postIDs.get(8), "instructor1", "Staff",   "Not at all. Use inheritance where there is a natural hierarchy like User roles.",   System.currentTimeMillis() - 114000},
-	                {postIDs.get(8), "user9",       "Student", "So BankAccount extending Account would be a good use of inheritance?",              System.currentTimeMillis() - 113000},
-	                {postIDs.get(8), "instructor1", "Staff",   "Yes, that is a classic textbook example of appropriate inheritance use.",           System.currentTimeMillis() - 112000},
-	                {postIDs.get(8), "user2",       "Student", "This thread is really helpful, should be pinned at the top!",                      System.currentTimeMillis() - 111000},
-	                {postIDs.get(8), "admin1",      "Admin",   "Agreed, great discussion everyone. This is exactly what Ed Discussion is for.",    System.currentTimeMillis() - 110000},
+	                {postIDs.get(8), generateRandomReplyUser(9), "Neither is always better. Prefer composition for flexibility and loose coupling.",   System.currentTimeMillis() - 119000},
+	                {postIDs.get(8), generateRandomReplyUser(9),       "I read that composition is preferred in most modern OOP design patterns.",          System.currentTimeMillis() - 118000},
+	                {postIDs.get(8), generateRandomReplyUser(9),       "Inheritance makes sense when there is a true is-a relationship between classes.",   System.currentTimeMillis() - 117000},
+	                {postIDs.get(8), generateRandomReplyUser(9),       "Composition gives you more flexibility at runtime which is usually what you want.", System.currentTimeMillis() - 116000},
+	                {postIDs.get(8), generateRandomReplyUser(9),       "Does this mean we should avoid inheritance entirely in our team project?",          System.currentTimeMillis() - 115000},
+	                {postIDs.get(8), generateRandomReplyUser(9), "Not at all. Use inheritance where there is a natural hierarchy like User roles.",   System.currentTimeMillis() - 114000},
+	                {postIDs.get(8), generateRandomReplyUser(9),       "So BankAccount extending Account would be a good use of inheritance?",              System.currentTimeMillis() - 113000},
+	                {postIDs.get(8), generateRandomReplyUser(9), "Yes, that is a classic textbook example of appropriate inheritance use.",           System.currentTimeMillis() - 112000},
+	                {postIDs.get(8), generateRandomReplyUser(9),       "This thread is really helpful, should be pinned at the top!",                      System.currentTimeMillis() - 111000},
+	                {postIDs.get(8), generateRandomReplyUser(9),      "Agreed, great discussion everyone. This is exactly what Ed Discussion is for.",    System.currentTimeMillis() - 110000},
 
 	                // Post 9 — 2 replies
-	                {postIDs.get(9), "admin1",      "Admin",   "All submissions go through Canvas only. Do not email the instructor or TAs.",       System.currentTimeMillis() - 109000},
-	                {postIDs.get(9), "user4",       "Student", "Thanks, I was not sure since the ZIP file gets pretty large.",                      System.currentTimeMillis() - 108000},
+	                {postIDs.get(9), generateRandomReplyUser(20),      "All submissions go through Canvas only. Do not email the instructor or TAs.",       System.currentTimeMillis() - 109000},
+	                {postIDs.get(9), generateRandomReplyUser(20),       "Thanks, I was not sure since the ZIP file gets pretty large.",                      System.currentTimeMillis() - 108000},
 
 	                // Post 10 — 3 replies
-	                {postIDs.get(10), "instructor1", "Staff",  "Abstract classes can have implementation while interfaces traditionally cannot.",    System.currentTimeMillis() - 99000},
-	                {postIDs.get(10), "user8",       "Student","So use abstract class when sharing code and interface when defining a contract?",   System.currentTimeMillis() - 98000},
-	                {postIDs.get(10), "instructor1", "Staff",  "Exactly right. That is the key distinction to remember for the exam.",              System.currentTimeMillis() - 97000},
+	                {postIDs.get(10), generateRandomReplyUser(21), "Abstract classes can have implementation while interfaces traditionally cannot.",    System.currentTimeMillis() - 99000},
+	                {postIDs.get(10), generateRandomReplyUser(21),  "So use abstract class when sharing code and interface when defining a contract?",   System.currentTimeMillis() - 98000},
+	                {postIDs.get(10), generateRandomReplyUser(21), "Exactly right. That is the key distinction to remember for the exam.",              System.currentTimeMillis() - 97000},
 
 	                // Post 11 — 2 replies
-	                {postIDs.get(11), "user5",       "Student","Always pull before you start working and communicate with your team on who edits what.", System.currentTimeMillis() - 89000},
-	                {postIDs.get(11), "instructor1", "Staff",  "Feature branches are a good strategy to avoid conflicts on shared files.",          System.currentTimeMillis() - 88000},
+	                {postIDs.get(11), generateRandomReplyUser(22),       "Always pull before you start working and communicate with your team on who edits what.", System.currentTimeMillis() - 89000},
+	                {postIDs.get(11), generateRandomReplyUser(22), "Feature branches are a good strategy to avoid conflicts on shared files.",          System.currentTimeMillis() - 88000},
 
 	                // Post 12 — 2 replies
-	                {postIDs.get(12), "admin1",      "Admin",  "The assignment requires at least one sequence diagram covering a main use case.",   System.currentTimeMillis() - 79000},
-	                {postIDs.get(12), "user3",       "Student","Good to know, I was planning to do one for the login flow.",                        System.currentTimeMillis() - 78000},
+	                {postIDs.get(12), generateRandomReplyUser(23),      "The assignment requires at least one sequence diagram covering a main use case.",   System.currentTimeMillis() - 79000},
+	                {postIDs.get(12), generateRandomReplyUser(23),       "Good to know, I was planning to do one for the login flow.",                        System.currentTimeMillis() - 78000},
 
 	                // Post 13 — 2 replies
-	                {postIDs.get(13), "instructor1", "Staff",  "You can write a main method with hardcoded test data and print results to console.", System.currentTimeMillis() - 69000},
-	                {postIDs.get(13), "user6",       "Student","That is basically what TP1 does for the user tests, good reference point.",         System.currentTimeMillis() - 68000},
+	                {postIDs.get(13), generateRandomReplyUser(24), "You can write a main method with hardcoded test data and print results to console.", System.currentTimeMillis() - 69000},
+	                {postIDs.get(13), generateRandomReplyUser(24),       "That is basically what TP1 does for the user tests, good reference point.",         System.currentTimeMillis() - 68000},
 
 	                // Post 14 — 2 replies
-	                {postIDs.get(14), "instructor1", "Staff",  "Yes, all code and documentation must follow the FoundationsF25 style guide.",       System.currentTimeMillis() - 59000},
-	                {postIDs.get(14), "user7",       "Student","Does that include the Javadoc comment format above every method?",                  System.currentTimeMillis() - 58000},
+	                {postIDs.get(14), generateRandomReplyUser(25), "Yes, all code and documentation must follow the FoundationsF25 style guide.",       System.currentTimeMillis() - 59000},
+	                {postIDs.get(14), generateRandomReplyUser(25),       "Does that include the Javadoc comment format above every method?",                  System.currentTimeMillis() - 58000},
 
 	                // Post 15 — 3 replies
-	                {postIDs.get(15), "user2",       "Student","Make sure the H2 JAR is on the build path and the driver string is correct.",       System.currentTimeMillis() - 49000},
-	                {postIDs.get(15), "user4",       "Student","The driver class name is org.h2.Driver, double check yours matches exactly.",       System.currentTimeMillis() - 48000},
-	                {postIDs.get(15), "instructor1", "Staff",  "Also verify the DB_URL in your Database class matches the one in FoundationsMain.", System.currentTimeMillis() - 47000},
+	                {postIDs.get(15), generateRandomReplyUser(26),       "Make sure the H2 JAR is on the build path and the driver string is correct.",       System.currentTimeMillis() - 49000},
+	                {postIDs.get(15), generateRandomReplyUser(26),       "The driver class name is org.h2.Driver, double check yours matches exactly.",       System.currentTimeMillis() - 48000},
+	                {postIDs.get(15), generateRandomReplyUser(26), "Also verify the DB_URL in your Database class matches the one in FoundationsMain.", System.currentTimeMillis() - 47000},
 
 	                // Post 16 — 2 replies
-	                {postIDs.get(16), "instructor1", "Staff",  "Epics are high level goals and user stories are the specific tasks within them.",   System.currentTimeMillis() - 39000},
-	                {postIDs.get(16), "user8",       "Student","So an epic might be manage users and a story is add a new user to the system?",    System.currentTimeMillis() - 38000},
+	                {postIDs.get(16), generateRandomReplyUser(27), "Epics are high level goals and user stories are the specific tasks within them.",   System.currentTimeMillis() - 39000},
+	                {postIDs.get(16), generateRandomReplyUser(27),       "So an epic might be manage users and a story is add a new user to the system?",    System.currentTimeMillis() - 38000},
 
 	                // Post 17 — 2 replies
-	                {postIDs.get(17), "instructor1", "Staff",  "Composition is preferred here. PostList should contain a list, not extend one.",   System.currentTimeMillis() - 29000},
-	                {postIDs.get(17), "first_user",       "Student","That makes sense, extending ArrayList would expose too many unrelated methods.",    System.currentTimeMillis() - 28000},
+	                {postIDs.get(17), generateRandomReplyUser(28), "Composition is preferred here. PostList should contain a list, not extend one.",   System.currentTimeMillis() - 29000},
+	                {postIDs.get(17), generateRandomReplyUser(28),       "That makes sense, extending ArrayList would expose too many unrelated methods.",    System.currentTimeMillis() - 28000},
 
 	                // Post 18 — 2 replies
-	                {postIDs.get(18), "admin1",      "Admin",  "HW2 requires 7 screencasts total. See the deliverables section for details.",      System.currentTimeMillis() - 19000},
-	                {postIDs.get(18), "user9",       "Student","Seven is a lot but at least most of them only need to be 2 to 5 minutes long.",    System.currentTimeMillis() - 18000},
+	                {postIDs.get(18), generateRandomReplyUser(29),      "HW2 requires 7 screencasts total. See the deliverables section for details.",      System.currentTimeMillis() - 19000},
+	                {postIDs.get(18), generateRandomReplyUser(29),       "Seven is a lot but at least most of them only need to be 2 to 5 minutes long.",    System.currentTimeMillis() - 18000},
 
 	                // Post 19 — 2 replies
-	                {postIDs.get(19), "instructor1", "Staff",  "TableView works but a custom VBox gives you more control over the row styling.",   System.currentTimeMillis() - 9000},
-	                {postIDs.get(19), "user3",       "Student","I tried TableView first but switched to VBox after seeing the TP1 examples.",      System.currentTimeMillis() - 8000},
+	                {postIDs.get(19), generateRandomReplyUser(30), "TableView works but a custom VBox gives you more control over the row styling.",   System.currentTimeMillis() - 9000},
+	                {postIDs.get(19), generateRandomReplyUser(30),       "I tried TableView first but switched to VBox after seeing the TP1 examples.",      System.currentTimeMillis() - 8000},
 	            };
      
 	            for (Object[] reply : replies) {
 	                pstmt.setInt(1,    (Integer) reply[0]);
-	                pstmt.setString(2, (String)  reply[1]);
+	                pstmt.setInt(2, (Integer)  reply[1]);
 	                pstmt.setString(3, (String)  reply[2]);
-	                pstmt.setString(4, (String)  reply[3]);
-	                pstmt.setLong(5,   (Long)    reply[4]);
+	                pstmt.setLong(4,   (Long)    reply[3]);
 	                pstmt.addBatch();
 	            }
 	            pstmt.executeBatch();
@@ -580,6 +606,53 @@ public class Database {
 	        e.printStackTrace();
 	    }
 	}
+  
+  /*******
+   * <p>
+   * Method: int generateRandomUser()
+   * </p>
+   * 
+   * <P>
+   * Description: Generate a random user to post a discussion message. And hey,
+   * let's exclude admins and staff from this!
+   * </p>
+   * 
+   * @return the id of the user that will make this random post
+   */
+  private int generateRandomUser()
+  {
+	  int selectedID = (int)(Math.random() * 25);
+	  User user = this.getUserAsObject(selectedID);
+	  while(!user.getNewRole1())
+	  {
+		  selectedID = (int)(Math.random() * 25);
+		  user = this.getUserAsObject(selectedID);
+	  }
+	  return user.getUserId();
+  }
+  
+  /*******
+   * <p>
+   * Method: int generateRandomReplyUser()
+   * </p>
+   * 
+   * <P>
+   * Description: Generate a reply post from a random user that is not the OP
+   * </p>
+   * 
+   * @return the id of the user that will make this random post
+   */
+  private int generateRandomReplyUser(int postID)
+  {
+	  int selectedID = (int)(Math.random() * 25);
+	  User user = this.getUserAsObject(selectedID);
+	  while(user.getUserId() == postID)
+	  {
+		  selectedID = (int)(Math.random() * 25);
+		  user = this.getUserAsObject(selectedID);
+	  }
+	  return user.getUserId();
+  }
 
   /*******
    * <p>
@@ -593,16 +666,16 @@ public class Database {
    * 
    * @return a list of userNames found in the database.
    */
-  public List<String> getUserList() {
-    List<String> userList = new ArrayList<String>();
+  public List<Integer> getUserList() {
+    List<Integer> userList = new ArrayList<Integer>();
     // Commenting out this line, having this will just cause more problems than it
     // solves
     // userList.add("<Select a User>");
-    String query = "SELECT userName FROM userDB";
+    String query = "SELECT id FROM userDB";
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
       ResultSet rs = pstmt.executeQuery();
       while (rs.next()) {
-        userList.add(rs.getString("userName"));
+        userList.add(rs.getInt("id"));
       }
     } catch (SQLException e) {
       return null;
@@ -743,7 +816,7 @@ public class Database {
 
   /*******
    * <p>
-   * Method: boolean doesUserExist(User user)
+   * Method: boolean doesUserExist(int id)
    * </p>
    * 
    * <p>
@@ -751,18 +824,18 @@ public class Database {
    * table.
    * </p>
    * 
-   * @param userName specifies the specific user that we want to determine if it
+   * @param id specifies the specific user that we want to determine if it
    *                 is in the table.
    * 
    * @return true if the specified user is in the table else false.
    * 
    */
   // Checks if a user already exists in the database based on their userName.
-  public boolean doesUserExist(String userName) {
-    String query = "SELECT COUNT(*) FROM userDB WHERE userName = ?";
+  public boolean doesUserExist(int id) {
+    String query = "SELECT COUNT(*) FROM userDB WHERE id = ?";
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
 
-      pstmt.setString(1, userName);
+      pstmt.setInt(1, id);
       ResultSet rs = pstmt.executeQuery();
 
       if (rs.next()) {
@@ -1040,17 +1113,17 @@ public class Database {
    * the new user name.
    * </p>
    * 
-   * @param oldUsername is the user name of the user
+   * @param id is the identification of the user
    * 
-   * @param newUsername is the new first name for the user
+   * @param newUsername is the new user name for the user
    * 
    */
   // update the user name
-  public void updateUserName(String oldUsername, String newUsername) {
-    String query = "UPDATE userDB SET userName = ? WHERE userName = ?";
+  public void updateUserName(int id, String newUsername) {
+    String query = "UPDATE userDB SET userName = ? WHERE id = ?";
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
       pstmt.setString(1, newUsername);
-      pstmt.setString(2, oldUsername);
+      pstmt.setInt(2, id);
       pstmt.executeUpdate();
     } catch (SQLException e) {
       e.printStackTrace();
@@ -1059,7 +1132,7 @@ public class Database {
 
   /*******
    * <p>
-   * Method: void updatePassword(String username, String newPassword)
+   * Method: void updatePassword(int id, String newPassword)
    * </p>
    * 
    * <p>
@@ -1068,17 +1141,17 @@ public class Database {
    * password.
    * </p>
    * 
-   * @param username is the username of the user
+   * @param id is the identification of the user
    * @param password is the new password of the user
    *
    * 
    */
   // update the password
-  public void updatePassword(String username, String password) {
-    String query = "UPDATE userDB SET passWord = ? WHERE userName = ?";
+  public void updatePassword(int id, String password) {
+    String query = "UPDATE userDB SET passWord = ? WHERE id = ?";
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
       pstmt.setString(1, password);
-      pstmt.setString(2, username);
+      pstmt.setInt(2, id);
       pstmt.executeUpdate();
     } catch (SQLException e) {
       e.printStackTrace();
@@ -1087,27 +1160,27 @@ public class Database {
 
   /*******
    * <p>
-   * Method: String generateOneTimePassword(String username)
+   * Method: String generateOneTimePassword(int id)
    * </p>
    * 
    * <p>
    * Description: Update the password of a user with a one-time, temporary PW.
    * </p>
    * 
-   * @param username is the username of the user
+   * @param id is the identification of the user
    * @return the generated one-time PW
    *
    * 
    */
   // update the password
-  public String generateOneTimePassword(String username) {
-    String query = "UPDATE userDB SET OTP = ?, isOneTimePW = ? WHERE userName = ?";
+  public String generateOneTimePassword(int id) {
+    String query = "UPDATE userDB SET OTP = ?, isOneTimePW = ? WHERE id = ?";
     // This is where the password is really generated
     String generatedPW = passWordGenerator();
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
       pstmt.setString(1, generatedPW);
       pstmt.setBoolean(2, true);
-      pstmt.setString(3, username);
+      pstmt.setInt(3, id);
       pstmt.executeUpdate();
       return generatedPW;
     } catch (SQLException e) {
@@ -1214,24 +1287,24 @@ public class Database {
 
   /*******
    * <p>
-   * Method: void clearOneTimePassword(String username)
+   * Method: void clearOneTimePassword(int id)
    * </p>
    * 
    * <p>
    * Description: Update the password of a user with a one-time, temporary PW.
    * </p>
    * 
-   * @param username is the username of the user
+   * @param id is the identification of the user
    *
    * 
    */
   // update the password
-  public void clearOneTimePassword(String username) {
-    String query = "UPDATE userDB SET OTP = ?, isoneTimePW = ? WHERE userName = ?";
+  public void clearOneTimePassword(int id) {
+    String query = "UPDATE userDB SET OTP = ?, isoneTimePW = ? WHERE id = ?";
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
       pstmt.setString(1, "");
       pstmt.setBoolean(2, false);
-      pstmt.setString(3, username);
+      pstmt.setInt(3, id);
       pstmt.executeUpdate();
     } catch (SQLException e) {
       e.printStackTrace();
@@ -1240,23 +1313,23 @@ public class Database {
 
   /*******
    * <p>
-   * Method: String getFirstName(String username)
+   * Method: String getFirstName(int id)
    * </p>
    * 
    * <p>
-   * Description: Get the first name of a user given that user's username.
+   * Description: Get the first name of a user given that user's id.
    * </p>
    * 
-   * @param username is the username of the user
+   * @param id is the identification of the user
    * 
-   * @return the first name of a user given that user's username
+   * @return the first name of a user given that user's id
    * 
    */
   // Get the First Name
-  public String getFirstName(String username) {
-    String query = "SELECT firstName FROM userDB WHERE userName = ?";
+  public String getFirstName(int id) {
+    String query = "SELECT firstName FROM userDB WHERE id = ?";
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-      pstmt.setString(1, username);
+      pstmt.setInt(1, id);
       ResultSet rs = pstmt.executeQuery();
 
       if (rs.next()) {
@@ -1271,26 +1344,25 @@ public class Database {
 
   /*******
    * <p>
-   * Method: void updateFirstName(String username, String firstName)
+   * Method: void updateFirstName(int id, String firstName)
    * </p>
    * 
    * <p>
-   * Description: Update the first name of a user given that user's username and
-   * the new
-   * first name.
+   * Description: Update the first name of a user given that user's id and
+   * the new first name.
    * </p>
    * 
-   * @param username  is the username of the user
+   * @param id is the identification of the user
    * 
    * @param firstName is the new first name for the user
    * 
    */
   // update the first name
-  public void updateFirstName(String username, String firstName) {
-    String query = "UPDATE userDB SET firstName = ? WHERE username = ?";
+  public void updateFirstName(int id, String firstName) {
+    String query = "UPDATE userDB SET firstName = ? WHERE id = ?";
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
       pstmt.setString(1, firstName);
-      pstmt.setString(2, username);
+      pstmt.setInt(2, id);
       pstmt.executeUpdate();
       currentFirstName = firstName;
     } catch (SQLException e) {
@@ -1300,23 +1372,23 @@ public class Database {
 
   /*******
    * <p>
-   * Method: String getMiddleName(String username)
+   * Method: String getMiddleName(int id)
    * </p>
    * 
    * <p>
    * Description: Get the middle name of a user given that user's username.
    * </p>
    * 
-   * @param username is the username of the user
+   * @param id is the identification of the user
    * 
    * @return the middle name of a user given that user's username
    * 
    */
   // get the middle name
-  public String getMiddleName(String username) {
-    String query = "SELECT MiddleName FROM userDB WHERE userName = ?";
+  public String getMiddleName(int id) {
+    String query = "SELECT MiddleName FROM userDB WHERE id = ?";
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-      pstmt.setString(1, username);
+      pstmt.setInt(1, id);
       ResultSet rs = pstmt.executeQuery();
 
       if (rs.next()) {
@@ -1330,7 +1402,7 @@ public class Database {
 
   /*******
    * <p>
-   * Method: void updateMiddleName(String username, String middleName)
+   * Method: void updateMiddleName(int id, String middleName)
    * </p>
    * 
    * <p>
@@ -1339,17 +1411,17 @@ public class Database {
    * middle name.
    * </p>
    * 
-   * @param username   is the username of the user
+   * @param id is the identification of the user
    * 
    * @param middleName is the new middle name for the user
    * 
    */
   // update the middle name
-  public void updateMiddleName(String username, String middleName) {
-    String query = "UPDATE userDB SET middleName = ? WHERE username = ?";
+  public void updateMiddleName(int id, String middleName) {
+    String query = "UPDATE userDB SET middleName = ? WHERE id = ?";
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
       pstmt.setString(1, middleName);
-      pstmt.setString(2, username);
+      pstmt.setInt(2, id);
       pstmt.executeUpdate();
       currentMiddleName = middleName;
     } catch (SQLException e) {
@@ -1359,23 +1431,23 @@ public class Database {
 
   /*******
    * <p>
-   * Method: String getLastName(String username)
+   * Method: String getLastName(int id)
    * </p>
    * 
    * <p>
    * Description: Get the last name of a user given that user's username.
    * </p>
    * 
-   * @param username is the username of the user
+   * @param id is the identification of the user
    * 
    * @return the last name of a user given that user's username
    * 
    */
   // get he last name
-  public String getLastName(String username) {
-    String query = "SELECT LastName FROM userDB WHERE userName = ?";
+  public String getLastName(int id) {
+    String query = "SELECT LastName FROM userDB WHERE id = ?";
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-      pstmt.setString(1, username);
+      pstmt.setInt(1, id);
       ResultSet rs = pstmt.executeQuery();
 
       if (rs.next()) {
@@ -1389,7 +1461,7 @@ public class Database {
 
   /*******
    * <p>
-   * Method: void updateLastName(String username, String lastName)
+   * Method: void updateLastName(int id, String lastName)
    * </p>
    * 
    * <p>
@@ -1398,17 +1470,17 @@ public class Database {
    * middle name.
    * </p>
    * 
-   * @param username is the username of the user
+   * @param id is the identification of the user
    * 
    * @param lastName is the new last name for the user
    * 
    */
   // update the last name
-  public void updateLastName(String username, String lastName) {
-    String query = "UPDATE userDB SET lastName = ? WHERE username = ?";
+  public void updateLastName(int id, String lastName) {
+    String query = "UPDATE userDB SET lastName = ? WHERE id = ?";
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
       pstmt.setString(1, lastName);
-      pstmt.setString(2, username);
+      pstmt.setInt(2, id);
       pstmt.executeUpdate();
       currentLastName = lastName;
     } catch (SQLException e) {
@@ -1418,7 +1490,7 @@ public class Database {
 
   /*******
    * <p>
-   * Method: String getPreferredFirstName(String username)
+   * Method: String getPreferredFirstName(int id)
    * </p>
    * 
    * <p>
@@ -1426,16 +1498,16 @@ public class Database {
    * username.
    * </p>
    * 
-   * @param username is the username of the user
+   * @param id is the identification of the user
    * 
    * @return the preferred first name of a user given that user's username
    * 
    */
   // get the preferred first name
-  public String getPreferredFirstName(String username) {
-    String query = "SELECT preferredFirstName FROM userDB WHERE userName = ?";
+  public String getPreferredFirstName(int id) {
+    String query = "SELECT preferredFirstName FROM userDB WHERE id = ?";
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-      pstmt.setString(1, username);
+      pstmt.setInt(1, id);
       ResultSet rs = pstmt.executeQuery();
 
       if (rs.next()) {
@@ -1450,7 +1522,7 @@ public class Database {
 
   /*******
    * <p>
-   * Method: void updatePreferredFirstName(String username, String
+   * Method: void updatePreferredFirstName(int id, String
    * preferredFirstName)
    * </p>
    * 
@@ -1460,17 +1532,17 @@ public class Database {
    * the new preferred first name.
    * </p>
    * 
-   * @param username           is the username of the user
+   * @param id is the identification of the user
    * 
    * @param preferredFirstName is the new preferred first name for the user
    * 
    */
   // update the preferred first name of the user
-  public void updatePreferredFirstName(String username, String preferredFirstName) {
-    String query = "UPDATE userDB SET preferredFirstName = ? WHERE username = ?";
+  public void updatePreferredFirstName(int id, String preferredFirstName) {
+    String query = "UPDATE userDB SET preferredFirstName = ? WHERE id = ?";
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
       pstmt.setString(1, preferredFirstName);
-      pstmt.setString(2, username);
+      pstmt.setInt(2, id);
       pstmt.executeUpdate();
       currentPreferredFirstName = preferredFirstName;
     } catch (SQLException e) {
@@ -1480,23 +1552,23 @@ public class Database {
 
   /*******
    * <p>
-   * Method: String getEmailAddress(String username)
+   * Method: String getEmailAddress(int id)
    * </p>
    * 
    * <p>
    * Description: Get the email address of a user given that user's username.
    * </p>
    * 
-   * @param username is the username of the user
+   * @param id is the identification of the user
    * 
    * @return the email address of a user given that user's username
    * 
    */
   // get the email address
-  public String getEmailAddress(String username) {
-    String query = "SELECT emailAddress FROM userDB WHERE userName = ?";
+  public String getEmailAddress(int id) {
+    String query = "SELECT emailAddress FROM userDB WHERE id = ?";
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-      pstmt.setString(1, username);
+      pstmt.setInt(1, id);
       ResultSet rs = pstmt.executeQuery();
 
       if (rs.next()) {
@@ -1511,7 +1583,7 @@ public class Database {
 
   /*******
    * <p>
-   * Method: void updateEmailAddress(String username, String emailAddress)
+   * Method: void updateEmailAddress(int id, String emailAddress)
    * </p>
    * 
    * <p>
@@ -1520,17 +1592,17 @@ public class Database {
    * the new email address.
    * </p>
    * 
-   * @param username     is the username of the user
+   * @param id is the identification of the user
    * 
    * @param emailAddress is the new preferred first name for the user
    * 
    */
   // update the email address
-  public void updateEmailAddress(String username, String emailAddress) {
-    String query = "UPDATE userDB SET emailAddress = ? WHERE username = ?";
+  public void updateEmailAddress(int id, String emailAddress) {
+    String query = "UPDATE userDB SET emailAddress = ? WHERE id = ?";
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
       pstmt.setString(1, emailAddress);
-      pstmt.setString(2, username);
+      pstmt.setInt(2, id);
       pstmt.executeUpdate();
       currentEmailAddress = emailAddress;
     } catch (SQLException e) {
@@ -1547,19 +1619,21 @@ public class Database {
    * Description: Get all the attributes of a user given that user's username.
    * </p>
    * 
-   * @param username is the username of the user
+   * @param id is the identification of the user
    * 
    * @return true of the get is successful, else false
    * 
    */
   // get the attributes for a specified user
-  public boolean getUserAccountDetails(String username) {
-    String query = "SELECT * FROM userDB WHERE username = ?";
+  public boolean getUserAccountDetails(String username, String password) {
+    String query = "SELECT * FROM userDB WHERE username = ? AND password = ?";
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
       pstmt.setString(1, username);
+      pstmt.setString(2, password);
       ResultSet rs = pstmt.executeQuery();
       if (rs.next()) {
-        currentUsername = rs.getString("userName");
+    	currentIdentification = rs.getInt("id");
+    	currentUsername = rs.getString("userName");
         currentPassword = rs.getString("password");
         currentOTP = rs.getString("OTP");
         currentFirstName = rs.getString("firstName");
@@ -1580,7 +1654,7 @@ public class Database {
 
   /*******
    * <p>
-   * Method: User getUserAsObject(String username)
+   * Method: User getUserAsObject(int id)
    * </p>
    * 
    * <p>
@@ -1588,19 +1662,20 @@ public class Database {
    * therefore not the current user
    * </p>
    * 
-   * @param username is the username of the user
+   * @param id is the identification of the user
    * 
    * @return a user object
    * 
    */
   // get the attributes for a specified user
-  public User getUserAsObject(String username) {
+  public User getUserAsObject(int id) {
     User user = new User();
-    String query = "SELECT * FROM userDB WHERE username = ?";
+    String query = "SELECT * FROM userDB WHERE id = ?";
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-      pstmt.setString(1, username);
+      pstmt.setInt(1, id);
       ResultSet rs = pstmt.executeQuery();
       if (rs.next()) {
+    	user.setId(rs.getInt("id"));
         user.setUserName(rs.getString("userName"));
         user.setPassword(rs.getString("password"));
         user.setFirstName(rs.getString("firstName"));
@@ -1620,22 +1695,22 @@ public class Database {
 
   /*******
    * <p>
-   * Method: void deleteUser(String username)
+   * Method: void deleteUser(int id)
    * </p>
    * 
    * <p>
    * Description: Delete the specified user.
    * </p>
    * 
-   * @param username is the username of the user
+   * @param id is the identification of the user
    * 
    * 
    */
   // update the last name
-  public void deleteUser(String username) {
-    String query = "DELETE FROM userDB WHERE username = ?";
+  public void deleteUser(int id) {
+    String query = "DELETE FROM userDB WHERE id = ?";
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-      pstmt.setString(1, username);
+      pstmt.setInt(1, id);
       pstmt.executeUpdate();
     } catch (SQLException e) {
       e.printStackTrace();
@@ -1644,7 +1719,7 @@ public class Database {
 
   /*******
    * <p>
-   * Method: boolean updateUserRole(String username, String role, String value)
+   * Method: boolean updateUserRole(int id, String role, String value)
    * </p>
    * 
    * <p>
@@ -1653,7 +1728,7 @@ public class Database {
    * current user attributes.
    * </p>
    * 
-   * @param username is the username of the user
+   * @param id 		 is the identification of the user
    * 
    * @param role     is string that specifies the role to update
    * 
@@ -1663,12 +1738,12 @@ public class Database {
    * 
    */
   // Update a users role
-  public boolean updateUserRole(String username, String role, String value) {
+  public boolean updateUserRole(int id, String role, String value) {
     if (role.compareTo("Admin") == 0) {
-      String query = "UPDATE userDB SET adminRole = ? WHERE username = ?";
+      String query = "UPDATE userDB SET adminRole = ? WHERE id = ?";
       try (PreparedStatement pstmt = connection.prepareStatement(query)) {
         pstmt.setString(1, value);
-        pstmt.setString(2, username);
+        pstmt.setInt(2, id);
         pstmt.executeUpdate();
         if (value.compareTo("true") == 0)
           currentAdminRole = true;
@@ -1680,10 +1755,10 @@ public class Database {
       }
     }
     if (role.compareTo("Staff") == 0) {
-      String query = "UPDATE userDB SET newRole1 = ? WHERE username = ?";
+      String query = "UPDATE userDB SET newRole1 = ? WHERE id = ?";
       try (PreparedStatement pstmt = connection.prepareStatement(query)) {
         pstmt.setString(1, value);
-        pstmt.setString(2, username);
+        pstmt.setInt(2, id);
         pstmt.executeUpdate();
         if (value.compareTo("true") == 0)
           currentNewRole1 = true;
@@ -1695,10 +1770,10 @@ public class Database {
       }
     }
     if (role.compareTo("Student") == 0) {
-      String query = "UPDATE userDB SET newRole2 = ? WHERE username = ?";
+      String query = "UPDATE userDB SET newRole2 = ? WHERE id = ?";
       try (PreparedStatement pstmt = connection.prepareStatement(query)) {
         pstmt.setString(1, value);
-        pstmt.setString(2, username);
+        pstmt.setInt(2, id);
         pstmt.executeUpdate();
         if (value.compareTo("true") == 0)
           currentNewRole2 = true;
@@ -1714,23 +1789,23 @@ public class Database {
 
   /*******
    * <p>
-   * Method: String getAdminRole(String username)
+   * Method: String getAdminRole(int id)
    * </p>
    * 
    * <p>
    * Description: Get whether the user is an admin.
    * </p>
    * 
-   * @param username is the username of the user
+   * @param id is the identification of the user
    * 
    * @return boolean of admin role
    * 
    */
   // get the email address
-  public boolean getAdminRole(String username) {
-    String query = "SELECT emailAddress FROM userDB WHERE userName = ? AND adminRole = TRUE";
+  public boolean getAdminRole(int id) {
+    String query = "SELECT emailAddress FROM userDB WHERE id = ? AND adminRole = TRUE";
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-      pstmt.setString(1, username);
+      pstmt.setInt(1, id);
       ResultSet rs = pstmt.executeQuery();
 
       if (rs.next()) {
@@ -1745,23 +1820,23 @@ public class Database {
 
   /*******
    * <p>
-   * Method: String getRole1(String username)
+   * Method: String getRole1(int id)
    * </p>
    * 
    * <p>
    * Description: Get whether the user has Role1.
    * </p>
    * 
-   * @param username is the username of the user
+   * @param id is the identification of the user
    * 
    * @return boolean of Role1
    * 
    */
   // get the email address
-  public boolean getRole1(String username) {
-    String query = "SELECT emailAddress FROM userDB WHERE userName = ? AND newRole1 = TRUE";
+  public boolean getRole1(int id) {
+    String query = "SELECT emailAddress FROM userDB WHERE id = ? AND newRole1 = TRUE";
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-      pstmt.setString(1, username);
+      pstmt.setInt(1, id);
       ResultSet rs = pstmt.executeQuery();
 
       if (rs.next()) {
@@ -1776,23 +1851,23 @@ public class Database {
 
   /*******
    * <p>
-   * Method: String getRole2(String username)
+   * Method: String getRole2(int id)
    * </p>
    * 
    * <p>
    * Description: Get whether the user has Role1.
    * </p>
    * 
-   * @param username is the username of the user
+   * @param id is the identification of the user
    * 
    * @return boolean of Role2
    * 
    */
   // get the email address
-  public boolean getRole2(String username) {
-    String query = "SELECT emailAddress FROM userDB WHERE userName = ? AND newRole2 = TRUE";
+  public boolean getRole2(int id) {
+    String query = "SELECT emailAddress FROM userDB WHERE id = ? AND newRole2 = TRUE";
     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-      pstmt.setString(1, username);
+      pstmt.setInt(1, id);
       ResultSet rs = pstmt.executeQuery();
 
       if (rs.next()) {
@@ -1996,6 +2071,22 @@ public class Database {
    */
   public String getCurrentOTP() {
     return currentOTP;
+  }
+  
+  /*******
+   * <p>
+   * Method: int getCurrentId()
+   * </p>
+   * 
+   * <p>
+   * Description: Get the current user's identification
+   * </p>
+   * 
+   * @return the identification of the user
+   * 
+   */
+  public int getCurrentId() {
+    return currentIdentification;
   }
 
   /*******

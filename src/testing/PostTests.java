@@ -215,7 +215,7 @@ public class PostTests {
 
     // Positive: Create valid post
     entityClasses.Post p1 = new entityClasses.Post();
-    p1.setAuthor("s1");
+    p1.setAuthor(123);
     p1.setTitle("Title");
     p1.setContent("The test");
     p1.setCategory("HW");
@@ -227,7 +227,7 @@ public class PostTests {
 
     // negative: Create blank post
     entityClasses.Post p2 = new entityClasses.Post();
-    p2.setAuthor("");
+    p2.setAuthor(0);
     p2.setTitle("");
     p2.setContent("");
     p2.setCategory("");
@@ -245,7 +245,7 @@ public class PostTests {
     assertEquals("HW", read.getCategory(), "Post Read - title");
 
     // Positive: Update post
-    read.setAuthor("Jonathan");
+    read.setAuthor(125);
     if(pc.updatePost(read)){
       isValid=true;
           assertTrue(isValid, "Post Update - valid", "Post " + read.getPostID() + " updated successfully.");
@@ -255,7 +255,7 @@ public class PostTests {
     assertEquals("Jonathan", updated.getAuthor(), "Post Update - author updated");
 
      // Negative: Update post
-    read.setAuthor("");
+    read.setAuthor(0);
     if(!pc.updatePost(read)){
       isValid=false;
           assertFalse(isValid, "Post not updateded","Post " + read.getPostID() + " updated unsuccessfully.");
@@ -264,7 +264,7 @@ public class PostTests {
 
     /// Empty Title Test   
     Post emptyTitle = new Post();
-    emptyTitle.setAuthor("s1");
+    emptyTitle.setAuthor(123);
     emptyTitle.setTitle("");
     emptyTitle.setContent("hello");
     emptyTitle.setCategory("HW");
@@ -277,7 +277,7 @@ public class PostTests {
     
  // Empty Body Post Test
     Post emptyBody = new Post();
-    emptyBody.setAuthor("s1");
+    emptyBody.setAuthor(123);
     emptyBody.setTitle("Title");
     emptyBody.setContent("");
     emptyBody.setCategory("HW");
@@ -291,7 +291,7 @@ public class PostTests {
     // Null Body Test
     
     Post nullBody = new Post();
-    nullBody.setAuthor("s1");
+    nullBody.setAuthor(123);
     nullBody.setTitle("Title");
     nullBody.setContent(null);
     nullBody.setCategory("HW");
@@ -305,7 +305,7 @@ public class PostTests {
     // Max Length Body Test
     
     Post maxBody = new Post();
-    maxBody.setAuthor("s1");
+    maxBody.setAuthor(123);
     maxBody.setTitle("Title");
     maxBody.setContent("1a1B2c3D4e5F6g7H8i9J0k1L2m3N4o5P6q7R8s9T0u1V2w3X4y5Z6a1B2c3D4e5F6g7H8i9J0k1L2m3N4o5P6q7R8s9T0u1V2w3X4");
     maxBody.setCategory("HW");
@@ -319,7 +319,7 @@ public class PostTests {
     // Special character Test
     
     Post special = new Post();
-    special.setAuthor("@");
+    special.setAuthor(126);
     special.setTitle("Title");
     special.setContent("Hello");
     special.setCategory("HW");
@@ -333,7 +333,7 @@ public class PostTests {
     
     // Negative: Create with empty author
     Post bad = new Post();
-    bad.setAuthor("");
+    bad.setAuthor(0);
     bad.setTitle("Title");
     bad.setContent("The test");
     bad.setCategory("HW");
@@ -346,7 +346,7 @@ public class PostTests {
 
     // Negative: Create with null author
     Post nullAuthor = new Post();
-    nullAuthor.setAuthor(null);
+    nullAuthor.setAuthor(0);
     nullAuthor.setTitle("Title");
     nullAuthor.setContent("The test");
     nullAuthor.setCategory("HW");
@@ -391,7 +391,7 @@ public class PostTests {
     ModelDiscussionForum rc = new ModelDiscussionForum();
    
      entityClasses.Post p1 = new entityClasses.Post();
-    p1.setAuthor("s1");
+    p1.setAuthor(123);
     p1.setTitle("Title");
     p1.setContent("The test");
     p1.setCategory("HW");
@@ -404,8 +404,7 @@ public class PostTests {
     // Positive: Create valid reply
     
     entityClasses.Reply r1 = new Reply();
-    r1.setAuthor("ta1");
-    r1.setAuthorRole("admin");
+    r1.setAuthor(124);
     r1.setContent("This is a reply");
     r1.setTimestamp(System.currentTimeMillis());
     boolean createReply= rc.addReply(r1,2);
@@ -433,8 +432,7 @@ public class PostTests {
 
     // Negative: Create with invalid postId 
      entityClasses.Reply r2 = new Reply();
-    r2.setAuthor("ta1");
-    r2.setAuthorRole("admin");
+    r2.setAuthor(124);
     r2.setContent("This is a reply");
     r2.setTimestamp(System.currentTimeMillis());
     boolean createInReply= rc.addReply(r2,1);

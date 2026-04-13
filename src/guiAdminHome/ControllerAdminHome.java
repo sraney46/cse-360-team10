@@ -141,9 +141,9 @@ public class ControllerAdminHome {
    * </p>
    */
   protected static void setOnetimePassword() {
-    String selectedUser = (String) ViewAdminHome.usersList.getSelectionModel().getSelectedItem().getUserName();
-    String generatedPW = theDatabase.generateOneTimePassword(selectedUser);
-    String msg = "Generated one-time password for " + selectedUser;
+    User selectedUser = ViewAdminHome.usersList.getSelectionModel().getSelectedItem();
+    String generatedPW = theDatabase.generateOneTimePassword(selectedUser.getUserId());
+    String msg = "Generated one-time password for " + selectedUser.getUserName();
     System.out.println(msg + ": " + generatedPW);
     ViewAdminHome.alertOneTimePassword.setHeaderText(msg);
     ViewAdminHome.alertOneTimePassword.setContentText(generatedPW);
@@ -163,19 +163,19 @@ public class ControllerAdminHome {
    * </p>
    */
   protected static void deleteUser() {
-    String selectedUser = (String) ViewAdminHome.usersList.getSelectionModel().getSelectedItem().getUserName();
+    User selectedUser = ViewAdminHome.usersList.getSelectionModel().getSelectedItem();
     System.out.println("\n*** WARNING ***: Delete User Not Yet Implemented");
-    ViewAdminHome.alertDeleteUser.setHeaderText("Are you sure you want to delete user " + selectedUser + "?");
+    ViewAdminHome.alertDeleteUser.setHeaderText("Are you sure you want to delete user " + selectedUser.getUserName() + "?");
     ViewAdminHome.alertDeleteUser.setContentText("This action cannot be undone");
     Optional<ButtonType> result = ViewAdminHome.alertDeleteUser.showAndWait();
 
     // Check if the user confirmed or not. If they did, delete the user from the
     // database, otherwise, do nothing
     if (result.get() == ButtonType.OK) {
-      theDatabase.deleteUser(selectedUser);
+      theDatabase.deleteUser(selectedUser.getUserId());
 
       // Sign out the user if they deleted their own account
-      if (selectedUser.equals(ViewAdminHome.theUser.getUserName()))
+      if (selectedUser.getUserId() == ViewAdminHome.theUser.getUserId())
         performLogout();
 
       ViewAdminHome.refreshUsersList();

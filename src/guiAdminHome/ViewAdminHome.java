@@ -314,7 +314,7 @@ public class ViewAdminHome {
     // Populate the dynamic aspects of the GUI with the data from the user and the
     // current
     // state of the system.
-    theDatabase.getUserAccountDetails(user.getUserName()); // Fetch this user's data
+    theDatabase.getUserAccountDetails(user.getUserName(), user.getPassword()); // Fetch this user's data
     applicationMain.FoundationsMain.activeHomePage = theRole; // Set this as the active Home // UserUpdate page
 
     // Set the role for potential users to the default (No role selected)
@@ -495,14 +495,11 @@ public class ViewAdminHome {
 
       if (selection != null) {
         String user = usersList.getSelectionModel().getSelectedItem().getUserName();
-        User selectUser = null;
         List<String> adminsAmount = theDatabase.getUserListAdmin();
-        if (!user.isEmpty())
-          selectUser = theDatabase.getUserAsObject(user);
 
-        if (selectUser != null) {
+        if (selected != null) {
           // Check if selected user is an admin and NOT the current user
-          if (selectUser.getAdminRole() && !user.equals(theUser.getUserName())) {
+          if (selected.getAdminRole() && selected.getUserId() != theUser.getUserId()) {
             // Cannot delete other admins
             button_DeleteUser.setDisable(true);
             button_DeleteUser.setStyle("-fx-background-color: #dc3545; -fx-opacity: 0.5;"); // Red & grayed
@@ -512,7 +509,7 @@ public class ViewAdminHome {
             button_SetOnetimePassword.setStyle(""); // Reset to default style
           }
           // Check if selected user IS the current user
-          else if (selectUser.getAdminRole() && user.equals(theUser.getUserName())) {
+          else if (selected.getAdminRole() && selected.getUserId() == theUser.getUserId()) {
             // Can delete self only if there's more than 1 admin
             if (adminsAmount.size() > 1) {
               button_DeleteUser.setDisable(false);
@@ -693,6 +690,7 @@ public class ViewAdminHome {
     usersList.getItems().clear();
     usersList.getColumns().clear();
     setupUserListData();
+    System.out.println(theUser.getUserId());
   }
 
   /**********
@@ -703,8 +701,8 @@ public class ViewAdminHome {
   private static void setupUserListData() {
     // Create a list of User objects for the TableView
     List<User> allUsers = new ArrayList<>();
-    for (String userName : FXCollections.observableArrayList(theDatabase.getUserList())) {
-      User selectUser = theDatabase.getUserAsObject(userName);
+    for (int user : FXCollections.observableArrayList(theDatabase.getUserList())) {
+      User selectUser = theDatabase.getUserAsObject(user);
       allUsers.add(selectUser);
     }
 

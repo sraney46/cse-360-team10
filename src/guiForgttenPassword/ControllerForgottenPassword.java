@@ -84,7 +84,7 @@ public class ControllerForgottenPassword {
     // page
     String password_1 = ViewForgottenPassword.text_Password1.getText();
     String password_2 = ViewForgottenPassword.text_Password2.getText();
-    String username = ViewForgottenPassword.theUser.getUserName();
+    int    identification = ViewForgottenPassword.theUser.getUserId();
 
     // Checks to see if the passwords are the same and not empty
     if (!password_1.equals(password_2)) {
@@ -99,9 +99,9 @@ public class ControllerForgottenPassword {
 
       // changes the users password
     } else {
-      theDatabase.updatePassword(username, password_1);
+      theDatabase.updatePassword(identification, password_1);
       ViewForgottenPassword.theUser.setPassword(password_1);
-      theDatabase.clearOneTimePassword(username);
+      theDatabase.clearOneTimePassword(identification);
       ViewForgottenPassword.success.setContentText("Your password has been changed.");
       Optional<ButtonType> result = ViewForgottenPassword.success.showAndWait();
       if (result.isPresent() && result.get() == ButtonType.OK) {

@@ -28,6 +28,7 @@ public class User {
   /*
    * These are the private attributes for this entity object
    */
+  private int identification;
   private String userName;
   private String password;
   private String OTP;
@@ -65,6 +66,8 @@ public class User {
    * Description: This constructor is used to establish user entity objects.
    * </p>
    * 
+   * @param id		 specifies the unique identification value of the user
+   * 
    * @param userName specifies the account userName for this user
    * 
    * @param password specifies the account password for this user
@@ -96,9 +99,10 @@ public class User {
    */
   // Constructor to initialize a new User object with userName, password, and
   // role.
-  public User(String userName, String password, String OTP, String fn, String mn, String ln, String pfn,
+  public User(int id, String userName, String password, String OTP, String fn, String mn, String ln, String pfn,
       String ea, boolean r1, boolean r2, boolean r3, boolean tpw) {
-    this.userName = userName;
+    this.identification = id;
+	this.userName = userName;
     this.password = password;
     this.OTP = OTP;
     this.firstName = fn;
@@ -162,6 +166,23 @@ public class User {
   // Sets the role2 user.
   public void setRole2User(boolean role) {
     this.role2 = role;
+  }
+  
+  /*****
+   * <p>
+   * Method: void setId(int id)
+   * </p>
+   * 
+   * <p>
+   * Description: This setter sets the new identification of the user
+   * </p>
+   * 
+   * @param id is an integer value for the new id
+   * 
+   */
+  // Sets the role2 user.
+  public void setId(int id) {
+    this.identification = id;
   }
 
   /*****
@@ -513,6 +534,23 @@ public class User {
   // Gets the current value of the role2 attribute.
   public boolean getNewRole2() {
     return role2;
+  }
+  
+  /*****
+   * <p>
+   * Method: int getUserId()
+   * </p>
+   * 
+   * <p>
+   * Description: This getter returns the identification value.
+   * </p>
+   * 
+   * @return an int of the user id.
+   * 
+   */
+  // Gets the current value of the id.
+  public int getUserId() {
+    return identification;
   }
 
   /*****

@@ -123,7 +123,7 @@ public class ViewRole2Home {
 		
 		// Populate the dynamic aspects of the GUI with the data from the user and the current
 		// state of the system.
-		theDatabase.getUserAccountDetails(user.getUserName());
+		theDatabase.getUserAccountDetails(user.getUserName(), user.getPassword());
 		applicationMain.FoundationsMain.activeHomePage = theRole;
 		
 		label_UserDetails.setText("User: " + theUser.getUserName());// Set the username

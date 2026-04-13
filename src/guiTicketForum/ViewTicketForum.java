@@ -1,10 +1,8 @@
-package guiDiscussionForum;
+package guiTicketForum;
 
-import entityClasses.Constraint;
-import entityClasses.Post;
+import entityClasses.Ticket;
 import entityClasses.Reply;
 import entityClasses.User;
-import entityClasses.Constraint.ConstraintType;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -25,14 +23,14 @@ import java.util.List;
 import java.util.Optional;
 
 /*******
- * <p>Title: ViewDiscussionForum Class.</p>
+ * <p>Title: ViewTicketForum Class.</p>
  *
  * <p>Description: The JavaFX-based discussion forum page. Displays a scrollable
- * list of posts on the left (1/3 width) and the selected post's full content
+ * list of Tickets on the left (1/3 width) and the selected Ticket's full content
  * and replies on the right (2/3 width). Supports creating, editing, and deleting
- * posts as well as adding replies.</p>
+ * Tickets as well as adding replies.</p>
  */
-public class ViewDiscussionForum {
+public class ViewTicketForum {
 
     /*-*******************************************************************************************
      Attributes
@@ -44,7 +42,7 @@ public class ViewDiscussionForum {
     // GUI Area 1 — Top bar
     protected static Label label_PageTitle = new Label("Discussion Forum");
     protected static Label label_UserDetails = new Label();
-    protected static Button button_NewPost = new Button("+ New Post");
+    protected static Button button_NewTicket = new Button("+ New Ticket");
     protected static Button button_NewThread = new Button("+ New Thread");
     protected static Button button_PopulateDatabase = new Button("Populate Database");
     protected static Button button_UpdateThisUser = new Button("Account Update");
@@ -59,13 +57,13 @@ public class ViewDiscussionForum {
 
     protected static Line line_Separator1 = new Line();
 
-    // GUI Area 2 — Left post list
-    protected static ScrollPane scrollPane_PostList;
-    protected static VBox vbox_PostList;
+    // GUI Area 2 — Left Ticket list
+    protected static ScrollPane scrollPane_TicketList;
+    protected static VBox vbox_TicketList;
 
-    // GUI Area 2 — Right post detail panel
-    protected static ScrollPane scrollPane_PostDetail;
-    protected static VBox vbox_PostDetail;
+    // GUI Area 2 — Right Ticket detail panel
+    protected static ScrollPane scrollPane_TicketDetail;
+    protected static VBox vbox_TicketDetail;
 
     // GUI Area 3 — Bottom bar
     protected static Button button_Return = new Button("Return");
@@ -73,18 +71,18 @@ public class ViewDiscussionForum {
     protected static Button button_Quit   = new Button("Quit");
 
     // Internal state
-    private static ViewDiscussionForum theView;
+    private static ViewTicketForum theView;
     private static Database theDatabase = applicationMain.FoundationsMain.database;
-    private static ModelDiscussionForum model = new ModelDiscussionForum();
+    private static ModelTicketForum model = new ModelTicketForum();
 
     protected static Stage theStage;
     protected static Pane theRootPane;
     protected static User theUser;
-    protected static Post theSelectedPost = null;
+    protected static Ticket theSelectedTicket = null;
     protected static String returnPage = "";
 
     // The scene used for the discussion forum. This can get away with being protected...
-    protected static Scene theDiscussionForumScene = null;
+    protected static Scene theTicketForumScene = null;
 
     // Alerts
     protected static Alert alertDeleteConfirm = new Alert(Alert.AlertType.CONFIRMATION);
@@ -97,22 +95,22 @@ public class ViewDiscussionForum {
     */
 
     /**********
-     * <p>Method: displayDiscussionForum(Stage ps, User user)</p>
+     * <p>Method: displayTicketForum(Stage ps, User user)</p>
      *
      * <p>Description: Single entry point to show the Discussion Forum page.
      * Sets shared references, instantiates the singleton if needed, refreshes
-     * the post list, and displays the scene.</p>
+     * the Ticket list, and displays the scene.</p>
      *
      * @param ps   the JavaFX Stage to use
      * @param user the currently logged-in User
      * @param returnPageStr the page to return to
      */
-    public static void displayDiscussionForum(Stage ps, User user, String returnPageStr) {
+    public static void displayTicketForum(Stage ps, User user, String returnPageStr) {
         theStage = ps;
         theUser  = user;
         returnPage = returnPageStr;
 
-        if (theView == null) theView = new ViewDiscussionForum();
+        if (theView == null) theView = new ViewTicketForum();
         
         // Only show if user is staff
         if (returnPage.equals("Staff")) {
@@ -127,10 +125,10 @@ public class ViewDiscussionForum {
       
 
         label_UserDetails.setText("User: " + theUser.getUserName());
-        refreshPostList();
+        refreshTicketList();
 
         theStage.setTitle("Discussion Forum");
-        theStage.setScene(theDiscussionForumScene);
+        theStage.setScene(theTicketForumScene);
         theStage.show();
     }
 
@@ -139,17 +137,17 @@ public class ViewDiscussionForum {
     */
 
     /**********
-     * <p>Constructor: ViewDiscussionForum()</p>
+     * <p>Constructor: ViewTicketForum()</p>
      *
      * <p>Description: Initializes all GUI widgets, sets their layout, fonts, sizes,
      * and event handlers. This is a singleton so it runs only once.</p>
      */
-    public ViewDiscussionForum() {
+    public ViewTicketForum() {
 
         theRootPane = new Pane();
-        theDiscussionForumScene = new Scene(theRootPane, width, height);
+        theTicketForumScene = new Scene(theRootPane, width, height);
 
-        theDiscussionForumScene.getStylesheets().add(
+        theTicketForumScene.getStylesheets().add(
             getClass().getResource("/applicationMain/application.css").toExternalForm()
         );
 
@@ -169,8 +167,8 @@ public class ViewDiscussionForum {
 
         setupLabelUI(label_UserDetails, "Arial", 16, 300, Pos.BASELINE_LEFT, 20, 5);
 
-        setupButtonUI(button_NewPost, "Dialog", 16, 100, Pos.BASELINE_LEFT, width/2 - 475, 55);
-        button_NewPost.setOnAction(_ -> showNewPostDialog());
+        setupButtonUI(button_NewTicket, "Dialog", 16, 100, Pos.BASELINE_LEFT, width/2 - 475, 55);
+        button_NewTicket.setOnAction(_ -> showNewTicketDialog());
         
         setupButtonUI(button_NewThread, "Dialog", 16, 100, Pos.BASELINE_LEFT, width/2 - 475, 20);
         button_NewThread.setOnAction(_ -> showNewThreadDialog());
@@ -186,7 +184,7 @@ public class ViewDiscussionForum {
 		    if (result.isPresent() && result.get() == ButtonType.OK) {
 		        // User pressed OK, proceed
 		        theDatabase.populateDatabaseWithTestPosts();
-		        refreshPostList();
+		        refreshTicketList();
 		    } else {
 		        // User cancelled, do nothing
 		        System.out.println("Database population cancelled by user.");
@@ -207,7 +205,7 @@ public class ViewDiscussionForum {
         combo_Category.setPrefWidth(150);
         combo_Category.setPrefHeight(16);
         combo_Category.setOnAction(_ -> {     
-            refreshPostList();
+            refreshTicketList();
         });
         
         combo_ReadStatus.setItems(FXCollections.observableArrayList(
@@ -219,7 +217,7 @@ public class ViewDiscussionForum {
     	combo_ReadStatus.setLayoutY(18);
     	combo_ReadStatus.setPrefWidth(130);
     	combo_ReadStatus.setPrefHeight(16);
-    	combo_ReadStatus.setOnAction(_ -> refreshPostList());
+    	combo_ReadStatus.setOnAction(_ -> refreshTicketList());
         
         // Andrew C -- Data for the text search bar
         setupLabelUI(label_searchText, "Arial", 18, 64, Pos.BASELINE_LEFT, 355, 60);
@@ -230,7 +228,7 @@ public class ViewDiscussionForum {
         
         setupTextFieldUI(textField_searchCriteria, "Dialog", 18, 600, Pos.BASELINE_LEFT, 460, 52);
         textField_searchCriteria.textProperty().addListener(_ -> {
-        	refreshPostList();
+        	refreshTicketList();
         });
         
         // Categorical text filter combo
@@ -244,7 +242,7 @@ public class ViewDiscussionForum {
         combo_SearchCriteria.setPrefWidth(100);
         combo_SearchCriteria.setPrefHeight(16);
         combo_SearchCriteria.setOnAction(_ -> {     
-            refreshPostList();
+            refreshTicketList();
         });
         
         // Here's what's left of GUI Area 1
@@ -259,63 +257,63 @@ public class ViewDiscussionForum {
         line_Separator1.setEndY(topBarHeight);
         line_Separator1.setStyle("-fx-stroke: #555;");
 
-        // ── GUI Area 2 — Left Post List 
+        // ── GUI Area 2 — Left Ticket List 
 
-        vbox_PostList = new VBox(8);
-        vbox_PostList.setPadding(new Insets(12));
-        vbox_PostList.setStyle("-fx-background-color: transparent;");
-        vbox_PostList.setFillWidth(true);
+        vbox_TicketList = new VBox(8);
+        vbox_TicketList.setPadding(new Insets(12));
+        vbox_TicketList.setStyle("-fx-background-color: transparent;");
+        vbox_TicketList.setFillWidth(true);
 
-        scrollPane_PostList = new ScrollPane(vbox_PostList);
-        scrollPane_PostList.setFitToWidth(true);
-        scrollPane_PostList.setFitToHeight(false);
-        scrollPane_PostList.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scrollPane_PostList.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scrollPane_PostList.setStyle(
+        scrollPane_TicketList = new ScrollPane(vbox_TicketList);
+        scrollPane_TicketList.setFitToWidth(true);
+        scrollPane_TicketList.setFitToHeight(false);
+        scrollPane_TicketList.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane_TicketList.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane_TicketList.setStyle(
             "-fx-background-color: #000;" +
             "-fx-background-radius: 15px;" +
             "-fx-border-radius: 15px;"
         );
-        scrollPane_PostList.viewportBoundsProperty().addListener((_) -> {
-            scrollPane_PostList.lookup(".viewport").setStyle(
+        scrollPane_TicketList.viewportBoundsProperty().addListener((_) -> {
+            scrollPane_TicketList.lookup(".viewport").setStyle(
                 "-fx-background-color: transparent;" +
                 "-fx-background-radius: 15px;"
             );
         });
-        scrollPane_PostList.setLayoutX(leftX);
-        scrollPane_PostList.setLayoutY(contentY);
-        scrollPane_PostList.setPrefWidth(leftWidth);
-        scrollPane_PostList.setPrefHeight(contentHeight);
-        scrollPane_PostList.getStyleClass().add("custom-scroll");
+        scrollPane_TicketList.setLayoutX(leftX);
+        scrollPane_TicketList.setLayoutY(contentY);
+        scrollPane_TicketList.setPrefWidth(leftWidth);
+        scrollPane_TicketList.setPrefHeight(contentHeight);
+        scrollPane_TicketList.getStyleClass().add("custom-scroll");
 
-        // ── GUI Area 2 — Right Post Detail 
+        // ── GUI Area 2 — Right Ticket Detail 
 
-        vbox_PostDetail = new VBox(12);
-        vbox_PostDetail.setPadding(new Insets(20));
-        vbox_PostDetail.setStyle("-fx-background-color: transparent;");
-        vbox_PostDetail.setFillWidth(true);
+        vbox_TicketDetail = new VBox(12);
+        vbox_TicketDetail.setPadding(new Insets(20));
+        vbox_TicketDetail.setStyle("-fx-background-color: transparent;");
+        vbox_TicketDetail.setFillWidth(true);
 
-        scrollPane_PostDetail = new ScrollPane(vbox_PostDetail);
-        scrollPane_PostDetail.setFitToWidth(true);
-        scrollPane_PostDetail.setFitToHeight(false);
-        scrollPane_PostDetail.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scrollPane_PostDetail.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scrollPane_PostDetail.setStyle(
+        scrollPane_TicketDetail = new ScrollPane(vbox_TicketDetail);
+        scrollPane_TicketDetail.setFitToWidth(true);
+        scrollPane_TicketDetail.setFitToHeight(false);
+        scrollPane_TicketDetail.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane_TicketDetail.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane_TicketDetail.setStyle(
             "-fx-background-color: #1a1a1e;" +
             "-fx-background-radius: 15px;" +
             "-fx-border-radius: 15px;"
         );
-        scrollPane_PostDetail.viewportBoundsProperty().addListener((_) -> {
-            scrollPane_PostDetail.lookup(".viewport").setStyle(
+        scrollPane_TicketDetail.viewportBoundsProperty().addListener((_) -> {
+            scrollPane_TicketDetail.lookup(".viewport").setStyle(
                 "-fx-background-color: transparent;" +
                 "-fx-background-radius: 15px;"
             );
         });
-        scrollPane_PostDetail.setLayoutX(rightX);
-        scrollPane_PostDetail.setLayoutY(contentY);
-        scrollPane_PostDetail.setPrefWidth(rightWidth);
-        scrollPane_PostDetail.setPrefHeight(contentHeight);
-        scrollPane_PostDetail.getStyleClass().add("custom-scroll");
+        scrollPane_TicketDetail.setLayoutX(rightX);
+        scrollPane_TicketDetail.setLayoutY(contentY);
+        scrollPane_TicketDetail.setPrefWidth(rightWidth);
+        scrollPane_TicketDetail.setPrefHeight(contentHeight);
+        scrollPane_TicketDetail.getStyleClass().add("custom-scroll");
 
         // ── GUI Area 3 — Bottom Bar ───────────────────────────────────
 
@@ -323,37 +321,37 @@ public class ViewDiscussionForum {
         line_Separator4.setStyle("-fx-stroke: #555;");
 
         setupButtonUI(button_Return, "Dialog", 18, 210, Pos.CENTER, 20, botBarY);
-        button_Return.setOnAction(_ -> ControllerDiscussionForum.performReturn());
+        button_Return.setOnAction(_ -> ControllerTicketForum.performReturn());
 
         setupButtonUI(button_Logout, "Dialog", 18, 210, Pos.CENTER,
                       (width / 2) - 105, botBarY);
-        button_Logout.setOnAction(_ -> ControllerDiscussionForum.performLogout());
+        button_Logout.setOnAction(_ -> ControllerTicketForum.performLogout());
 
         setupButtonUI(button_Quit, "Dialog", 18, 210, Pos.CENTER,
                       width - 230, botBarY);
-        button_Quit.setOnAction(_ -> ControllerDiscussionForum.performQuit());
+        button_Quit.setOnAction(_ -> ControllerTicketForum.performQuit());
 
         // Alerts
-        alertDeleteConfirm.setTitle("Delete Post");
-        alertDeleteConfirm.setHeaderText("Are you sure you want to delete this post?");
+        alertDeleteConfirm.setTitle("Delete Ticket");
+        alertDeleteConfirm.setHeaderText("Are you sure you want to delete this Ticket?");
         alertDeleteConfirm.setContentText("This action cannot be undone.");
 
         alertValidation.setTitle("Validation Error");
         alertValidation.setHeaderText("Please fix the following:");
         
         alertPopulateDatabase.setTitle("Confirm Database Population");
-		alertPopulateDatabase.setHeaderText("This action will reset the database post\nand reply tables with default values");
+		alertPopulateDatabase.setHeaderText("This action will reset the database Ticket\nand reply tables with default values");
 		alertPopulateDatabase.setContentText("Press OK to continue or Cancel to abort.");
 
         // ── Add all to pane ───────────────────────────────────────────
 
         theRootPane.getChildren().addAll(
             label_PageTitle, label_UserDetails,
-            button_NewPost, combo_Category, button_UpdateThisUser,
+            button_NewTicket, combo_Category, button_UpdateThisUser,
             button_PopulateDatabase,
             line_Separator1,
-            scrollPane_PostList,
-            scrollPane_PostDetail,
+            scrollPane_TicketList,
+            scrollPane_TicketDetail,
             button_NewThread,
             combo_ReadStatus,
             line_Separator4,
@@ -363,107 +361,96 @@ public class ViewDiscussionForum {
     }
 
     /*-*******************************************************************************************
-     Post List Population
+     Ticket List Population
     */
 
     /**********
-     * <p>Method: refreshPostList()</p>
+     * <p>Method: refreshTicketList()</p>
      *
-     * <p>Description: Fetches posts from the database based on the current filter
-     * selections and repopulates the left panel post list. Applies category filtering,
+     * <p>Description: Fetches Tickets from the database based on the current filter
+     * selections and repopulates the left panel Ticket list. Applies category filtering,
      * text search filtering by title, content, or author, and read status filtering
      * client side. Called on page load and after any CRUD operation.</p>
      */
-    private static void refreshPostList() {
-        List<Constraint> args = new ArrayList<>();
+    private static void refreshTicketList() {
+        List<String> args = new ArrayList<>();
         String selectedCategory = combo_Category.getValue();
         String searchFilterMode = combo_SearchCriteria.getValue();
         String textFilterContent = textField_searchCriteria.textProperty().getValue();
         String readStatusFilter = combo_ReadStatus.getValue();
 
         if (selectedCategory != null && combo_Category.getSelectionModel().getSelectedIndex() > 0)
-            args.add(new Constraint("category = " + selectedCategory, ConstraintType.AND));
+            args.add("category = " + selectedCategory);
 
         switch (searchFilterMode) {
             default:
             case "Title":
                 if (textFilterContent.length() > 0)
-                    args.add(new Constraint("UPPER(title) LIKE %" + textFilterContent.toUpperCase() + "%", ConstraintType.AND));
+                    args.add("UPPER(title) LIKE %" + textFilterContent.toUpperCase() + "%");
                 break;
             case "Content":
                 if (textFilterContent.length() > 0)
-                    args.add(new Constraint("UPPER(content) LIKE %" + textFilterContent.toUpperCase() + "%", ConstraintType.AND));
+                    args.add("UPPER(content) LIKE %" + textFilterContent.toUpperCase() + "%");
                 break;
-            //This is a very special case
             case "Author":
                 if (textFilterContent.length() > 0)
-                {
-                	List<Integer> authorList = model.getAuthorList(textFilterContent.toUpperCase());
-                	if(authorList.size() > 0) {
-	                	for(int i : authorList) {
-	                		args.add(new Constraint("author = " + i, ConstraintType.OR));
-	                	}
-                	}
-                	else {
-                		args.add(new Constraint("author = 0", ConstraintType.OR));
-                	}	
-                }
+                    args.add("UPPER(author) = " + textFilterContent.toUpperCase());
                 break;
         }
 
-        List<Post> allPosts = model.getAllPosts(args);
+        List<Ticket> allTickets = model.getAllTickets(args);
 
         // Filter by read status client side
-        if (allPosts != null && !readStatusFilter.equals("All") && !readStatusFilter.equals("Read Status")) {
+        if (allTickets != null && !readStatusFilter.equals("All") && !readStatusFilter.equals("Read Status")) {
             boolean filterRead = readStatusFilter.equals("Read");
-            allPosts = allPosts.stream()
-                .filter(p -> model.isPostRead(theUser.getUserName(), p.getPostID()) == filterRead)
+            allTickets = allTickets.stream()
+                .filter(p -> model.isTicketRead(theUser.getUserName(), p.getPostID()) == filterRead)
                 .collect(java.util.stream.Collectors.toList());
         }
 
-        populatePostList(allPosts);
+        populateTicketList(allTickets);
     }
 
     /**********
-     * <p>Method: populatePostList(List Post posts)</p>
+     * <p>Method: populateTicketList(List Ticket Tickets)</p>
      *
      * <p>Description: Clears the left panel and rebuilds it using the provided
-     * list of posts. Each post becomes a clickable row. Extracted from refreshPostList
-     * so subset filter results can also use this method. Displays a "No posts found"
+     * list of Tickets. Each Ticket becomes a clickable row. Extracted from refreshTicketList
+     * so subset filter results can also use this method. Displays a "No Tickets found"
      * message if the list is null or empty.</p>
      *
-     * @param posts the list of Post objects to display
+     * @param Tickets the list of Ticket objects to display
      */
-    private static void populatePostList(List<Post> posts) {
+    private static void populateTicketList(List<Ticket> Tickets) {
 
-        vbox_PostList.getChildren().clear();
+        vbox_TicketList.getChildren().clear();
 
-        if (posts == null || posts.isEmpty()) {
-            Label empty = new Label("No posts found.");
+        if (Tickets == null || Tickets.isEmpty()) {
+            Label empty = new Label("No Tickets found.");
             empty.setStyle("-fx-text-fill: #888; -fx-font-size: 14px;");
-            vbox_PostList.getChildren().add(empty);
+            vbox_TicketList.getChildren().add(empty);
             return;
         }
 
-        for (Post post : posts) {
-            HBox row = createPostRow(post);
-            vbox_PostList.getChildren().add(row);
+        for (Ticket Ticket : Tickets) {
+            HBox row = createTicketRow(Ticket);
+            vbox_TicketList.getChildren().add(row);
         }
     }
 
     /**********
-     * <p>Method: createPostRow(Post post)</p>
+     * <p>Method: createTicketRow(Ticket Ticket)</p>
      *
      * <p>Description: Builds a single clickable row for the left panel representing
-     * one post. Displays the post author, category badge, a read or unread status pill,
-     * and a truncated preview of the title and content. Clicking the row marks the post
-     * as read in the database, updates the pill instantly, and loads the full post
+     * one Ticket. Displays the Ticket author, category badge, a read or unread status pill,
+     * and a truncated preview of the title and content. Clicking the row marks the Ticket
+     * as read in the database, updates the pill instantly, and loads the full Ticket
      * in the right panel.</p>
      *
-     * @param post the Post object to represent as a row
+     * @param Ticket the Ticket object to represent as a row
      * @return the configured HBox row
      */
-    private static HBox createPostRow(Post post) {
+    private static HBox createTicketRow(Ticket Ticket) {
 
         HBox row = new HBox(8);
         row.setAlignment(Pos.CENTER_LEFT);
@@ -473,7 +460,7 @@ public class ViewDiscussionForum {
             "-fx-background-radius: 10px;" +
             "-fx-cursor: hand;"
         );
-        row.prefWidthProperty().bind(vbox_PostList.widthProperty().subtract(24));
+        row.prefWidthProperty().bind(vbox_TicketList.widthProperty().subtract(24));
 
         VBox textCol = new VBox(4);
         HBox.setHgrow(textCol, Priority.ALWAYS);
@@ -481,18 +468,18 @@ public class ViewDiscussionForum {
         // Author + category badge + read status pill on one line
         HBox topLine = new HBox(8);
         topLine.setAlignment(Pos.CENTER_LEFT);
-        Label authorLabel = new Label(theDatabase.getUserAsObject(post.getAuthor()).getUserName());
+        Label authorLabel = new Label(theDatabase.getUserAsObject(Ticket.getAuthor()).getUserName());
         authorLabel.setStyle(
             "-fx-font-family: 'Montserrat SemiBold'; -fx-font-size: 13px; -fx-text-fill: #fff;"
         );
-        Label categoryBadge = new Label(post.getCategory());
+        Label categoryBadge = new Label(Ticket.getCategory());
         categoryBadge.setStyle(
             "-fx-background-color: #5865f2; -fx-text-fill: white;" +
             "-fx-font-size: 10px; -fx-padding: 2 8; -fx-background-radius: 999;"
         );
 
         // Read status pill — checks database for current user's read status
-        boolean isRead = model.isPostRead(theUser.getUserName(), post.getPostID());
+        boolean isRead = model.isTicketRead(theUser.getUserName(), Ticket.getPostID());
         Label readPill = new Label(isRead ? "Read" : "Unread");
         readPill.setStyle(
             "-fx-background-color: " + (isRead ? "#2ecc71" : "#e74c3c") + ";" +
@@ -503,8 +490,8 @@ public class ViewDiscussionForum {
         topLine.getChildren().addAll(authorLabel, categoryBadge, readPill);
 
         // Title + content preview
-        String titlePart = post.getTitle() != null ? post.getTitle() : "";
-        String contentPart = post.getContent() != null ? post.getContent() : "";
+        String titlePart = Ticket.getTitle() != null ? Ticket.getTitle() : "";
+        String contentPart = Ticket.getContent() != null ? Ticket.getContent() : "";
         String combined = titlePart + " - " + contentPart;
         String preview = combined.length() > 60
             ? combined.substring(0, 60) + "..."
@@ -532,21 +519,21 @@ public class ViewDiscussionForum {
             )
         );
 
-        // Click to load full post, mark as read, and update pill instantly
+        // Click to load full Ticket, mark as read, and update pill instantly
         row.setOnMouseClicked(_ -> {
-            model.markPostAsRead(theUser.getUserName(), post.getPostID());
+            model.markTicketAsRead(theUser.getUserName(), Ticket.getPostID());
             readPill.setText("Read");
             readPill.setStyle(
                 "-fx-background-color: #2ecc71; -fx-text-fill: white;" +
                 "-fx-font-size: 10px; -fx-padding: 2 8; -fx-background-radius: 999;"
             );
-            Post freshPost = model.getPostByID(post.getPostID());
-            if (freshPost == null) {
-                theSelectedPost = null;
-                loadPostDetail(null);
+            Ticket freshTicket = model.getTicketByID(Ticket.getPostID());
+            if (freshTicket == null) {
+                theSelectedTicket = null;
+                loadTicketDetail(null);
             } else {
-                theSelectedPost = freshPost;
-                loadPostDetail(freshPost);
+                theSelectedTicket = freshTicket;
+                loadTicketDetail(freshTicket);
             }
         });
 
@@ -554,38 +541,38 @@ public class ViewDiscussionForum {
     }
 
     /*-*******************************************************************************************
-     Post Detail Panel
+     Ticket Detail Panel
     */
 
     /**********
-     * <p>Method: loadPostDetail(Post post)</p>
+     * <p>Method: loadTicketDetail(Ticket Ticket)</p>
      *
      * <p>Description: Populates the right panel with the full content of the selected
-     * post and all of its replies. Renders a Reply button for all users and Edit and
-     * Delete buttons only if the logged-in user is the author of the post. If the post
+     * Ticket and all of its replies. Renders a Reply button for all users and Edit and
+     * Delete buttons only if the logged-in user is the author of the Ticket. If the Ticket
      * is null, a deleted message is shown instead. Includes a role filter combo box
      * to filter replies by author role.</p>
      *
-     * @param post the Post to display in full detail, or null if the post was deleted
+     * @param Ticket the Ticket to display in full detail, or null if the Ticket was deleted
      */
-    private static void loadPostDetail(Post post) {
-        vbox_PostDetail.getChildren().clear();
+    private static void loadTicketDetail(Ticket Ticket) {
+        vbox_TicketDetail.getChildren().clear();
         
-        // Handle deleted post
-        if (post == null) {
-            Label deletedLabel = new Label("This post has been deleted.");
+        // Handle deleted Ticket
+        if (Ticket == null) {
+            Label deletedLabel = new Label("This Ticket has been deleted.");
             deletedLabel.setStyle("-fx-text-fill: #888; -fx-font-size: 16px;");
-            vbox_PostDetail.getChildren().add(deletedLabel);
+            vbox_TicketDetail.getChildren().add(deletedLabel);
             return;
         }
 
-        // Post header
-        Label authorLabel = new Label(theDatabase.getUserAsObject(post.getAuthor()).getUserName());
+        // Ticket header
+        Label authorLabel = new Label(theDatabase.getUserAsObject(Ticket.getAuthor()).getUserName());
         authorLabel.setStyle(
             "-fx-font-family: 'Montserrat SemiBold'; -fx-font-size: 18px; -fx-text-fill: #fff;"
         );
 
-        Label categoryBadge = new Label(post.getCategory());
+        Label categoryBadge = new Label(Ticket.getCategory());
         categoryBadge.setStyle(
             "-fx-background-color: #5865f2; -fx-text-fill: white;" +
             "-fx-font-size: 11px; -fx-padding: 3 10; -fx-background-radius: 999;"
@@ -594,15 +581,15 @@ public class ViewDiscussionForum {
         HBox headerLine = new HBox(10, authorLabel, categoryBadge);
         headerLine.setAlignment(Pos.CENTER_LEFT);
 
-        // Full post content
-        Label contentLabel = new Label(post.getContent());
+        // Full Ticket content
+        Label contentLabel = new Label(Ticket.getContent());
         contentLabel.setWrapText(true);
         contentLabel.setStyle(
             "-fx-font-family: 'Montserrat'; -fx-font-size: 15px;" +
             "-fx-text-fill: #ddd; -fx-padding: 10 0 0 0;"
         );
 
-        // Action buttons (Edit/Delete only for the post author)
+        // Action buttons (Edit/Delete only for the Ticket author)
         HBox actionBar = new HBox(10);
         actionBar.setPadding(new Insets(12, 0, 12, 0));
         actionBar.setAlignment(Pos.CENTER_LEFT);
@@ -612,23 +599,23 @@ public class ViewDiscussionForum {
             "-fx-background-color: #5865f2; -fx-text-fill: white;" +
             "-fx-font-size: 13px; -fx-background-radius: 5px;"
         );
-        replyBtn.setOnAction(_ -> showReplyDialog(post));
+        replyBtn.setOnAction(_ -> showReplyDialog(Ticket));
         actionBar.getChildren().add(replyBtn);
 
-        if (post.getAuthor() == theUser.getUserId()) {
+        if (Ticket.getAuthor() == theUser.getUserId()) {
             Button editBtn = new Button("Edit");
             editBtn.setStyle(
                 "-fx-background-color: #2d2d2d; -fx-text-fill: white;" +
                 "-fx-font-size: 13px; -fx-background-radius: 5px;"
             );
-            editBtn.setOnAction(_ -> showEditPostDialog(post));
+            editBtn.setOnAction(_ -> showEditTicketDialog(Ticket));
 
             Button deleteBtn = new Button("Delete");
             deleteBtn.setStyle(
                 "-fx-background-color: #dc3545; -fx-text-fill: white;" +
                 "-fx-font-size: 13px; -fx-background-radius: 5px;"
             );
-            deleteBtn.setOnAction(_ -> handleDeletePost(post));
+            deleteBtn.setOnAction(_ -> handleDeleteTicket(Ticket));
 
             actionBar.getChildren().addAll(editBtn, deleteBtn);
         }
@@ -656,13 +643,13 @@ public class ViewDiscussionForum {
         HBox repliesHeaderRow = new HBox(10, repliesHeader, roleFilterCombo);
         repliesHeaderRow.setAlignment(Pos.CENTER_LEFT);
 
-        vbox_PostDetail.getChildren().addAll(
+        vbox_TicketDetail.getChildren().addAll(
             headerLine, contentLabel, actionBar, divider, repliesHeaderRow
         );
 
         // Helper VBox to hold reply cards so we can refresh just replies on filter change
         VBox repliesContainer = new VBox(8);
-        vbox_PostDetail.getChildren().add(repliesContainer);
+        vbox_TicketDetail.getChildren().add(repliesContainer);
 
         // Method reference to load replies into the container based on selected role
         Runnable loadReplies = () -> {
@@ -671,9 +658,9 @@ public class ViewDiscussionForum {
 
             List<Reply> replies;
             if (selectedRole == null || selectedRole.equals("All")) {
-                replies = model.getRepliesByPost(post.getPostID());
+                replies = model.getRepliesByTicket(Ticket.getPostID());
             } else {
-                replies = model.getRepliesByPostAndRole(post.getPostID(), selectedRole);
+                replies = model.getRepliesByTicketAndRole(Ticket.getPostID(), selectedRole);
             }
 
             if (replies == null || replies.isEmpty()) {
@@ -750,16 +737,16 @@ public class ViewDiscussionForum {
     */
 
     /**********
-     * <p>Method: showNewPostDialog()</p>
+     * <p>Method: showNewTicketDialog()</p>
      *
-     * <p>Description: Opens a dialog allowing the user to create a new post.
-     * Collects category, title, and content input, validates using Post.checkValidation(),
-     * and inserts the post into the database via the model if valid.</p>
+     * <p>Description: Opens a dialog allowing the user to create a new Ticket.
+     * Collects category, title, and content input, validates using Ticket.checkValidation(),
+     * and inserts the Ticket into the database via the model if valid.</p>
      */
-    private static void showNewPostDialog() {
+    private static void showNewTicketDialog() {
         Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle("New Post");
-        dialog.setHeaderText("Create a new post");
+        dialog.setTitle("New Ticket");
+        dialog.setHeaderText("Create a new Ticket");
 
         ButtonType submitType = new ButtonType("Submit", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(submitType, ButtonType.CANCEL);
@@ -775,7 +762,7 @@ public class ViewDiscussionForum {
         titleArea.setPrefHeight(50);
 
         TextArea contentArea = new TextArea();
-        contentArea.setPromptText("Write your post here...");
+        contentArea.setPromptText("Write your Ticket here...");
         contentArea.setWrapText(true);
         contentArea.setPrefHeight(150);
 
@@ -791,50 +778,49 @@ public class ViewDiscussionForum {
 
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == submitType) {
-            Post newPost = new Post(
+            Ticket newTicket = new Ticket(
                 theUser.getUserId(),
                 titleArea.getText(),
-                contentArea.getText(),
-                categoryCombo.getValue()
+                contentArea.getText()
             );
-            String error = newPost.checkValidation();
+            String error = newTicket.checkValidation();
             if (!error.isEmpty()) {
                 alertValidation.setContentText(error);
                 alertValidation.showAndWait();
             } else {
-            	model.addPost(newPost);
-                refreshPostList();
+            	model.addTicket(newTicket);
+                refreshTicketList();
             }
         }
     }
 
     /**********
-     * <p>Method: showEditPostDialog(Post post)</p>
+     * <p>Method: showEditTicketDialog(Ticket Ticket)</p>
      *
-     * <p>Description: Opens a dialog pre-filled with the selected post's current title,
+     * <p>Description: Opens a dialog pre-filled with the selected Ticket's current title,
      * content, and category. On submit, validates the updated values using
-     * Post.checkValidation() and updates the post in the database via the model if valid.
-     * Refreshes the post list and reloads the post detail panel on success.</p>
+     * Ticket.checkValidation() and updates the Ticket in the database via the model if valid.
+     * Refreshes the Ticket list and reloads the Ticket detail panel on success.</p>
      *
-     * @param post the Post to be edited
+     * @param Ticket the Ticket to be edited
      */
-    private static void showEditPostDialog(Post post) {
+    private static void showEditTicketDialog(Ticket Ticket) {
         Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle("Edit Post");
-        dialog.setHeaderText("Edit your post");
+        dialog.setTitle("Edit Ticket");
+        dialog.setHeaderText("Edit your Ticket");
 
         ButtonType saveType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(saveType, ButtonType.CANCEL);
         
         ComboBox<String> categoryCombo = new ComboBox<>();
         categoryCombo.setItems(threadCategories);
-        categoryCombo.setValue(post.getCategory());
+        categoryCombo.setValue(Ticket.getCategory());
         
-        TextArea titleArea = new TextArea(post.getTitle());
+        TextArea titleArea = new TextArea(Ticket.getTitle());
         titleArea.setWrapText(true);
         titleArea.setPrefHeight(50);
 
-        TextArea contentArea = new TextArea(post.getContent());
+        TextArea contentArea = new TextArea(Ticket.getContent());
         contentArea.setWrapText(true);
         contentArea.setPrefHeight(150);
 
@@ -849,36 +835,36 @@ public class ViewDiscussionForum {
 
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == saveType) {
-        	post.setTitle(titleArea.getText());
-            post.setContent(contentArea.getText());
-            post.setCategory(categoryCombo.getValue());
-            String error = post.checkValidation();
+        	Ticket.setTitle(titleArea.getText());
+            Ticket.setContent(contentArea.getText());
+            Ticket.setCategory(categoryCombo.getValue());
+            String error = Ticket.checkValidation();
             if (!error.isEmpty()) {
                 alertValidation.setContentText(error);
                 alertValidation.showAndWait();
             } else {
-            	model.updatePost(post);
-                refreshPostList();
-                loadPostDetail(post);
+            	model.updateTicket(Ticket);
+                refreshTicketList();
+                loadTicketDetail(Ticket);
             }
         }
     }
 
     /**********
-     * <p>Method: showReplyDialog(Post post)</p>
+     * <p>Method: showReplyDialog(Ticket Ticket)</p>
      *
-     * <p>Description: Opens a dialog for the user to write a reply to the selected post.
+     * <p>Description: Opens a dialog for the user to write a reply to the selected Ticket.
      * Collects reply content, validates using Reply.checkValidation(), and inserts the
-     * reply via the model if valid. After a successful reply, marks the post as unread
+     * reply via the model if valid. After a successful reply, marks the Ticket as unread
      * for all other users so they are notified of new activity.</p>
      *
-     * @param post the Post being replied to
+     * @param Ticket the Ticket being replied to
      */
-    private static void showReplyDialog(Post post) {
+    private static void showReplyDialog(Ticket Ticket) {
 
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Reply");
-        dialog.setHeaderText("Reply to " + post.getAuthor() + "'s post");
+        dialog.setHeaderText("Reply to " + Ticket.getAuthor() + "'s Ticket");
 
         ButtonType submitType = new ButtonType("Submit", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(submitType, ButtonType.CANCEL);
@@ -896,7 +882,7 @@ public class ViewDiscussionForum {
         if (result.isPresent() && result.get() == submitType) {
             // Determine the author's role
             Reply newReply = new Reply(
-                post.getPostID(),
+                Ticket.getPostID(),
                 theUser.getUserId(),
                 replyArea.getText()
             );
@@ -905,30 +891,30 @@ public class ViewDiscussionForum {
                 alertValidation.setContentText(error);
                 alertValidation.showAndWait();
             } else {
-                model.addReply(newReply, post.getPostID());
-                model.markPostAsUnread(post.getPostID(), theUser.getUserName()); // add this
-                loadPostDetail(post);
+                model.addReply(newReply, Ticket.getPostID());
+                model.markTicketAsUnread(Ticket.getPostID(), theUser.getUserName()); // add this
+                loadTicketDetail(Ticket);
             }
         }
     }
 
     /**********
-     * <p>Method: handleDeletePost(Post post)</p>
+     * <p>Method: handleDeleteTicket(Ticket Ticket)</p>
      *
-     * <p>Description: Shows a confirmation dialog before soft deleting the selected post.
-     * If confirmed, calls softDeletePost() which overwrites the post content with a
+     * <p>Description: Shows a confirmation dialog before soft deleting the selected Ticket.
+     * If confirmed, calls softDeleteTicket() which overwrites the Ticket content with a
      * deleted placeholder instead of removing the row, allowing replies to remain visible.
-     * Clears the right panel and refreshes the post list on confirmation.</p>
+     * Clears the right panel and refreshes the Ticket list on confirmation.</p>
      *
-     * @param post the Post to be soft deleted
+     * @param Ticket the Ticket to be soft deleted
      */
-    private static void handleDeletePost(Post post) {
+    private static void handleDeleteTicket(Ticket Ticket) {
         Optional<ButtonType> result = alertDeleteConfirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-        	model.softDeletePost(post.getPostID());
-            theSelectedPost = null;
-            vbox_PostDetail.getChildren().clear();
-            refreshPostList();
+        	model.softDeleteTicket(Ticket.getPostID());
+            theSelectedTicket = null;
+            vbox_TicketDetail.getChildren().clear();
+            refreshTicketList();
         }
     }
     
@@ -938,7 +924,7 @@ public class ViewDiscussionForum {
      * <p>Description: Opens a text input dialog allowing a staff user to create a new
      * thread category. On submit, adds the new category to the shared threadCategories
      * list and to the category filter combo box so it is immediately available for
-     * filtering and post creation. Only accessible by staff users.</p>
+     * filtering and Ticket creation. Only accessible by staff users.</p>
      */
     private static void showNewThreadDialog() {
         TextInputDialog dialog = new TextInputDialog();

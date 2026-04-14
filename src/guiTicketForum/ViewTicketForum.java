@@ -1,8 +1,11 @@
 package guiTicketForum;
 
 import entityClasses.Ticket;
+import entityClasses.Constraint;
+import entityClasses.Post;
 import entityClasses.Reply;
 import entityClasses.User;
+import entityClasses.Constraint.ConstraintType;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -40,10 +43,9 @@ public class ViewTicketForum {
     private static double height = applicationMain.FoundationsMain.WINDOW_HEIGHT * 1.75;
 
     // GUI Area 1 — Top bar
-    protected static Label label_PageTitle = new Label("Discussion Forum");
+    protected static Label label_PageTitle = new Label("Administrator Action List");
     protected static Label label_UserDetails = new Label();
     protected static Button button_NewTicket = new Button("+ New Ticket");
-    protected static Button button_NewThread = new Button("+ New Thread");
     protected static Button button_PopulateDatabase = new Button("Populate Database");
     protected static Button button_UpdateThisUser = new Button("Account Update");
     protected static ComboBox<String> combo_Category = new ComboBox<>();
@@ -51,7 +53,7 @@ public class ViewTicketForum {
     protected static TextField textField_searchCriteria = new TextField();
     protected static Label label_searchText = new Label();
     protected static ObservableList<String> threadCategories = FXCollections.observableArrayList(
-    	    "General", "Homework", "Lectures", "Assignments", "Exams"
+    	    "Open", "Closed"
     	);
     protected static ComboBox<String> combo_ReadStatus = new ComboBox<>();
 
@@ -86,6 +88,8 @@ public class ViewTicketForum {
 
     // Alerts
     protected static Alert alertDeleteConfirm = new Alert(Alert.AlertType.CONFIRMATION);
+    protected static Alert alertReopenTicket = new Alert(Alert.AlertType.CONFIRMATION);
+    protected static Alert alertCloseTicket = new Alert(Alert.AlertType.CONFIRMATION);
     protected static Alert alertValidation = new Alert(Alert.AlertType.WARNING);
  	protected static Alert alertPopulateDatabase = new Alert(AlertType.CONFIRMATION);
 
@@ -112,18 +116,9 @@ public class ViewTicketForum {
 
         if (theView == null) theView = new ViewTicketForum();
         
-        // Only show if user is staff
-        if (returnPage.equals("Staff")) {
-        	  button_NewThread.setVisible(true);
-              button_NewThread.setManaged(true);
-        } else {
-        	  button_NewThread.setVisible(false);
-              button_NewThread.setManaged(false);
-        }
+        //AC - let's hide the new ticket button if we're an admin!
+        button_NewTicket.setVisible(!theUser.getAdminRole());
         
-        combo_ReadStatus.setValue("Read Status");
-      
-
         label_UserDetails.setText("User: " + theUser.getUserName());
         refreshTicketList();
 
@@ -169,12 +164,7 @@ public class ViewTicketForum {
 
         setupButtonUI(button_NewTicket, "Dialog", 16, 100, Pos.BASELINE_LEFT, width/2 - 475, 55);
         button_NewTicket.setOnAction(_ -> showNewTicketDialog());
-        
-        setupButtonUI(button_NewThread, "Dialog", 16, 100, Pos.BASELINE_LEFT, width/2 - 475, 20);
-        button_NewThread.setOnAction(_ -> showNewThreadDialog());
-        
-
-        
+            
         setupButtonUI(button_PopulateDatabase, "Dialog", 16, 100, Pos.BASELINE_LEFT, width/2 - 75, 55);
         button_PopulateDatabase.setOnAction((_) -> { 
         
@@ -335,6 +325,14 @@ public class ViewTicketForum {
         alertDeleteConfirm.setTitle("Delete Ticket");
         alertDeleteConfirm.setHeaderText("Are you sure you want to delete this Ticket?");
         alertDeleteConfirm.setContentText("This action cannot be undone.");
+        
+     // Alerts
+        alertReopenTicket.setTitle("Reopen Ticket");
+        alertReopenTicket.setHeaderText("Are you sure you want to reopen this Ticket?");
+        alertReopenTicket.setContentText("This ticket will still be closed, but a duplicate ticket will be created!");
+        
+        alertCloseTicket.setTitle("Close Ticket");
+        alertCloseTicket.setHeaderText("Are you sure you want to close this Ticket?");
 
         alertValidation.setTitle("Validation Error");
         alertValidation.setHeaderText("Please fix the following:");
@@ -352,7 +350,6 @@ public class ViewTicketForum {
             line_Separator1,
             scrollPane_TicketList,
             scrollPane_TicketDetail,
-            button_NewThread,
             combo_ReadStatus,
             line_Separator4,
             button_Return, button_Logout, button_Quit,
@@ -373,42 +370,53 @@ public class ViewTicketForum {
      * client side. Called on page load and after any CRUD operation.</p>
      */
     private static void refreshTicketList() {
-        List<String> args = new ArrayList<>();
+    	List<Constraint> args = new ArrayList<>();
         String selectedCategory = combo_Category.getValue();
         String searchFilterMode = combo_SearchCriteria.getValue();
         String textFilterContent = textField_searchCriteria.textProperty().getValue();
         String readStatusFilter = combo_ReadStatus.getValue();
 
         if (selectedCategory != null && combo_Category.getSelectionModel().getSelectedIndex() > 0)
-            args.add("category = " + selectedCategory);
+            args.add(new Constraint("category = " + selectedCategory, ConstraintType.AND));
 
         switch (searchFilterMode) {
             default:
             case "Title":
                 if (textFilterContent.length() > 0)
-                    args.add("UPPER(title) LIKE %" + textFilterContent.toUpperCase() + "%");
+                    args.add(new Constraint("UPPER(title) LIKE %" + textFilterContent.toUpperCase() + "%", ConstraintType.AND));
                 break;
             case "Content":
                 if (textFilterContent.length() > 0)
-                    args.add("UPPER(content) LIKE %" + textFilterContent.toUpperCase() + "%");
+                    args.add(new Constraint("UPPER(content) LIKE %" + textFilterContent.toUpperCase() + "%", ConstraintType.AND));
                 break;
+            //This is a very special case
             case "Author":
                 if (textFilterContent.length() > 0)
-                    args.add("UPPER(author) = " + textFilterContent.toUpperCase());
+                {
+                	List<Integer> authorList = model.getAuthorList(textFilterContent.toUpperCase());
+                	if(authorList.size() > 0) {
+	                	for(int i : authorList) {
+	                		args.add(new Constraint("author = " + i, ConstraintType.OR));
+	                	}
+                	}
+                	else {
+                		args.add(new Constraint("author = 0", ConstraintType.OR));
+                	}	
+                }
                 break;
         }
 
-        List<Ticket> allTickets = model.getAllTickets(args);
+        List<Ticket> allPosts = model.getAllTickets(args);
 
         // Filter by read status client side
-        if (allTickets != null && !readStatusFilter.equals("All") && !readStatusFilter.equals("Read Status")) {
+        if (allPosts != null && !readStatusFilter.equals("All") && !readStatusFilter.equals("Read Status")) {
             boolean filterRead = readStatusFilter.equals("Read");
-            allTickets = allTickets.stream()
+            allPosts = allPosts.stream()
                 .filter(p -> model.isTicketRead(theUser.getUserName(), p.getPostID()) == filterRead)
                 .collect(java.util.stream.Collectors.toList());
         }
 
-        populateTicketList(allTickets);
+        populateTicketList(allPosts);
     }
 
     /**********
@@ -468,7 +476,8 @@ public class ViewTicketForum {
         // Author + category badge + read status pill on one line
         HBox topLine = new HBox(8);
         topLine.setAlignment(Pos.CENTER_LEFT);
-        Label authorLabel = new Label(theDatabase.getUserAsObject(Ticket.getAuthor()).getUserName());
+        Label authorLabel = new Label(Ticket.getAuthor() == -1 ? "[Deleted]" : 
+        	theDatabase.getUserAsObject(Ticket.getAuthor()).getUserName());
         authorLabel.setStyle(
             "-fx-font-family: 'Montserrat SemiBold'; -fx-font-size: 13px; -fx-text-fill: #fff;"
         );
@@ -567,7 +576,8 @@ public class ViewTicketForum {
         }
 
         // Ticket header
-        Label authorLabel = new Label(theDatabase.getUserAsObject(Ticket.getAuthor()).getUserName());
+        Label authorLabel = new Label(Ticket.getAuthor() == -1 ? "[Deleted]" : 
+        	theDatabase.getUserAsObject(Ticket.getAuthor()).getUserName());
         authorLabel.setStyle(
             "-fx-font-family: 'Montserrat SemiBold'; -fx-font-size: 18px; -fx-text-fill: #fff;"
         );
@@ -602,7 +612,7 @@ public class ViewTicketForum {
         replyBtn.setOnAction(_ -> showReplyDialog(Ticket));
         actionBar.getChildren().add(replyBtn);
 
-        if (Ticket.getAuthor() == theUser.getUserId()) {
+        if (Ticket.getAuthor() == theUser.getUserId() && theUser.getNewRole1()) {
             Button editBtn = new Button("Edit");
             editBtn.setStyle(
                 "-fx-background-color: #2d2d2d; -fx-text-fill: white;" +
@@ -616,10 +626,34 @@ public class ViewTicketForum {
                 "-fx-font-size: 13px; -fx-background-radius: 5px;"
             );
             deleteBtn.setOnAction(_ -> handleDeleteTicket(Ticket));
-
+            
             actionBar.getChildren().addAll(editBtn, deleteBtn);
+            
+            if(Ticket.getCategory().equals("Closed")) {
+            	Button reopenBtn = new Button("Reopen");
+                reopenBtn.setStyle(
+                		"-fx-background-color: #5865f2; -fx-text-fill: white;" +
+                	    "-fx-font-size: 13px; -fx-background-radius: 5px;"
+                );
+                reopenBtn.setOnAction(_ -> doReopenTicket(Ticket));
+                HBox.setMargin(reopenBtn, new Insets(0, 0, 0, 600));
+                actionBar.getChildren().add(reopenBtn);
+            }
         }
-
+        else if(theUser.getAdminRole()) {
+        	if(Ticket.getCategory().equals("Open")) {
+            	Button closeBtn = new Button("Close");
+            	closeBtn.setStyle(
+                		"-fx-background-color: #5865f2; -fx-text-fill: white;" +
+                	    "-fx-font-size: 13px; -fx-background-radius: 5px;"
+                );
+            	closeBtn.setOnAction(_ -> doCloseTicket(Ticket));
+                HBox.setMargin(closeBtn, new Insets(0, 0, 0, 720));
+                actionBar.getChildren().add(closeBtn);
+            }
+        }
+        
+        
         // Divider
         Separator divider = new Separator();
         divider.setStyle("-fx-background-color: #333;");
@@ -704,7 +738,8 @@ public class ViewTicketForum {
         HBox topLine = new HBox(8);
         topLine.setAlignment(Pos.CENTER_LEFT);
 
-        Label authorLabel = new Label(theDatabase.getUserAsObject(reply.getAuthor()).getUserName());
+        Label authorLabel = new Label(reply.getAuthor() == -1 ? "[Deleted]" : 
+        	theDatabase.getUserAsObject(reply.getAuthor()).getUserName());
         authorLabel.setStyle(
             "-fx-font-family: 'Montserrat SemiBold'; -fx-font-size: 13px; -fx-text-fill: #fff;"
         );
@@ -751,11 +786,6 @@ public class ViewTicketForum {
         ButtonType submitType = new ButtonType("Submit", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(submitType, ButtonType.CANCEL);
         
-        ComboBox<String> categoryCombo = new ComboBox<>();
-        
-        categoryCombo.setItems(threadCategories);
-        categoryCombo.setValue("General");
-        
         TextArea titleArea = new TextArea();
         titleArea.setPromptText("Write your title here...");
         titleArea.setWrapText(true);
@@ -766,10 +796,7 @@ public class ViewTicketForum {
         contentArea.setWrapText(true);
         contentArea.setPrefHeight(150);
 
-   
-
         VBox content = new VBox(10,
-            new Label("Category:"), categoryCombo,
             new Label("Title:"),    titleArea,
             new Label("Content:"),  contentArea
         );
@@ -811,11 +838,7 @@ public class ViewTicketForum {
 
         ButtonType saveType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(saveType, ButtonType.CANCEL);
-        
-        ComboBox<String> categoryCombo = new ComboBox<>();
-        categoryCombo.setItems(threadCategories);
-        categoryCombo.setValue(Ticket.getCategory());
-        
+
         TextArea titleArea = new TextArea(Ticket.getTitle());
         titleArea.setWrapText(true);
         titleArea.setPrefHeight(50);
@@ -826,7 +849,6 @@ public class ViewTicketForum {
 
 
         VBox content = new VBox(10,
-            new Label("Category:"), categoryCombo,
             new Label("Title:"),    titleArea,
             new Label("Content:"),  contentArea
         );
@@ -837,7 +859,6 @@ public class ViewTicketForum {
         if (result.isPresent() && result.get() == saveType) {
         	Ticket.setTitle(titleArea.getText());
             Ticket.setContent(contentArea.getText());
-            Ticket.setCategory(categoryCombo.getValue());
             String error = Ticket.checkValidation();
             if (!error.isEmpty()) {
                 alertValidation.setContentText(error);
@@ -919,29 +940,41 @@ public class ViewTicketForum {
     }
     
     /**********
-     * <p>Method: showNewThreadDialog()</p>
+     * <p>Method: doReopenTicket(Ticket Ticket)</p>
      *
-     * <p>Description: Opens a text input dialog allowing a staff user to create a new
-     * thread category. On submit, adds the new category to the shared threadCategories
-     * list and to the category filter combo box so it is immediately available for
-     * filtering and Ticket creation. Only accessible by staff users.</p>
+     * <p>Description: Sets the selected ticket back to open. Only
+     * members of staff are allowed to do this.</p>
+     *
+     * @param Ticket the Ticket that is being reopened
      */
-    private static void showNewThreadDialog() {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("New Thread");
-        dialog.setHeaderText("Create a new thread category");
-        dialog.setContentText("Thread name:");
-
-        Optional<String> result = dialog.showAndWait();
-        result.ifPresent(threadName -> {
-            if (threadName.trim().isEmpty()) {
-                alertValidation.setContentText("Thread name cannot be empty.");
-                alertValidation.showAndWait();
-            } else {
-                threadCategories.add(threadName.trim());
-                combo_Category.getItems().add(threadName.trim());
-            }
-        });
+    private static void doReopenTicket(Ticket Ticket) {
+    	Optional<ButtonType> result = alertReopenTicket.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+        	Ticket newTicket = Ticket;
+        	newTicket.setCategory("Open");
+        	model.addTicket(newTicket);
+            theSelectedTicket = newTicket;
+            loadTicketDetail(newTicket);
+            refreshTicketList();
+        	
+        }
+    }
+    
+    /**********
+     * <p>Method: doCloseTicket(Ticket Ticket)</p>
+     *
+     * <p>Description: Sets the selected ticket to closed. Only
+     * administrators are allowed to do this.</p>
+     *
+     * @param Ticket the Ticket that is being closed
+     */
+    private static void doCloseTicket(Ticket Ticket) {
+    	Optional<ButtonType> result = alertCloseTicket.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+        	Ticket.setCategory("Closed");
+        	model.updateTicket(Ticket);
+            refreshTicketList();
+        }
     }
 
     /*-*******************************************************************************************

@@ -15,7 +15,6 @@ import javafx.scene.layout.*;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import database.Database;
 import javafx.collections.ObservableList;
@@ -481,7 +480,8 @@ public class ViewDiscussionForum {
         // Author + category badge + read status pill on one line
         HBox topLine = new HBox(8);
         topLine.setAlignment(Pos.CENTER_LEFT);
-        Label authorLabel = new Label(theDatabase.getUserAsObject(post.getAuthor()).getUserName());
+        Label authorLabel = new Label(post.getAuthor() == -1 ? "[Deleted]" : 
+        	theDatabase.getUserAsObject(post.getAuthor()).getUserName());
         authorLabel.setStyle(
             "-fx-font-family: 'Montserrat SemiBold'; -fx-font-size: 13px; -fx-text-fill: #fff;"
         );
@@ -580,7 +580,8 @@ public class ViewDiscussionForum {
         }
 
         // Post header
-        Label authorLabel = new Label(theDatabase.getUserAsObject(post.getAuthor()).getUserName());
+        Label authorLabel = new Label(post.getAuthor() == -1 ? "[Deleted]" : 
+        	theDatabase.getUserAsObject(post.getAuthor()).getUserName());
         authorLabel.setStyle(
             "-fx-font-family: 'Montserrat SemiBold'; -fx-font-size: 18px; -fx-text-fill: #fff;"
         );
@@ -717,7 +718,8 @@ public class ViewDiscussionForum {
         HBox topLine = new HBox(8);
         topLine.setAlignment(Pos.CENTER_LEFT);
 
-        Label authorLabel = new Label(theDatabase.getUserAsObject(reply.getAuthor()).getUserName());
+        Label authorLabel = new Label(reply.getAuthor() == -1 ? "[Deleted]" : 
+        	theDatabase.getUserAsObject(reply.getAuthor()).getUserName());
         authorLabel.setStyle(
             "-fx-font-family: 'Montserrat SemiBold'; -fx-font-size: 13px; -fx-text-fill: #fff;"
         );

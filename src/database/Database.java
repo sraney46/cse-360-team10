@@ -205,6 +205,12 @@ public class Database {
         + "content LONGTEXT, "
         + "timestamp BIGINT)";
     statement.execute(ticketReplyTable);
+    
+    String readStatusTicketTable = "CREATE TABLE IF NOT EXISTS ticketReadStatus ("
+		    + "userName VARCHAR(255), "
+		    + "postID INT, "
+		    + "PRIMARY KEY (userName, postID))";
+		statement.execute(readStatusTicketTable);
 
   }
 
@@ -298,7 +304,6 @@ public class Database {
     try {
     	ResultSet resultSet = statement.executeQuery(getIDQuery);
         if (resultSet.next()) {
-        	System.out.println(resultSet.getInt("id"));
         	user.setId(resultSet.getInt("id"));
         }
       }

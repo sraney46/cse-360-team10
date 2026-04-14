@@ -44,13 +44,22 @@ public class ControllerRole1Home {
 	 * 
 	 * Title: discussionForum () Method. </p>
 	 * 
-	 * <p> Description: Protected method that allows an admin to add and remove roles for any of
-	 * the users currently in the system.  This is done by invoking the AddRemoveRoles Page. There
-	 * is no need to specify the home page for the return as this can only be initiated by and
-	 * Admin.</p>
+	 * <p> Description: Opens the discussion board.</p>
 	 */
 	protected static void discussionForum() {
 		guiDiscussionForum.ViewDiscussionForum.displayDiscussionForum(ViewRole1Home.theStage, 
+				ViewRole1Home.theUser, "Staff");
+	}
+	
+	/**********
+	 * <p> 
+	 * 
+	 * Title: ticketForum () Method. </p>
+	 * 
+	 * <p> Description: Opens the administrator action list/ticket forum.</p>
+	 */
+	protected static void ticketForum() {
+		guiTicketForum.ViewTicketForum.displayTicketForum(ViewRole1Home.theStage, 
 				ViewRole1Home.theUser, "Staff");
 	}
 

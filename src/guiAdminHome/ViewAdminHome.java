@@ -201,6 +201,7 @@ public class ViewAdminHome {
   protected static Button button_AddRemoveRoles = new Button("Add/Remove Roles");
   
   protected static Button button_DiscussionForum = new Button("Discussion Forum");
+  protected static Button button_TicketForum = new Button("Administrator Action List");
 
   /**
    * The alert displayed when a requested feature has not yet been fully
@@ -406,39 +407,45 @@ public class ViewAdminHome {
     alertEmailSent.setTitle("Invitation");
     alertEmailSent.setHeaderText("Invitation was sent");
 
-    setupButtonUI(button_SendInvitation, "Dialog", 18, 170, Pos.CENTER, 800, 205);
+    setupButtonUI(button_SendInvitation, "Dialog", 18, 160, Pos.CENTER, 640, 205);
     button_SendInvitation.setOnAction((_) -> {
       ControllerAdminHome.performInvitation();
     });
-
-    // GUI Area 4
-    setupButtonUI(button_ManageInvitations, "Dialog", 16, 250, Pos.CENTER, 20, 270);
+    
+    //AC - Yo, let's move this here!
+    setupButtonUI(button_ManageInvitations, "Dialog", 16, 160, Pos.CENTER, 810, 205);
     button_ManageInvitations.setOnAction((_) -> {
       ControllerAdminHome.manageInvitations();
     });
 
-    setupButtonUI(button_SetOnetimePassword, "Dialog", 16, 250, Pos.CENTER, 20, 320);
+    // GUI Area 4
+    setupButtonUI(button_TicketForum, "Dialog", 16, 250, Pos.CENTER, 20, 270);
+	button_TicketForum.setOnAction((_) -> {ControllerAdminHome.ticketForum(); });
+    
+	setupButtonUI(button_DiscussionForum, "Dialog", 16, 250, Pos.CENTER, 20, 320);
+	button_DiscussionForum.setOnAction((_) -> {ControllerAdminHome.discussionForum(); });
+    
+
+    setupButtonUI(button_SetOnetimePassword, "Dialog", 16, 250, Pos.CENTER, 20, 370);
     button_SetOnetimePassword.setOnAction((_) -> {
       ControllerAdminHome.setOnetimePassword();
     });
     alertOneTimePassword.setTitle("One-time password generated");
 
-    setupButtonUI(button_DeleteUser, "Dialog", 16, 250, Pos.CENTER, 20, 370);
+    setupButtonUI(button_DeleteUser, "Dialog", 16, 250, Pos.CENTER, 20, 420);
     button_DeleteUser.setOnAction((_) -> {
       ControllerAdminHome.deleteUser();
     });
     alertDeleteUser.setTitle("Confirm");
 
-    setupButtonUI(button_ListUsers, "Dialog", 16, 250, Pos.CENTER, 20, 420);
+    //AC - I don't recall us using this, either
+    /*setupButtonUI(button_ListUsers, "Dialog", 16, 250, Pos.CENTER, 20, 470);
     button_ListUsers.setOnAction((_) -> {
       ControllerAdminHome.listUsers();
-    });
+    });*/
 
     button_ListUsers.setVisible(false);
     button_ListUsers.setManaged(false);
-    
-	setupButtonUI(button_DiscussionForum, "Dialog", 16, 250, Pos.CENTER, 20, 420);
-	button_DiscussionForum.setOnAction((_) -> {ControllerAdminHome.discussionForum(); });
 
     setupButtonUI(button_AddRemoveRoles, "Dialog", 16, 250, Pos.CENTER, 20, 470);
     button_AddRemoveRoles.setOnAction((_) -> {
@@ -556,6 +563,7 @@ public class ViewAdminHome {
         button_DeleteUser,
         button_ListUsers,
         button_DiscussionForum,
+        button_TicketForum,
         button_AddRemoveRoles,
         line_Separator4,
         button_Logout,
@@ -690,7 +698,6 @@ public class ViewAdminHome {
     usersList.getItems().clear();
     usersList.getColumns().clear();
     setupUserListData();
-    System.out.println(theUser.getUserId());
   }
 
   /**********

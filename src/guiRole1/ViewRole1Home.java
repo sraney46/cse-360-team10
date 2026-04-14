@@ -64,6 +64,7 @@ public class ViewRole1Home {
   protected static Label label_UserDetails = new Label();
   
   protected static Button button_DiscussionForum = new Button("Discussion Forum");
+  protected static Button button_TicketForum = new Button("Administrator Action List");
 
   /** Button that allows the user to navigate to the account update page. */
   protected static Button button_UpdateThisUser = new Button("Account Update");
@@ -219,8 +220,11 @@ public class ViewRole1Home {
       ControllerRole1Home.performUpdate();
     });
     
-    setupButtonUI(button_DiscussionForum, "Dialog", 16, 170, Pos.CENTER, 315, 55);
+    setupButtonUI(button_DiscussionForum, "Dialog", 16, 170, Pos.CENTER, 200, 55);
 	button_DiscussionForum.setOnAction((_) -> {ControllerRole1Home.discussionForum(); });
+	
+	setupButtonUI(button_TicketForum, "Dialog", 16, 170, Pos.CENTER, 400, 55);
+	button_TicketForum.setOnAction((_) -> {ControllerRole1Home.ticketForum(); });
 
     // GUI Area 2: Staff Announcements
     setupLabelUI(label_AnnouncementsTitle, "Arial", 22, width - 40, Pos.CENTER, 20, 120);
@@ -274,7 +278,7 @@ public class ViewRole1Home {
     // Place all of the widget items into the Root Pane's list of children
     theRootPane.getChildren().addAll(
         label_PageTitle, label_UserDetails, button_UpdateThisUser, line_Separator1, button_DiscussionForum,
-        label_AnnouncementsTitle, textArea_Announcements,
+        button_TicketForum, label_AnnouncementsTitle, textArea_Announcements,
         line_Separator4, button_Logout, button_Quit);
   }
 

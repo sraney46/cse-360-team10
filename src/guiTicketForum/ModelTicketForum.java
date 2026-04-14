@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import entityClasses.Ticket;
+import entityClasses.Constraint.ConstraintType;
+import entityClasses.Constraint;
+import entityClasses.Post;
 import entityClasses.Reply;
 
 /**********
@@ -83,32 +86,55 @@ public class ModelTicketForum {
     }
 
     /**********************************************************************************************
-     * Ticket - READ
+     * TICKET - READ
      **********************************************************************************************/
 
    /**********
-     * <p>Method: getTicketByID(int id)</p>
+     * <p>Method: getAuthorList(string username)</p>
      *
-     * <p>Description: Retrieves Ticket matching the desired id and returns the Ticket object.</p>
+     * <p>Description: Retrieves a list of integer ids for each user by a username.</p>
      *
-     * @param id the ID of the Ticket to grab.
-     * @return a Ticket object of desired Ticket, or null if an error occurs.
+     * @param username the the username of the author to get
+     * @return a post object of desired ticket, or null if an error occurs.
      */
-  public Ticket getTicketByID(int id){
-     List<Ticket> TicketList = new ArrayList<>();
-        String query = "SELECT * FROM ticketDB WHERE postID = ?";
-        try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {  
-      pstmt.setInt(1, id);
-            ResultSet rs = pstmt.executeQuery();
-            if(rs.next()) {
-                return buildTicketFromResultSet(rs);
-            }
-        } catch (SQLException e) {
-            System.out.println("*** ERROR *** Failed to retrieve Tickets by ID: " + e.getMessage());    
-    }
-    return null;
-
-  }
+	  public List<Integer> getAuthorList(String username){
+	     List<Integer> authorList = new ArrayList<>();
+	        String query = "SELECT * FROM userDB WHERE UPPER(username) = ?";
+	        try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {  
+	        	pstmt.setString(1, username);
+	            ResultSet rs = pstmt.executeQuery();
+	            while(rs.next()) {
+	            	authorList.add(rs.getInt("id"));
+	            }
+	        } catch (SQLException e) {
+	            System.out.println("*** ERROR *** Failed to retrieve authors by username: " + e.getMessage());    
+	    }
+	    return authorList;
+	
+	  }
+  
+	  /**********
+	   * <p>Method: getTicketByID(int id)</p>
+	   *
+	   * <p>Description: Retrieves ticket matching the desired id and returns the ticket object.</p>
+	   *
+	   * @param id the ID of the ticket to grab.
+	   * @return a ticket object of desired ticket, or null if an error occurs.
+	   */
+	public Ticket getTicketByID(int id){
+	      String query = "SELECT * FROM ticketDB WHERE postID = ?";
+	      try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {  
+	    pstmt.setInt(1, id);
+	          ResultSet rs = pstmt.executeQuery();
+	          if(rs.next()) {
+	              return buildTicketFromResultSet(rs);
+	          }
+	      } catch (SQLException e) {
+	          System.out.println("*** ERROR *** Failed to retrieve posts by ID: " + e.getMessage());    
+	  }
+	  return null;
+	
+	}
 
     /**********
      * <p>Method: getAllTickets()</p>
@@ -125,22 +151,23 @@ public class ModelTicketForum {
      * and if there is a filter for the Tickets, will only return the Tickets that pass
      * the filter.
      */
-    public List<Ticket> getAllTickets(List<String> constraints) {
-        List<Ticket> TicketList = new ArrayList<>();
-        String query = "SELECT * FROM ticketDB";
-        
-        //We need this in two places, so let's init here...
-        List<String> rightHandArgs = new ArrayList<>();
-        
-        //If there is a list of constraints, then we need to add args to the query
-        if(constraints != null && constraints.size() > 0)
-        {
-        	//Track if we need an AND
-        	int stringCounter = 0;
-        	query += " WHERE ";
+	public List<Ticket> getAllTickets(List<Constraint> constraints) {
+      List<Ticket> ticketList = new ArrayList<>();
+      String query = "SELECT * FROM ticketDB";
+      
+      //We need this in two places, so let's init here...
+      List<String> rightHandArgs = new ArrayList<>();
+      
+      //If there is a list of constraints, then we need to add args to the query
+      if(constraints != null && constraints.size() > 0)
+      {
+      	//Track if we need an AND
+      	int stringCounter = 0;
+      	query += " WHERE ";
 	        //We need an array for right hand args, which will get saved in the list parser
-	        for(String str : constraints)
+	        for(Constraint constraint : constraints)
 	        {  	
+	        	String str = constraint.getText();
 	        	//Extract the left and right hand side of the args, where they are used
 	        	//in two different places
 	        	String left = str.substring(0, str.indexOf(" "));
@@ -156,27 +183,37 @@ public class ModelTicketForum {
 	        	rightHandArgs.add(right);
 	        	
 	        	//Finally, build the statement. Append AND if it's another filter
-	        	if(stringCounter > 0) query += " AND ";
+	        	if(stringCounter > 0) {
+	        		switch(constraint.getType())
+	        		{
+	        			case ConstraintType.AND:
+	        				query += " AND ";
+	        				break;
+	        			case ConstraintType.OR:
+	        				query += " OR ";
+	        				break;
+	        		}
+	        	}
 	        	query += left + " " + operator + " ?";
 	        	stringCounter++;
 	        }
-        }
-        try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
-        	//If there is a list of constraints, let's loop through the list
-        	if(constraints != null)
+      }
+      try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
+      	//If there is a list of constraints, let's loop through the list
+      	if(constraints != null)
 	        	for(int i = 1; i <= constraints.size(); i++)
 	        		pstmt.setString(i, rightHandArgs.get(i - 1));
-        	
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                TicketList.add(buildTicketFromResultSet(rs));
-            }
-        } catch (SQLException e) {
-            System.out.println("*** ERROR *** Failed to retrieve Tickets: " + e.getMessage());
-            return null;
-        }
-        return TicketList;
-    }
+      	
+          ResultSet rs = pstmt.executeQuery();
+          while (rs.next()) {
+        	  ticketList.add(buildTicketFromResultSet(rs));
+          }
+      } catch (SQLException e) {
+          System.out.println("*** ERROR *** Failed to retrieve tickets: " + e.getMessage());
+          return null;
+      }
+      return ticketList;
+  }
 
     /**********************************************************************************************
      * Ticket - UPDATE
@@ -254,7 +291,7 @@ public class ModelTicketForum {
      * @return true if the soft deletion was successful, false otherwise
      */
     public boolean softDeleteTicket(int postID) {
-        String query = "UPDATE ticketDB SET content = 'This Ticket has been deleted.', title = '[Deleted]', author = '[deleted]' WHERE postID = ?";
+        String query = "UPDATE ticketDB SET content = 'This Ticket has been deleted.', title = '[Deleted]', author = -1 WHERE postID = ?";
         try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
             pstmt.setInt(1, postID);
             pstmt.executeUpdate();

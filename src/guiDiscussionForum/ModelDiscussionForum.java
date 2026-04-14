@@ -88,6 +88,30 @@ public class ModelDiscussionForum {
      * POST - READ
      **********************************************************************************************/
 
+    /**********
+     * <p>Method: getAuthorList(string username)</p>
+     *
+     * <p>Description: Retrieves a list of integer ids for each user by a username.</p>
+     *
+     * @param username the the username of the author to get
+     * @return a post object of desired post, or null if an error occurs.
+     */
+  public List<Integer> getAuthorList(String username){
+     List<Integer> authorList = new ArrayList<>();
+        String query = "SELECT * FROM userDB WHERE UPPER(username) = ?";
+        try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {  
+        	pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()) {
+            	authorList.add(rs.getInt("id"));
+            }
+        } catch (SQLException e) {
+            System.out.println("*** ERROR *** Failed to retrieve authors by username: " + e.getMessage());    
+    }
+    return authorList;
+
+  }
+    
    /**********
      * <p>Method: getPostByID(int id)</p>
      *
@@ -97,7 +121,6 @@ public class ModelDiscussionForum {
      * @return a post object of desired post, or null if an error occurs.
      */
   public Post getPostByID(int id){
-     List<Post> postList = new ArrayList<>();
         String query = "SELECT * FROM postDB WHERE postID = ?";
         try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {  
       pstmt.setInt(1, id);
@@ -190,34 +213,6 @@ public class ModelDiscussionForum {
         }
         return postList;
     }
-    
-    /**********************************************************************************************
-     * POST - READ
-     **********************************************************************************************/
-
-   /**********
-     * <p>Method: getAuthorList(string username)</p>
-     *
-     * <p>Description: Retrieves a list of integer ids for each user by a username.</p>
-     *
-     * @param username the the username of the author to get
-     * @return a post object of desired post, or null if an error occurs.
-     */
-  public List<Integer> getAuthorList(String username){
-     List<Integer> authorList = new ArrayList<>();
-        String query = "SELECT * FROM userDB WHERE UPPER(username) = ?";
-        try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {  
-        	pstmt.setString(1, username);
-            ResultSet rs = pstmt.executeQuery();
-            while(rs.next()) {
-            	authorList.add(rs.getInt("id"));
-            }
-        } catch (SQLException e) {
-            System.out.println("*** ERROR *** Failed to retrieve authors by username: " + e.getMessage());    
-    }
-    return authorList;
-
-  }
 
     /**********************************************************************************************
      * POST - UPDATE
@@ -295,7 +290,7 @@ public class ModelDiscussionForum {
      * @return true if the soft deletion was successful, false otherwise
      */
     public boolean softDeletePost(int postID) {
-        String query = "UPDATE postDB SET content = 'This post has been deleted.', title = '[Deleted]', author = '[deleted]' WHERE postID = ?";
+        String query = "UPDATE postDB SET content = 'This post has been deleted.', title = '[Deleted]', author = -1 WHERE postID = ?";
         try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
             pstmt.setInt(1, postID);
             pstmt.executeUpdate();

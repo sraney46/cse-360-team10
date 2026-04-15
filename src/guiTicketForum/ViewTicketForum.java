@@ -67,6 +67,7 @@ public class ViewTicketForum {
     protected static ScrollPane scrollPane_TicketDetail;
     protected static VBox vbox_TicketDetail;
 
+
     // GUI Area 3 — Bottom bar
     protected static Button button_Return = new Button("Return");
     protected static Button button_Logout = new Button("Logout");

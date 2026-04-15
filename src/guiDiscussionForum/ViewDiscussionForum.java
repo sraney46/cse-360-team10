@@ -66,6 +66,8 @@ public class ViewDiscussionForum {
     protected static ScrollPane scrollPane_PostDetail;
     protected static VBox vbox_PostDetail;
 
+
+
     // GUI Area 3 — Bottom bar
     protected static Button button_Return = new Button("Return");
     protected static Button button_Logout = new Button("Logout");
@@ -251,6 +253,7 @@ public class ViewDiscussionForum {
                       width - 180, 45);
         button_UpdateThisUser.setOnAction(_ ->
             guiUserUpdate.ViewUserUpdate.displayUserUpdate(theStage, theUser));
+
 
         line_Separator1.setStartX(20);
         line_Separator1.setStartY(topBarHeight);

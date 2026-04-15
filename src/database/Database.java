@@ -214,6 +214,15 @@ public class Database {
 		    + "PRIMARY KEY (userName, postID))";
 		statement.execute(readStatusTicketTable);
 
+    String evaluationToolTable = "CREATE TABLE IF NOT EXISTS evaluationTool ("
+        + "studentName VARCHAR(255), "
+        + "definedParams VARCHAR(255) ARRAY, "
+        + "paramWeights DOUBLE PRECISION ARRAY, "
+        + "percentage DOUBLE, "
+        + "numberGrade INT, "
+        + "letterGrade VARCHAR(5))";
+    statement.execute(evaluationToolTable);
+
   }
 
   /*******
@@ -1587,6 +1596,103 @@ public class Database {
     }
     return null;
   }
+
+    public static final double EVALUATION_RUBRIC_WEIGHT_TOTAL = 100.0;
+
+  private static final double EVALUATION_RUBRIC_WEIGHT_EPSILON = 0.001;
+
+  /*******
+   * <p>
+   * Method: validateEvaluationRubric
+   * </p>
+   *
+   * <p>
+   * Description: Ensures assessment parameters are all
+   * defined with non-blank names, that each row has a corresponding weight, and that weights sum to
+   * rubric total so the rubric matches a standard percentage breakdown.
+   * </p>
+   *
+   * @param definedParams parallel criterion labels
+   * @param paramWeights  parallel weights as percent points; must total 100
+   *
+   * @throws IllegalArgumentException if any name is missing, any weight is null/invalid, lengths
+   *                                  differ, or the total is not 100%
+   */
+  public static void validateEvaluationRubric(String[] definedParams, Double[] paramWeights) {
+    if (definedParams == null || paramWeights == null) {
+      throw new IllegalArgumentException("definedParams and paramWeights must not be null.");
+    }
+    if (definedParams.length != paramWeights.length) {
+      throw new IllegalArgumentException(
+          "Each assessment parameter must have exactly one weight (array length mismatch).");
+    }
+    if (definedParams.length == 0) {
+      throw new IllegalArgumentException(
+          "At least one assessment parameter is required (e.g. accuracy, spelling, grammar, length).");
+    }
+    for (int i = 0; i < definedParams.length; i++) {
+      String name = definedParams[i];
+      if (name == null || name.trim().isEmpty()) {
+        throw new IllegalArgumentException(
+            "Assessment parameter at index " + i + " is not defined (null or blank).");
+      }
+      Double w = paramWeights[i];
+      if (w == null) {
+        throw new IllegalArgumentException(
+            "Weight for parameter \"" + name + "\" is not defined (null).");
+      }
+      if (w < 0) {
+        throw new IllegalArgumentException("Weights must be non-negative (parameter \"" + name + "\").");
+      }
+    }
+    double sum = 0.0;
+    for (Double w : paramWeights) {
+      sum += w;
+    }
+    if (Math.abs(sum - EVALUATION_RUBRIC_WEIGHT_TOTAL) > EVALUATION_RUBRIC_WEIGHT_EPSILON) {
+      throw new IllegalArgumentException(
+          "Parameter weights must total 100% (currently " + sum + ").");
+    }
+  }
+
+
+
+  /*******
+   * <p>
+   * Method: insertEvaluation
+   * </p>
+   *
+   * <p>
+   * Description: Persists an evaluation after
+   * succeeds.
+   * </p>
+   */
+  public void insertEvaluation(String studentName, String[] definedParams, Double[] paramWeights,
+      double percentage, int numberGrade, String letterGrade) {
+    validateEvaluationRubric(definedParams, paramWeights);
+
+    String sql = "INSERT INTO evaluationTool (studentName, definedParams, paramWeights, percentage, numberGrade, letterGrade) VALUES (?, ?, ?, ?, ?, ?)";
+    
+    try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        
+        Array dbDefinedParams = connection.createArrayOf("VARCHAR", definedParams);
+        Array dbParamWeights = connection.createArrayOf("DOUBLE", paramWeights);
+        
+        preparedStatement.setString(1, studentName);
+        preparedStatement.setArray(2, dbDefinedParams);
+        preparedStatement.setArray(3, dbParamWeights);
+        preparedStatement.setDouble(4, percentage);
+        preparedStatement.setInt(5, numberGrade);
+        preparedStatement.setString(6, letterGrade);
+        
+        preparedStatement.executeUpdate();
+        System.out.println("Evaluation inserted successfully for: " + studentName);
+        
+    } catch (SQLException e) {
+        System.out.println("Error inserting evaluation: " + e.getMessage());
+    }
+}
+
 
   /*******
    * <p>

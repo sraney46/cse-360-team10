@@ -290,9 +290,10 @@ public class ModelDiscussionForum {
      * @return true if the soft deletion was successful, false otherwise
      */
     public boolean softDeletePost(int postID) {
-        String query = "UPDATE postDB SET content = 'This post has been deleted.', title = '[Deleted]', author = -1 WHERE postID = ?";
+        String query = "UPDATE postDB SET content = 'This post has been deleted.', title = '[Deleted]', author = ? WHERE postID = ?";
         try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
-            pstmt.setInt(1, postID);
+        	pstmt.setInt(1, -1);
+            pstmt.setInt(2, postID);
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {

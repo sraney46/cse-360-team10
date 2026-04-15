@@ -567,6 +567,12 @@ public class ViewTicketForum {
     private static void loadTicketDetail(Ticket Ticket) {
         vbox_TicketDetail.getChildren().clear();
         
+        //This is designed to push things to the right
+        Region actionMargin = new Region();
+        Region headerMargin = new Region();
+        HBox.setHgrow(actionMargin, Priority.ALWAYS);
+        HBox.setHgrow(headerMargin, Priority.ALWAYS);
+        
         // Handle deleted Ticket
         if (Ticket == null) {
             Label deletedLabel = new Label("This Ticket has been deleted.");
@@ -590,6 +596,22 @@ public class ViewTicketForum {
 
         HBox headerLine = new HBox(10, authorLabel, categoryBadge);
         headerLine.setAlignment(Pos.CENTER_LEFT);
+        
+      //If the ticket has been reopened -> add a button to go to it.
+        //It doesn't say we need a comment about it, only a link to it!
+        int origianlTicketId = model.getTicketOriginal(Ticket.getPostID());
+        headerLine.getChildren().add(headerMargin);
+        if(origianlTicketId > 0) {
+        	Button originalTicketBtn = new Button("View Original");
+        	originalTicketBtn.setStyle(
+	        		"-fx-background-color: #5865f2; -fx-text-fill: white;" +
+	        	    "-fx-font-size: 13px; -fx-background-radius: 5px;"
+	        );
+        	originalTicketBtn.setOnAction(_ -> doOpenOriginalTicket(
+        			model.getTicketByID(origianlTicketId)));
+	        headerLine.getChildren().add(originalTicketBtn);
+	        
+        }
 
         // Full Ticket content
         Label contentLabel = new Label(Ticket.getContent());
@@ -629,15 +651,15 @@ public class ViewTicketForum {
             
             actionBar.getChildren().addAll(editBtn, deleteBtn);
             
-            if(Ticket.getCategory().equals("Closed")) {
+            
+            if(Ticket.getCategory().equals("Closed") && !model.isTicketReopened(Ticket.getPostID())) {
             	Button reopenBtn = new Button("Reopen");
-                reopenBtn.setStyle(
+            	reopenBtn.setStyle(
                 		"-fx-background-color: #5865f2; -fx-text-fill: white;" +
                 	    "-fx-font-size: 13px; -fx-background-radius: 5px;"
                 );
-                reopenBtn.setOnAction(_ -> doReopenTicket(Ticket));
-                HBox.setMargin(reopenBtn, new Insets(0, 0, 0, 600));
-                actionBar.getChildren().add(reopenBtn);
+                reopenBtn.setOnAction(_ -> doReopenTicket(Ticket));              
+                actionBar.getChildren().addAll(actionMargin,reopenBtn);
             }
         }
         else if(theUser.getAdminRole()) {
@@ -648,11 +670,9 @@ public class ViewTicketForum {
                 	    "-fx-font-size: 13px; -fx-background-radius: 5px;"
                 );
             	closeBtn.setOnAction(_ -> doCloseTicket(Ticket));
-                HBox.setMargin(closeBtn, new Insets(0, 0, 0, 720));
-                actionBar.getChildren().add(closeBtn);
+                actionBar.getChildren().addAll(actionMargin, closeBtn);
             }
         }
-        
         
         // Divider
         Separator divider = new Separator();
@@ -950,9 +970,12 @@ public class ViewTicketForum {
     private static void doReopenTicket(Ticket Ticket) {
     	Optional<ButtonType> result = alertReopenTicket.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
+        	int oldID = Ticket.getPostID();
+        	model.markTicketAsReopened(Ticket);
         	Ticket newTicket = Ticket;
         	newTicket.setCategory("Open");
         	model.addTicket(newTicket);
+        	model.markNewTicketOriginal(newTicket, oldID);
             theSelectedTicket = newTicket;
             loadTicketDetail(newTicket);
             refreshTicketList();
@@ -973,8 +996,21 @@ public class ViewTicketForum {
         if (result.isPresent() && result.get() == ButtonType.OK) {
         	Ticket.setCategory("Closed");
         	model.updateTicket(Ticket);
+        	loadTicketDetail(Ticket);
             refreshTicketList();
         }
+    }
+    
+    /**********
+     * <p>Method: doOpenOriginalTicket(Ticket Ticket)</p>
+     *
+     * <p>Description: Open the original ticket that was reopened</p>
+     *
+     * @param Ticket the Ticket that is being pointed to
+     */
+    private static void doOpenOriginalTicket(Ticket Ticket) {
+    	loadTicketDetail(Ticket);
+        refreshTicketList();
     }
 
     /*-*******************************************************************************************

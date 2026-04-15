@@ -130,10 +130,56 @@ public class ModelTicketForum {
 	              return buildTicketFromResultSet(rs);
 	          }
 	      } catch (SQLException e) {
-	          System.out.println("*** ERROR *** Failed to retrieve posts by ID: " + e.getMessage());    
+	          System.out.println("*** ERROR *** Failed to retrieve tickets by ID: " + e.getMessage());    
 	  }
 	  return null;
 	
+	}
+	
+	/**********
+	   * <p>Method: isTicketReopened(int id)</p>
+	   *
+	   * <p>Description: Retrieves ticket matching the desired id and returns if it was reopened.</p>
+	   *
+	   * @param id the ID of the ticket to grab.
+	   * @return whether or not the ticket has been previous reopened.
+	   */
+	public boolean isTicketReopened(int id){
+	      String query = "SELECT * FROM ticketDB WHERE postID = ?";
+	      try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {  
+	    pstmt.setInt(1, id);
+	          ResultSet rs = pstmt.executeQuery();
+	          if(rs.next()) {
+	              return rs.getBoolean("reopened");
+	          }
+	      } catch (SQLException e) {
+	          System.out.println("*** ERROR *** Failed to retrieve tickets by ID: " + e.getMessage());    
+	  }
+	  return false;
+	
+	}
+	
+	/**********
+	   * <p>Method: getTicketOriginal(int id)</p>
+	   *
+	   * <p>Description: Retrieves the ticket that this ticket was reopened from.</p>
+	   *
+	   * @param id the ID of the ticket to grab.
+	   * @return an integer representation of the original ticket
+	   */
+	public int getTicketOriginal(int id){
+	      String query = "SELECT * FROM ticketDB WHERE postID = ?";
+	      try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {  
+	    	  pstmt.setInt(1, id);
+	          ResultSet rs = pstmt.executeQuery();
+	          if(rs.next()) {
+	              return rs.getInt("originalID");
+	          }
+	      } catch (SQLException e) {
+	          System.out.println("*** ERROR *** Failed to retrieve tickets by ID: " + e.getMessage());    
+	  }
+	 //Good fail safe to just stay on the same ticket
+	  return id;
 	}
 
     /**********
@@ -248,6 +294,59 @@ public class ModelTicketForum {
             return false;
         }
     }
+    
+    /**********
+     * <p>Method: markTicketAsReopened(Ticket Ticket)</p>
+     *
+     * <p>Description: We need to mark tickets that have been reopened with a special
+     * flag, so that way the ticket cannot be reopened again. </p>
+     *
+     * @param Ticket the Ticket object that needs to be marked as reopened.
+     * @return true if the update was successful, false otherwise
+     */
+    public boolean markTicketAsReopened(Ticket Ticket) {
+        String error = Ticket.checkValidation();
+        if (!error.isEmpty()) {
+            System.out.println("*** ERROR *** Cannot update ticket: " + error);
+            return false;
+        }
+        String query = "UPDATE ticketDB SET reopened = ? WHERE postID = ? ";
+        try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
+        	pstmt.setBoolean(1, true);
+        	pstmt.setInt(2, Ticket.getPostID());
+            pstmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.out.println("*** ERROR *** Failed to update ticket: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    /**********
+     * <p>Method: markNewTicketOriginal(Ticket Ticket)</p>
+     *
+     * <p>Description: Set the new ticket with an id of the original ticket. </p>
+     *
+     * @param Ticket the Ticket object that needs the new id
+     * @return true if the update was successful, false otherwise
+     */
+    public boolean markNewTicketOriginal(Ticket Ticket, int originalID) {
+        String error = Ticket.checkValidation();
+        if (!error.isEmpty()) {
+            System.out.println("*** ERROR *** Cannot update ticket: " + error);
+            return false;
+        }
+        String query = "UPDATE ticketDB SET originalID = ? WHERE postID = ? ";
+        try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
+        	pstmt.setInt(1, originalID);
+        	pstmt.setInt(2, Ticket.getPostID());
+            pstmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.out.println("*** ERROR *** Failed to update ticket: " + e.getMessage());
+            return false;
+        }
+    }
 
     /**********************************************************************************************
      * Ticket - DELETE
@@ -291,9 +390,10 @@ public class ModelTicketForum {
      * @return true if the soft deletion was successful, false otherwise
      */
     public boolean softDeleteTicket(int postID) {
-        String query = "UPDATE ticketDB SET content = 'This Ticket has been deleted.', title = '[Deleted]', author = -1 WHERE postID = ?";
+        String query = "UPDATE ticketDB SET content = 'This Ticket has been deleted.', title = '[Deleted]', author = ? WHERE postID = ?";
         try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
-            pstmt.setInt(1, postID);
+            pstmt.setInt(1, -1);
+            pstmt.setInt(2, postID);
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {

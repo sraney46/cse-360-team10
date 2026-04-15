@@ -195,7 +195,9 @@ public class Database {
         + "title VARCHAR(255), "
         + "content LONGTEXT, "
         + "category VARCHAR(50), "
-        + "timestamp BIGINT)";
+        + "timestamp BIGINT,"
+        + "reopened BOOL DEFAULT FALSE,"
+        + "originalID INT)";
     statement.execute(ticketTable);
 
     String ticketReplyTable = "CREATE TABLE IF NOT EXISTS ticketreplyDB ("
@@ -626,11 +628,11 @@ public class Database {
    */
   private int generateRandomUser()
   {
-	  int selectedID = (int)(Math.random() * 25);
+	  int selectedID = (int)(Math.random() * 25) + 1;
 	  User user = this.getUserAsObject(selectedID);
 	  while(!user.getNewRole1())
 	  {
-		  selectedID = (int)(Math.random() * 25);
+		  selectedID = (int)(Math.random() * 25) + 1;
 		  user = this.getUserAsObject(selectedID);
 	  }
 	  return user.getUserId();
@@ -649,11 +651,11 @@ public class Database {
    */
   private int generateRandomReplyUser(int postID)
   {
-	  int selectedID = (int)(Math.random() * 25);
+	  int selectedID = (int)(Math.random() * 25) + 1;
 	  User user = this.getUserAsObject(selectedID);
 	  while(user.getUserId() == postID)
 	  {
-		  selectedID = (int)(Math.random() * 25);
+		  selectedID = (int)(Math.random() * 25) + 1;
 		  user = this.getUserAsObject(selectedID);
 	  }
 	  return user.getUserId();

@@ -30,6 +30,18 @@ public class Post {
 
     /** The time the post was created, stored as a Unix timestamp in milliseconds */
     private long timestamp;
+
+     /** Whether this post has been graded by staff */
+    private boolean graded;
+    
+    /** Computed percentage for this post */
+    private double percentageGrade;
+    
+    /** Rounded numeric grade for this post */
+    private int numberGrade;
+    
+    /** Letter grade for this post */
+    private String letterGrade;
     
     /** Maximum allowed character length for post body content */
     private static final int MAX_LENGTH = 100;
@@ -108,6 +120,30 @@ public class Post {
      */
     public long getTimestamp() { return timestamp; }
 
+   /**
+     * <p>Method: isGraded()</p>
+     * @return true if the post has a stored grade
+     */
+    public boolean isGraded() { return graded; }
+    
+    /**
+     * <p>Method: getPercentageGrade()</p>
+     * @return the percentage grade
+     */
+    public double getPercentageGrade() { return percentageGrade; }
+    
+    /**
+     * <p>Method: getNumberGrade()</p>
+     * @return the rounded numeric grade
+     */
+    public int getNumberGrade() { return numberGrade; }
+    
+    /**
+     * <p>Method: getLetterGrade()</p>
+     * @return the letter grade
+     */
+    public String getLetterGrade() { return letterGrade; }
+
     /**********************************************************************************************
      * Setters
      **********************************************************************************************/
@@ -147,6 +183,30 @@ public class Post {
      * @param timestamp the Unix timestamp to set
      */
     public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
+
+  /**
+     * <p>Method: setGraded(boolean graded)</p>
+     * @param graded true when this post has been graded
+     */
+    public void setGraded(boolean graded) { this.graded = graded; }
+    
+    /**
+     * <p>Method: setPercentageGrade(double percentageGrade)</p>
+     * @param percentageGrade the percentage grade to store
+     */
+    public void setPercentageGrade(double percentageGrade) { this.percentageGrade = percentageGrade; }
+    
+    /**
+     * <p>Method: setNumberGrade(int numberGrade)</p>
+     * @param numberGrade rounded grade to store
+     */
+    public void setNumberGrade(int numberGrade) { this.numberGrade = numberGrade; }
+    
+    /**
+     * <p>Method: setLetterGrade(String letterGrade)</p>
+     * @param letterGrade letter grade to store
+     */
+    public void setLetterGrade(String letterGrade) { this.letterGrade = letterGrade; }
 
     /**********************************************************************************************
      * Validation

@@ -8,6 +8,7 @@ import entityClasses.Constraint;
 import entityClasses.Constraint.ConstraintType;
 import entityClasses.Post;
 import entityClasses.Reply;
+import entityClasses.EvaluationTool;
 
 /**********
  * <p>Title: ModelDiscussionForum Class</p>
@@ -244,6 +245,28 @@ public class ModelDiscussionForum {
             return true;
         } catch (SQLException e) {
             System.out.println("*** ERROR *** Failed to update post: " + e.getMessage());
+            return false;
+        }
+    }
+    /**********
+     * <p>Method: savePostGrade(int postID, EvaluationRow row)</p>
+     *
+     * <p>Description: Persists the computed grade fields to the selected post row.</p>
+     *
+     * @param postID post identifier to update
+     * @param row computed grade result
+     * @return true when updated, false otherwise
+     */
+    public boolean savePostGrade(int postID, EvaluationTool.EvaluationRow row) {
+        String query = "UPDATE postDB SET graded = TRUE, percentageGrade = ?, numberGrade = ?, letterGrade = ? WHERE postID = ?";
+        try (PreparedStatement pstmt =theDatabase.getConnection().prepareStatement(query)) {
+            pstmt.setDouble(1, row.percentage);
+            pstmt.setInt(2, row.numberGrade);
+            pstmt.setString(3, row.letterGrade);
+            pstmt.setInt(4, postID);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("*** ERROR *** Failed to save post grade: " + e.getMessage());
             return false;
         }
     }
@@ -610,6 +633,10 @@ public class ModelDiscussionForum {
         post.setContent(rs.getString("content"));
         post.setCategory(rs.getString("category"));
         post.setTimestamp(rs.getLong("timestamp"));
+        post.setGraded(rs.getBoolean("graded"));
+        post.setPercentageGrade(rs.getDouble("percentageGrade"));
+        post.setNumberGrade(rs.getInt("numberGrade"));
+        post.setLetterGrade(rs.getString("letterGrade"));
         return post;
     }
   /**********************************************************************************************

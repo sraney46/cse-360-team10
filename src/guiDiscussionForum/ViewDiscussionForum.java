@@ -504,6 +504,24 @@ public class ViewDiscussionForum {
         );
 
         topLine.getChildren().addAll(authorLabel, categoryBadge, readPill);
+        if (isStaffUser()) {
+            Label gradePill;
+            if (post.isGraded()) {
+                String gradeText = post.getLetterGrade() + " (" + post.getNumberGrade() + "%)";
+                gradePill = new Label(gradeText);
+                gradePill.setStyle(
+                    "-fx-background-color: #3498db; -fx-text-fill: white;" +
+                    "-fx-font-size: 10px; -fx-padding: 2 8; -fx-background-radius: 999;"
+                );
+            } else {
+                gradePill = new Label("Not Graded");
+                gradePill.setStyle(
+                    "-fx-background-color: #e67e22; -fx-text-fill: white;" +
+                    "-fx-font-size: 10px; -fx-padding: 2 8; -fx-background-radius: 999;"
+                );
+            }
+            topLine.getChildren().add(gradePill);
+        }
 
         // Title + content preview
         String titlePart = post.getTitle() != null ? post.getTitle() : "";
@@ -1003,4 +1021,8 @@ public class ViewDiscussionForum {
 		tf.setLayoutX(x);
 		tf.setLayoutY(y);		
 	}
+     private static boolean isStaffUser() {
+        return "Staff".equals(returnPage);
+    }
+
 }

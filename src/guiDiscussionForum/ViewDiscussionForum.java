@@ -22,6 +22,8 @@ import javafx.collections.ObservableList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 
 /*******
  * <p>Title: ViewDiscussionForum Class.</p>
@@ -49,6 +51,7 @@ public class ViewDiscussionForum {
     protected static Button button_UpdateThisUser = new Button("Account Update");
     protected static ComboBox<String> combo_Category = new ComboBox<>();
     protected static ComboBox<String> combo_SearchCriteria = new ComboBox<>();
+    protected static ComboBox<String> combo_StudentFilter = new ComboBox<>();
     protected static TextField textField_searchCriteria = new TextField();
     protected static Label label_searchText = new Label();
     protected static ObservableList<String> threadCategories = FXCollections.observableArrayList(
@@ -221,6 +224,41 @@ public class ViewDiscussionForum {
     	combo_ReadStatus.setPrefWidth(130);
     	combo_ReadStatus.setPrefHeight(16);
     	combo_ReadStatus.setOnAction(_ -> refreshPostList());
+    	
+    	List<Post> posts = model.getAllPosts(null);
+    	List<Integer> allUsersIDs = theDatabase.getUserList();
+    	Set<Integer> postStudentIDs = new TreeSet<>();
+    	ObservableList<String> items = FXCollections.observableArrayList("All Students");
+
+
+    	if (posts != null) {
+    	    for (Post p : posts) {
+    	    	postStudentIDs.add(p.getAuthor());
+    	    }
+    	}
+    	
+    	if (allUsersIDs != null) {
+    	    for (Integer userID : allUsersIDs) {
+    	    	for(Integer postID : postStudentIDs) {
+    	    		if (userID == postID) {
+    	    			User grabUserName = theDatabase.getUserAsObject(userID);
+    	    			items.add(grabUserName.getUserName());
+    	    		}
+    	    	}
+    	    }
+    	}
+    	
+
+    	combo_StudentFilter.setItems(items);
+    	combo_StudentFilter.setValue("All Students");
+    	combo_StudentFilter.getStyleClass().add("default-combo-box");
+    	combo_StudentFilter.setLayoutX(width/2 + 372);
+    	combo_StudentFilter.setLayoutY(18);
+    	combo_StudentFilter.setPrefWidth(130);
+    	combo_StudentFilter.setPrefHeight(16);
+
+    	combo_StudentFilter.setOnAction(_ -> refreshPostList());
+        
         
         // Andrew C -- Data for the text search bar
         setupLabelUI(label_searchText, "Arial", 18, 64, Pos.BASELINE_LEFT, 355, 60);
@@ -358,6 +396,7 @@ public class ViewDiscussionForum {
             scrollPane_PostDetail,
             button_NewThread,
             combo_ReadStatus,
+            combo_StudentFilter,
             line_Separator4,
             button_Return, button_Logout, button_Quit,
             textField_searchCriteria, combo_SearchCriteria, label_searchText

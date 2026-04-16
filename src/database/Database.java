@@ -111,7 +111,7 @@ public class Database {
       connection = DriverManager.getConnection(DB_URL, USER, PASS);
       statement = connection.createStatement();
       // You can use this command to clear the database and restart from fresh.
-      // statement.execute("DROP ALL OBJECTS");
+//       statement.execute("DROP ALL OBJECTS");
 
       createTables(); // Create the necessary tables if they don't exist
     } catch (ClassNotFoundException e) {
@@ -167,12 +167,16 @@ public class Database {
     statement.execute(invitationCodesTable);
     
     String postTable = "CREATE TABLE IF NOT EXISTS postDB ("
-        + "postID INT AUTO_INCREMENT PRIMARY KEY, "
-        + "author INT, "
-        + "title VARCHAR(255), "
-        + "content LONGTEXT, "
-        + "category VARCHAR(50), "
-        + "timestamp BIGINT)";
+    	    + "postID INT AUTO_INCREMENT PRIMARY KEY, "
+    	    + "author INT, "
+    	    + "title VARCHAR(255), "
+    	    + "content LONGTEXT, "
+    	    + "category VARCHAR(50), "
+    	    + "timestamp BIGINT, "
+    	    + "graded BOOLEAN, "
+    	    + "percentageGrade DOUBLE, "
+    	    + "numberGrade INT, "
+    	    + "letterGrade VARCHAR(5))";
     statement.execute(postTable);
 
     String replyTable = "CREATE TABLE IF NOT EXISTS replyDB ("
@@ -447,28 +451,51 @@ public class Database {
 	        // Insert test posts
 	        String postSQL = "INSERT INTO postDB (author, title, content, category, timestamp) VALUES (?, ?, ?, ?, ?)";
 	        try (PreparedStatement pstmt = connection.prepareStatement(postSQL)) {
-
+//
+//	        	Object[][] posts = {
+//	        		    {generateRandomUser(),  "STACK/QUEUE",      "What is the difference between a stack and a queue?",                               "General",     System.currentTimeMillis() - 200000},
+//	        		    {generateRandomUser(),  "INTERFACES",       "Can someone explain how interfaces work in Java?",                                   "Lectures",    System.currentTimeMillis() - 190000},
+//	        		    {generateRandomUser(),  "HW2 CLARIFY",      "I am confused about HW2 requirements, can someone clarify?",                        "Homework",    System.currentTimeMillis() - 180000},
+//	        		    {generateRandomUser(),  "MIDTERM TOPICS",   "What topics will be covered on the midterm?",                                        "Exams",       System.currentTimeMillis() - 170000},
+//	        		    {generateRandomUser(),  "H2 SETUP",         "Does anyone know how to set up the H2 database in Eclipse?",                        "General",     System.currentTimeMillis() - 160000},
+//	        		    {generateRandomUser(),  "NULL POINTER",     "I keep getting a NullPointerException in my PostList class, any ideas?",            "Homework",    System.currentTimeMillis() - 150000},
+//	        		    {generateRandomUser(),  "PROJECT DEADLINE", "What is the deadline for the team project phase 2?",                                 "Assignments", System.currentTimeMillis() - 140000},
+//	        		    {generateRandomUser(),  "SCREENCAST TIPS",  "Can someone share tips for recording screencasts on Mac?",                          "General",     System.currentTimeMillis() - 130000},
+//	        		    {generateRandomUser(),  "INHERITANCE",      "Is inheritance always better than composition in OOP?",                             "Lectures",    System.currentTimeMillis() - 120000},
+//	        		    {generateRandomUser(), "HW2 SUBMISSION",   "Where do we submit the HW2 zip file, Canvas or email?",                            "Homework",    System.currentTimeMillis() - 110000},
+//	        		    {generateRandomUser(),  "ABSTRACT VS INTERFACE", "Can someone explain the difference between abstract classes and interfaces?", "Lectures",    System.currentTimeMillis() - 100000},
+//	        		    {generateRandomUser(),  "GIT MERGE",        "How do we handle merge conflicts in Git when two people edit the same file?",       "General",     System.currentTimeMillis() - 90000},
+//	        		    {generateRandomUser(),  "SEQUENCE DIAGRAM", "Is the sequence diagram required for every use case or just the main one?",        "Assignments", System.currentTimeMillis() - 80000},
+//	        		    {generateRandomUser(),  "CRUD TEST",        "What is the best way to test CRUD operations without a GUI?",                       "Homework",    System.currentTimeMillis() - 70000},
+//	        		    {generateRandomUser(),  "PROJECT STYLE",    "Does the team project need to follow the FoundationsF25 documentation style?",     "Assignments", System.currentTimeMillis() - 60000},
+//	        		    {generateRandomUser(),  "H2 DRIVER ERROR",  "I am getting a ClassNotFoundException for the H2 driver, how do I fix this?",      "General",     System.currentTimeMillis() - 50000},
+//	        		    {generateRandomUser(),  "EPICS VS STORIES", "What is the difference between epics and user stories?",                            "Lectures",    System.currentTimeMillis() - 40000},
+//	        		    {generateRandomUser(),  "ARRAYLIST/COMPOSITION", "Should our PostList class extend ArrayList or use composition instead?",        "Homework",    System.currentTimeMillis() - 30000},
+//	        		    {generateRandomUser(),  "HW2 SCREENCASTS",  "How many screencasts do we need to submit for HW2?",                               "Assignments", System.currentTimeMillis() - 20000},
+//	        		    {generateRandomUser(), "JAVA FX",          "Can we use JavaFX TableView instead of a custom VBox list for displaying posts?",  "General",     System.currentTimeMillis() - 10000},
+//	        		};
+	        	
 	        	Object[][] posts = {
-	        		    {generateRandomUser(),  "STACK/QUEUE",      "What is the difference between a stack and a queue?",                               "General",     System.currentTimeMillis() - 200000},
-	        		    {generateRandomUser(),  "INTERFACES",       "Can someone explain how interfaces work in Java?",                                   "Lectures",    System.currentTimeMillis() - 190000},
-	        		    {generateRandomUser(),  "HW2 CLARIFY",      "I am confused about HW2 requirements, can someone clarify?",                        "Homework",    System.currentTimeMillis() - 180000},
-	        		    {generateRandomUser(),  "MIDTERM TOPICS",   "What topics will be covered on the midterm?",                                        "Exams",       System.currentTimeMillis() - 170000},
-	        		    {generateRandomUser(),  "H2 SETUP",         "Does anyone know how to set up the H2 database in Eclipse?",                        "General",     System.currentTimeMillis() - 160000},
-	        		    {generateRandomUser(),  "NULL POINTER",     "I keep getting a NullPointerException in my PostList class, any ideas?",            "Homework",    System.currentTimeMillis() - 150000},
-	        		    {generateRandomUser(),  "PROJECT DEADLINE", "What is the deadline for the team project phase 2?",                                 "Assignments", System.currentTimeMillis() - 140000},
-	        		    {generateRandomUser(),  "SCREENCAST TIPS",  "Can someone share tips for recording screencasts on Mac?",                          "General",     System.currentTimeMillis() - 130000},
-	        		    {generateRandomUser(),  "INHERITANCE",      "Is inheritance always better than composition in OOP?",                             "Lectures",    System.currentTimeMillis() - 120000},
-	        		    {generateRandomUser(), "HW2 SUBMISSION",   "Where do we submit the HW2 zip file, Canvas or email?",                            "Homework",    System.currentTimeMillis() - 110000},
-	        		    {generateRandomUser(),  "ABSTRACT VS INTERFACE", "Can someone explain the difference between abstract classes and interfaces?", "Lectures",    System.currentTimeMillis() - 100000},
-	        		    {generateRandomUser(),  "GIT MERGE",        "How do we handle merge conflicts in Git when two people edit the same file?",       "General",     System.currentTimeMillis() - 90000},
-	        		    {generateRandomUser(),  "SEQUENCE DIAGRAM", "Is the sequence diagram required for every use case or just the main one?",        "Assignments", System.currentTimeMillis() - 80000},
-	        		    {generateRandomUser(),  "CRUD TEST",        "What is the best way to test CRUD operations without a GUI?",                       "Homework",    System.currentTimeMillis() - 70000},
-	        		    {generateRandomUser(),  "PROJECT STYLE",    "Does the team project need to follow the FoundationsF25 documentation style?",     "Assignments", System.currentTimeMillis() - 60000},
-	        		    {generateRandomUser(),  "H2 DRIVER ERROR",  "I am getting a ClassNotFoundException for the H2 driver, how do I fix this?",      "General",     System.currentTimeMillis() - 50000},
-	        		    {generateRandomUser(),  "EPICS VS STORIES", "What is the difference between epics and user stories?",                            "Lectures",    System.currentTimeMillis() - 40000},
-	        		    {generateRandomUser(),  "ARRAYLIST/COMPOSITION", "Should our PostList class extend ArrayList or use composition instead?",        "Homework",    System.currentTimeMillis() - 30000},
-	        		    {generateRandomUser(),  "HW2 SCREENCASTS",  "How many screencasts do we need to submit for HW2?",                               "Assignments", System.currentTimeMillis() - 20000},
-	        		    {generateRandomUser(), "JAVA FX",          "Can we use JavaFX TableView instead of a custom VBox list for displaying posts?",  "General",     System.currentTimeMillis() - 10000},
+	        		    {generateRandomUser(), "STACK/QUEUE", "What is the difference between a stack and a queue?", "General", System.currentTimeMillis() - 200000, false, 0.0, 0, "N/A"},
+	        		    {generateRandomUser(), "INTERFACES", "Can someone explain how interfaces work in Java?", "Lectures", System.currentTimeMillis() - 190000, false, 0.0, 0, "N/A"},
+	        		    {generateRandomUser(), "HW2 CLARIFY", "I am confused about HW2 requirements, can someone clarify?", "Homework", System.currentTimeMillis() - 180000, false, 0.0, 0, "N/A"},
+	        		    {generateRandomUser(), "MIDTERM TOPICS", "What topics will be covered on the midterm?", "Exams", System.currentTimeMillis() - 170000, false, 0.0, 0, "N/A"},
+	        		    {generateRandomUser(), "H2 SETUP", "Does anyone know how to set up the H2 database in Eclipse?", "General", System.currentTimeMillis() - 160000, false, 0.0, 0, "N/A"},
+	        		    {generateRandomUser(), "NULL POINTER", "I keep getting a NullPointerException in my PostList class, any ideas?", "Homework", System.currentTimeMillis() - 150000, false, 0.0, 0, "N/A"},
+	        		    {generateRandomUser(), "PROJECT DEADLINE", "What is the deadline for the team project phase 2?", "Assignments", System.currentTimeMillis() - 140000, false, 0.0, 0, "N/A"},
+	        		    {generateRandomUser(), "SCREENCAST TIPS", "Can someone share tips for recording screencasts on Mac?", "General", System.currentTimeMillis() - 130000, false, 0.0, 0, "N/A"},
+	        		    {generateRandomUser(), "INHERITANCE", "Is inheritance always better than composition in OOP?", "Lectures", System.currentTimeMillis() - 120000, false, 0.0, 0, "N/A"},
+	        		    {generateRandomUser(), "HW2 SUBMISSION", "Where do we submit the HW2 zip file, Canvas or email?", "Homework", System.currentTimeMillis() - 110000, false, 0.0, 0, "N/A"},
+	        		    {generateRandomUser(), "ABSTRACT VS INTERFACE", "Can someone explain the difference between abstract classes and interfaces?", "Lectures", System.currentTimeMillis() - 100000, false, 0.0, 0, "N/A"},
+	        		    {generateRandomUser(), "GIT MERGE", "How do we handle merge conflicts in Git when two people edit the same file?", "General", System.currentTimeMillis() - 90000, false, 0.0, 0, "N/A"},
+	        		    {generateRandomUser(), "SEQUENCE DIAGRAM", "Is the sequence diagram required for every use case or just the main one?", "Assignments", System.currentTimeMillis() - 80000, false, 0.0, 0, "N/A"},
+	        		    {generateRandomUser(), "CRUD TEST", "What is the best way to test CRUD operations without a GUI?", "Homework", System.currentTimeMillis() - 70000, false, 0.0, 0, "N/A"},
+	        		    {generateRandomUser(), "PROJECT STYLE", "Does the team project need to follow the FoundationsF25 documentation style?", "Assignments", System.currentTimeMillis() - 60000, false, 0.0, 0, "N/A"},
+	        		    {generateRandomUser(), "H2 DRIVER ERROR", "I am getting a ClassNotFoundException for the H2 driver, how do I fix this?", "General", System.currentTimeMillis() - 50000, false, 0.0, 0, "N/A"},
+	        		    {generateRandomUser(), "EPICS VS STORIES", "What is the difference between epics and user stories?", "Lectures", System.currentTimeMillis() - 40000, false, 0.0, 0, "N/A"},
+	        		    {generateRandomUser(), "ARRAYLIST/COMPOSITION", "Should our PostList class extend ArrayList or use composition instead?", "Homework", System.currentTimeMillis() - 30000, false, 0.0, 0, "N/A"},
+	        		    {generateRandomUser(), "HW2 SCREENCASTS", "How many screencasts do we need to submit for HW2?", "Assignments", System.currentTimeMillis() - 20000, false, 0.0, 0, "N/A"},
+	        		    {generateRandomUser(), "JAVA FX", "Can we use JavaFX TableView instead of a custom VBox list for displaying posts?", "General", System.currentTimeMillis() - 10000, false, 0.0, 0, "N/A"},
 	        		};
 
 	            for (Object[] post : posts) {

@@ -676,7 +676,9 @@ public class ViewDiscussionForum {
         replyBtn.setOnAction(_ -> showReplyDialog(post));
         actionBar.getChildren().add(replyBtn);
 
-        if (post.getAuthor() == theUser.getUserId()) {
+        if (post.getAuthor() == theUser.getUserId()
+        		|| theUser.getRoles().contains("Admin")
+        		|| theUser.getRoles().contains("Staff")) {
             Button editBtn = new Button("Edit");
             editBtn.setStyle(
                 "-fx-background-color: #2d2d2d; -fx-text-fill: white;" +

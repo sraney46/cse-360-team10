@@ -5,6 +5,7 @@ import entityClasses.Post;
 import entityClasses.Reply;
 import entityClasses.User;
 import entityClasses.Constraint.ConstraintType;
+import entityClasses.EvaluationTool;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -86,6 +87,8 @@ public class ViewDiscussionForum {
     protected static User theUser;
     protected static Post theSelectedPost = null;
     protected static String returnPage = "";
+    private static final String[] GRADER_PARAMS = {"Accuracy", "Spelling", "Grammar", "Length"};
+    private static final Double[] GRADER_WEIGHTS = {40.0, 20.0, 20.0, 20.0};
 
     // The scene used for the discussion forum. This can get away with being protected...
     protected static Scene theDiscussionForumScene = null;
@@ -695,6 +698,24 @@ public class ViewDiscussionForum {
 
             actionBar.getChildren().addAll(editBtn, deleteBtn);
         }
+    if (isStaffUser()) {
+            Label gradeStatusLabel;
+            if (post.isGraded()) {
+                gradeStatusLabel = new Label("Graded: " + post.getLetterGrade() + " (" + post.getNumberGrade() + "%)");
+                gradeStatusLabel.setStyle("-fx-text-fill: #9ad0ff; -fx-font-size: 13px;");
+                actionBar.getChildren().add(gradeStatusLabel);
+            } else {
+                gradeStatusLabel = new Label("Not graded yet");
+                gradeStatusLabel.setStyle("-fx-text-fill: #ffcf8c; -fx-font-size: 13px;");
+                Button launchGraderBtn = new Button("Launch Grader Tool");
+                launchGraderBtn.setStyle(
+                    "-fx-background-color: #8e44ad; -fx-text-fill: white;" +
+                    "-fx-font-size: 13px; -fx-background-radius: 5px;"
+                );
+                launchGraderBtn.setOnAction(_ -> showStaffGraderDialog(post));
+                actionBar.getChildren().addAll(gradeStatusLabel, launchGraderBtn);
+            }
+        }
 
         // Divider
         Separator divider = new Separator();
@@ -1020,6 +1041,62 @@ public class ViewDiscussionForum {
                 combo_Category.getItems().add(threadName.trim());
             }
         });
+    }
+  /**********
+     * <p>Method: showStaffGraderDialog(Post post)</p>
+     *
+     * <p>Description: Opens a staff-only grader form where each predefined
+     * criterion can be marked as met or unmet, then computes and stores
+     * a weighted grade for the selected post.</p>
+     *
+     * @param post the post being graded
+     */
+    private static void showStaffGraderDialog(Post post) {
+        if (!isStaffUser() || post == null) {
+            return;
+        }
+        
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Grader Tool");
+        dialog.setHeaderText("Evaluate post by " + post.getAuthor());
+        ButtonType autoGradeType = new ButtonType("Start Auto Grader", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(autoGradeType, ButtonType.CANCEL);
+        
+        VBox content = new VBox(10);
+        content.setPadding(new Insets(12));
+        Label instructions = new Label("Mark each parameter as met, then run auto grader.");
+        instructions.setWrapText(true);
+        content.getChildren().add(instructions);
+        
+        CheckBox[] checks = new CheckBox[GRADER_PARAMS.length];
+        for (int i = 0; i < GRADER_PARAMS.length; i++) {
+            checks[i] = new CheckBox(GRADER_PARAMS[i] + " (" + GRADER_WEIGHTS[i].intValue() + "%)");
+            content.getChildren().add(checks[i]);
+        }
+        
+        dialog.getDialogPane().setContent(content);
+        Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() == autoGradeType) {
+            double[] scores = new double[GRADER_PARAMS.length];
+            for (int i = 0; i < checks.length; i++) {
+                scores[i] = checks[i].isSelected() ? GRADER_WEIGHTS[i] : 0.0;
+            }
+            
+             EvaluationTool tool = new EvaluationTool(theDatabase);
+            EvaluationTool.EvaluationRow row = EvaluationTool.compute(
+                    post.getAuthor(),
+                    GRADER_PARAMS,
+                    GRADER_WEIGHTS,
+                    scores);
+            
+            model.savePostGrade(post.getPostID(), row);
+            tool.save(row);
+            
+            Post refreshed = model.getPostByID(post.getPostID());
+            theSelectedPost = refreshed;
+            refreshPostList();
+            loadPostDetail(refreshed);
+        }
     }
 
     /*-*******************************************************************************************

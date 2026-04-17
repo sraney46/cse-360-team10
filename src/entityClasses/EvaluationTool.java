@@ -27,6 +27,10 @@ public class EvaluationTool {
 
     private static final String TABLE = "evaluationTool";
     private Database database;
+    public static final double EVALUATION_RUBRIC_WEIGHT_TOTAL = 100.0;
+    private static final double EVALUATION_RUBRIC_WEIGHT_EPSILON = 0.001;
+
+
 
     public EvaluationTool(Database database) {
         this.database = database;
@@ -36,16 +40,16 @@ public class EvaluationTool {
      * Snapshot of one row for evaluations.
      */
     public static final class EvaluationRow {
-        public final String studentName;
+        public final int studentID;
         public final String[] definedParams;
         public final Double[] paramWeights;
         public final double percentage;
         public final int numberGrade;
         public final String letterGrade;
 
-        public EvaluationRow(String studentName, String[] definedParams, Double[] paramWeights,
+        public EvaluationRow(int studentID, String[] definedParams, Double[] paramWeights,
                              double percentage, int numberGrade, String letterGrade) {
-            this.studentName = studentName;
+            this.studentID = studentID;
             this.definedParams = definedParams;
             this.paramWeights = paramWeights;
             this.percentage = percentage;
@@ -94,7 +98,7 @@ public class EvaluationTool {
      * @throws IllegalArgumentException if any array is null or if the arrays do
      * not all have the same length
      */
-    public static EvaluationRow compute(String studentName, String[] definedParams,
+    public static EvaluationRow compute(int studentID, String[] definedParams,
                                         Double[] paramWeights, double[] scores) {
         if (definedParams == null || paramWeights == null || scores == null) {
             throw new IllegalArgumentException("Arrays must not be null.");
@@ -109,7 +113,7 @@ public class EvaluationTool {
         }
         double pct = sumMax > 0 ? (sumScore / sumMax) * 100.0 : 0;
         int num = (int) Math.round(pct);
-        return new EvaluationRow(studentName, definedParams, paramWeights, pct, num, computeLetterGrade(num));
+        return new EvaluationRow(studentID, definedParams, paramWeights, pct, num, computeLetterGrade(num));
     }
 
     /**
@@ -124,7 +128,7 @@ public class EvaluationTool {
      * @param row the EvaluationRow to save
      */
     public void save(EvaluationRow row) {
-        database.insertEvaluation(row.studentName, row.definedParams, row.paramWeights,
+        database.insertEvaluation(row.studentID, row.definedParams, row.paramWeights,
                 row.percentage, row.numberGrade, row.letterGrade);
     }
 
@@ -189,7 +193,7 @@ public class EvaluationTool {
      */
     private static EvaluationRow readRow(ResultSet rs) throws SQLException {
         return new EvaluationRow(
-                rs.getString("studentName"),
+                rs.getInt("studentID"),
                 toStringArray(rs.getArray("definedParams")),
                 toDoubleArray(rs.getArray("paramWeights")),
                 rs.getDouble("percentage"),
@@ -254,4 +258,58 @@ public class EvaluationTool {
             return out;
         } finally { sqlArray.free(); }
     }
+   /*******
+   * <p>
+   * Method: validateEvaluationRubric
+   * </p>
+   *
+   * <p>
+   * Description: Ensures assessment parameters are all
+   * defined with non-blank names, that each row has a corresponding weight, and that weights sum to
+   * rubric total so the rubric matches a standard percentage breakdown.
+   * </p>
+   *
+   * @param definedParams parallel criterion labels
+   * @param paramWeights  parallel weights as percent points; must total 100
+   *
+   * @throws IllegalArgumentException if any name is missing, any weight is null/invalid, lengths
+   *                                  differ, or the total is not 100%
+   */
+  public static void validateEvaluationRubric(String[] definedParams, Double[] paramWeights) {
+    if (definedParams == null || paramWeights == null) {
+      throw new IllegalArgumentException("definedParams and paramWeights must not be null.");
+    }
+    if (definedParams.length != paramWeights.length) {
+      throw new IllegalArgumentException(
+          "Each assessment parameter must have exactly one weight (array length mismatch).");
+    }
+    if (definedParams.length == 0) {
+      throw new IllegalArgumentException(
+          "At least one assessment parameter is required (e.g. accuracy, spelling, grammar, length).");
+    }
+    for (int i = 0; i < definedParams.length; i++) {
+      String name = definedParams[i];
+      if (name == null || name.trim().isEmpty()) {
+        throw new IllegalArgumentException(
+            "Assessment parameter at index " + i + " is not defined (null or blank).");
+      }
+      Double w = paramWeights[i];
+      if (w == null) {
+        throw new IllegalArgumentException(
+            "Weight for parameter \"" + name + "\" is not defined (null).");
+      }
+      if (w < 0) {
+        throw new IllegalArgumentException("Weights must be non-negative (parameter \"" + name + "\").");
+      }
+    }
+    double sum = 0.0;
+    for (Double w : paramWeights) {
+      sum += w;
+    }
+    if (Math.abs(sum - EVALUATION_RUBRIC_WEIGHT_TOTAL) > EVALUATION_RUBRIC_WEIGHT_EPSILON) {
+      throw new IllegalArgumentException(
+          "Parameter weights must total 100% (currently " + sum + ").");
+    }
+  }
+
 }

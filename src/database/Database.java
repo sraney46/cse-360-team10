@@ -11,6 +11,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import entityClasses.User;
+import entityClasses.EvaluationTool;
 
 /*******
  * <p>
@@ -219,7 +220,7 @@ public class Database {
 		statement.execute(readStatusTicketTable);
 
     String evaluationToolTable = "CREATE TABLE IF NOT EXISTS evaluationTool ("
-        + "studentName VARCHAR(255), "
+        + "studentID INT, "
         + "definedParams VARCHAR(255) ARRAY, "
         + "paramWeights DOUBLE PRECISION ARRAY, "
         + "percentage DOUBLE, "
@@ -1599,7 +1600,7 @@ public class Database {
    * </p>
    * 
    * <p>
-   * Description: Get the email address of a user given that user's username.
+   * Description: Get the email address of a user given that getIntername.
    * </p>
    * 
    * @param id is the identification of the user
@@ -1624,64 +1625,7 @@ public class Database {
     return null;
   }
 
-    public static final double EVALUATION_RUBRIC_WEIGHT_TOTAL = 100.0;
-
-  private static final double EVALUATION_RUBRIC_WEIGHT_EPSILON = 0.001;
-
-  /*******
-   * <p>
-   * Method: validateEvaluationRubric
-   * </p>
-   *
-   * <p>
-   * Description: Ensures assessment parameters are all
-   * defined with non-blank names, that each row has a corresponding weight, and that weights sum to
-   * rubric total so the rubric matches a standard percentage breakdown.
-   * </p>
-   *
-   * @param definedParams parallel criterion labels
-   * @param paramWeights  parallel weights as percent points; must total 100
-   *
-   * @throws IllegalArgumentException if any name is missing, any weight is null/invalid, lengths
-   *                                  differ, or the total is not 100%
-   */
-  public static void validateEvaluationRubric(String[] definedParams, Double[] paramWeights) {
-    if (definedParams == null || paramWeights == null) {
-      throw new IllegalArgumentException("definedParams and paramWeights must not be null.");
-    }
-    if (definedParams.length != paramWeights.length) {
-      throw new IllegalArgumentException(
-          "Each assessment parameter must have exactly one weight (array length mismatch).");
-    }
-    if (definedParams.length == 0) {
-      throw new IllegalArgumentException(
-          "At least one assessment parameter is required (e.g. accuracy, spelling, grammar, length).");
-    }
-    for (int i = 0; i < definedParams.length; i++) {
-      String name = definedParams[i];
-      if (name == null || name.trim().isEmpty()) {
-        throw new IllegalArgumentException(
-            "Assessment parameter at index " + i + " is not defined (null or blank).");
-      }
-      Double w = paramWeights[i];
-      if (w == null) {
-        throw new IllegalArgumentException(
-            "Weight for parameter \"" + name + "\" is not defined (null).");
-      }
-      if (w < 0) {
-        throw new IllegalArgumentException("Weights must be non-negative (parameter \"" + name + "\").");
-      }
-    }
-    double sum = 0.0;
-    for (Double w : paramWeights) {
-      sum += w;
-    }
-    if (Math.abs(sum - EVALUATION_RUBRIC_WEIGHT_TOTAL) > EVALUATION_RUBRIC_WEIGHT_EPSILON) {
-      throw new IllegalArgumentException(
-          "Parameter weights must total 100% (currently " + sum + ").");
-    }
-  }
-
+    
 
 
   /*******
@@ -1694,18 +1638,18 @@ public class Database {
    * succeeds.
    * </p>
    */
-  public void insertEvaluation(String studentName, String[] definedParams, Double[] paramWeights,
+  public void insertEvaluation(int studentID, String[] definedParams, Double[] paramWeights,
       double percentage, int numberGrade, String letterGrade) {
-    validateEvaluationRubric(definedParams, paramWeights);
+    EvaluationTool.validateEvaluationRubric(definedParams, paramWeights);
 
-    String sql = "INSERT INTO evaluationTool (studentName, definedParams, paramWeights, percentage, numberGrade, letterGrade) VALUES (?, ?, ?, ?, ?, ?)";
+    String sql = "INSERT INTO evaluationTool (studentID, definedParams, paramWeights, percentage, numberGrade, letterGrade) VALUES (?, ?, ?, ?, ?, ?)";
     
     try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
         
         Array dbDefinedParams = connection.createArrayOf("VARCHAR", definedParams);
         Array dbParamWeights = connection.createArrayOf("DOUBLE", paramWeights);
         
-        preparedStatement.setString(1, studentName);
+        preparedStatement.setInt(1, studentID);
         preparedStatement.setArray(2, dbDefinedParams);
         preparedStatement.setArray(3, dbParamWeights);
         preparedStatement.setDouble(4, percentage);
@@ -1713,7 +1657,7 @@ public class Database {
         preparedStatement.setString(6, letterGrade);
         
         preparedStatement.executeUpdate();
-        System.out.println("Evaluation inserted successfully for: " + studentName);
+        System.out.println("Evaluation inserted successfully for student ID: " + studentID);
         
     } catch (SQLException e) {
         System.out.println("Error inserting evaluation: " + e.getMessage());

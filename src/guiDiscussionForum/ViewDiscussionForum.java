@@ -691,7 +691,13 @@ public class ViewDiscussionForum {
             );
             deleteBtn.setOnAction(_ -> handleDeletePost(post));
 
-            actionBar.getChildren().addAll(editBtn, deleteBtn);
+            Button emailBtn = new Button("Email");
+            emailBtn.setStyle(
+                "-fx-background-color: #28a745; -fx-text-fill: white;" +
+                "-fx-font-size: 13px; -fx-background-radius: 5px;"
+            );
+            emailBtn.setOnAction(_ -> showEmailDialog(post));
+            actionBar.getChildren().addAll(editBtn, deleteBtn, emailBtn);
         }
     if (isStaffUser()) {
             Label gradeStatusLabel;
@@ -1130,6 +1136,50 @@ public class ViewDiscussionForum {
 
         combo_StudentFilter.setItems(items);
         combo_StudentFilter.setValue("All Students");
+    }
+    
+    /**********
+     * <p>Method: showEmailDialog(Post post)</p>
+     *
+     * <p>Description: Opens a dialog allowing the current user to compose and send
+     * a simulated email to the author of the given post. Retrieves the author's email
+     * address from the database and displays it in a confirmation alert once the user
+     * submits their message. No actual email is sent; this is a simulated interaction.</p>
+     *
+     * @param post the Post whose author will receive the simulated email
+     */
+    private static void showEmailDialog(Post post) {
+        String recipientEmail = theDatabase.getEmailAddress(post.getAuthor());
+
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Send Email");
+        dialog.setHeaderText("Email post author");
+
+        ButtonType submitType = new ButtonType("Submit", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(submitType, ButtonType.CANCEL);
+
+        TextArea messageArea = new TextArea();
+        messageArea.setPromptText("Write your message here...");
+        messageArea.setWrapText(true);
+        messageArea.setPrefHeight(150);
+
+        VBox content = new VBox(10,
+            new Label("To: " + (recipientEmail != null ? recipientEmail : "Unknown")),
+            new Label("Message:"),
+            messageArea
+        );
+        content.setPadding(new Insets(10));
+        dialog.getDialogPane().setContent(content);
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() == submitType) {
+            Alert confirmation = new Alert(Alert.AlertType.INFORMATION);
+            confirmation.setTitle("Email Sent");
+            confirmation.setHeaderText("Email Sent!");
+            confirmation.setContentText("Your message was sent to: " + 
+                (recipientEmail != null ? recipientEmail : "Unknown"));
+            confirmation.showAndWait();
+        }
     }
 
     /*-*******************************************************************************************

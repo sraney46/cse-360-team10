@@ -56,10 +56,11 @@ public class ViewDiscussionForum {
     protected static ComboBox<String> combo_Category = new ComboBox<>();
     protected static ComboBox<String> combo_SearchCriteria = new ComboBox<>();
     protected static ComboBox<String> combo_StudentFilter = new ComboBox<>();
+    protected static ComboBox<String> combo_hiddenFilter = new ComboBox<>();
     protected static TextField textField_searchCriteria = new TextField();
     protected static Label label_searchText = new Label();
     protected static ObservableList<String> threadCategories = FXCollections.observableArrayList(
-    	    "General", "Homework", "Lectures", "Assignments", "Exams"
+    	    "General", "Homework", "Lectures", "Assignments", "Exams", "Hidden"
     	);
     protected static ComboBox<String> combo_ReadStatus = new ComboBox<>();
 
@@ -448,10 +449,17 @@ public class ViewDiscussionForum {
         String searchFilterMode = combo_SearchCriteria.getValue();
         String textFilterContent = textField_searchCriteria.textProperty().getValue();
         String readStatusFilter = combo_ReadStatus.getValue();
+        String hiddenFilter = combo_hiddenFilter.getValue();
 
-        if (selectedCategory != null && combo_Category.getSelectionModel().getSelectedIndex() > 0)
-            args.add(new Constraint("category = " + selectedCategory, ConstraintType.AND));
-
+        if (selectedCategory != null && combo_Category.getSelectionModel().getSelectedIndex() > 0) {
+        	
+        	if (selectedCategory.equals("Hidden")) {
+        		args.add(new Constraint("isPostHidden = TRUE", ConstraintType.AND));
+        	} else {
+        		args.add(new Constraint("category = " + selectedCategory, ConstraintType.AND));
+        	}
+        }	
+                
         switch (searchFilterMode) {
             default:
             case "Title":

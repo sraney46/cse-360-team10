@@ -7,6 +7,8 @@ import entityClasses.User;
 import entityClasses.Constraint.ConstraintType;
 import entityClasses.EvaluationTool;
 import entityClasses.StaffFeedbackValidator;
+import entityClasses.Ticket;
+import guiTicketForum.ModelTicketForum;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -67,6 +69,7 @@ public class ViewDiscussionForum {
     protected static ScrollPane scrollPane_PostList;
     protected static VBox vbox_PostList;
     private static final StaffFeedbackValidator feedbackValidator = new StaffFeedbackValidator();
+    private static ModelTicketForum ticketModel = new ModelTicketForum();
 
     // GUI Area 2 — Right post detail panel
     protected static ScrollPane scrollPane_PostDetail;
@@ -546,10 +549,10 @@ public class ViewDiscussionForum {
 
         if (feedbackValidator.containsInappropriateContent(post.getTitle()) ||
             feedbackValidator.containsInappropriateContent(post.getContent())) {
-            Label flagBadge = new Label("⚑ FLAG");
+            Label flagBadge = new Label("FLAG");
             flagBadge.setStyle(
-                "-fx-background-color: #e74c3c; -fx-text-fill: white;" +
-                "-fx-font-size: 10px; -fx-padding: 2 8; -fx-background-radius: 999;"
+        	    "-fx-background-color: #f1c40f; -fx-text-fill: black;" +
+        	    "-fx-font-size: 10px; -fx-padding: 2 8; -fx-background-radius: 999;"
             );
             topLine.getChildren().add(flagBadge);
         }
@@ -904,7 +907,7 @@ public class ViewDiscussionForum {
             	model.addPost(newPost);
             	if (feedbackValidator.containsInappropriateContent(newPost.getTitle()) ||
         	        feedbackValidator.containsInappropriateContent(newPost.getContent())) {
-        	        // model.flagPost(newPost);  // replace with however your flag system works
+            		createFlaggedContentTicket(newPost);
         	    }
             	refreshStudentFilter();
                 refreshPostList();
@@ -1218,6 +1221,29 @@ public class ViewDiscussionForum {
                 (recipientEmail != null ? recipientEmail : "Unknown"));
             confirmation.showAndWait();
         }
+    }
+    
+    /**********
+     * <p>Method: createFlaggedContentTicket(Post post)</p>
+     *
+     * <p>Description: Automatically creates a support ticket in the Ticket Forum when a
+     * newly submitted post is detected to contain inappropriate content. The ticket is
+     * filed under the poster's author ID and categorized as Open so staff can immediately
+     * see and action it. Content is kept concise to satisfy the Post body character limit.</p>
+     *
+     * @param post the Post that was flagged for inappropriate content
+     */
+    private static void createFlaggedContentTicket(Post post) {
+        String posterName = theDatabase.getUserAsObject(post.getAuthor()).getUserName();
+        String contentPreview = post.getContent().length() > 30
+            ? post.getContent().substring(0, 30) + "..."
+            : post.getContent();
+
+        String ticketTitle = "FLAG: " + posterName;
+        String ticketContent = "Flagged post by " + posterName + ": " + contentPreview;
+
+        Ticket flagTicket = new Ticket(post.getAuthor(), ticketTitle, ticketContent);
+        ticketModel.addTicket(flagTicket);
     }
 
     /*-*******************************************************************************************

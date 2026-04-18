@@ -46,7 +46,7 @@ public class Post {
     /** Maximum allowed character length for post body content */
     private static final int MAX_LENGTH = 100;
 
-    private static final String SPECIAL_CHARS = "!@#$%^&*[]{}|;:<>?/";
+    private static final String SPECIAL_CHARS = "@#$%^&*[]{}|;<>/";
 
 
     /**********************************************************************************************

@@ -6,6 +6,7 @@ import entityClasses.Reply;
 import entityClasses.User;
 import entityClasses.Constraint.ConstraintType;
 import entityClasses.EvaluationTool;
+import entityClasses.StaffFeedbackValidator;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -65,6 +66,7 @@ public class ViewDiscussionForum {
     // GUI Area 2 — Left post list
     protected static ScrollPane scrollPane_PostList;
     protected static VBox vbox_PostList;
+    private static final StaffFeedbackValidator feedbackValidator = new StaffFeedbackValidator();
 
     // GUI Area 2 — Right post detail panel
     protected static ScrollPane scrollPane_PostDetail;
@@ -541,6 +543,17 @@ public class ViewDiscussionForum {
         );
 
         topLine.getChildren().addAll(authorLabel, categoryBadge, readPill);
+
+        if (feedbackValidator.containsInappropriateContent(post.getTitle()) ||
+            feedbackValidator.containsInappropriateContent(post.getContent())) {
+            Label flagBadge = new Label("⚑ FLAG");
+            flagBadge.setStyle(
+                "-fx-background-color: #e74c3c; -fx-text-fill: white;" +
+                "-fx-font-size: 10px; -fx-padding: 2 8; -fx-background-radius: 999;"
+            );
+            topLine.getChildren().add(flagBadge);
+        }
+        
         if (isStaffUser()) {
             Label gradePill;
             if (post.isGraded()) {
@@ -889,6 +902,10 @@ public class ViewDiscussionForum {
                 alertValidation.showAndWait();
             } else {
             	model.addPost(newPost);
+            	if (feedbackValidator.containsInappropriateContent(newPost.getTitle()) ||
+        	        feedbackValidator.containsInappropriateContent(newPost.getContent())) {
+        	        // model.flagPost(newPost);  // replace with however your flag system works
+        	    }
             	refreshStudentFilter();
                 refreshPostList();
             }
@@ -1162,21 +1179,42 @@ public class ViewDiscussionForum {
         messageArea.setPromptText("Write your message here...");
         messageArea.setWrapText(true);
         messageArea.setPrefHeight(150);
+       
 
         VBox content = new VBox(10,
             new Label("To: " + (recipientEmail != null ? recipientEmail : "Unknown")),
             new Label("Message:"),
             messageArea
         );
+        
         content.setPadding(new Insets(10));
         dialog.getDialogPane().setContent(content);
 
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == submitType) {
+            String validationError = feedbackValidator.validateEmailMessage(messageArea.getText());
+            if (!validationError.isEmpty()) {
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                errorAlert.setTitle("Invalid Message");
+                errorAlert.setHeaderText("Could not send email");
+                errorAlert.setContentText(validationError);
+                errorAlert.showAndWait();
+                return;
+            }
+
+            if (feedbackValidator.containsInappropriateContent(messageArea.getText())) {
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                errorAlert.setTitle("Invalid Message");
+                errorAlert.setHeaderText("Could not send email");
+                errorAlert.setContentText("Message contains inappropriate content.");
+                errorAlert.showAndWait();
+                return;
+            }
+
             Alert confirmation = new Alert(Alert.AlertType.INFORMATION);
             confirmation.setTitle("Email Sent");
             confirmation.setHeaderText("Email Sent!");
-            confirmation.setContentText("Your message was sent to: " + 
+            confirmation.setContentText("Your message was sent to: " +
                 (recipientEmail != null ? recipientEmail : "Unknown"));
             confirmation.showAndWait();
         }

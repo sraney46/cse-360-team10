@@ -135,6 +135,15 @@ public class ViewDiscussionForum {
               button_NewThread.setManaged(false);
         }
         
+        // Only show if user is not a student
+        if (returnPage.equals("Student")) {
+        	combo_StudentFilter.setVisible(false);
+        	combo_StudentFilter.setManaged(false);
+        } else {
+        	combo_StudentFilter.setVisible(true);
+        	combo_StudentFilter.setManaged(true);
+        }
+        
         combo_ReadStatus.setValue("Read Status");
         refreshStudentFilter();
         vbox_PostDetail.getChildren().clear(); 
@@ -547,14 +556,16 @@ public class ViewDiscussionForum {
 
         topLine.getChildren().addAll(authorLabel, categoryBadge, readPill);
 
-        if (feedbackValidator.containsInappropriateContent(post.getTitle()) ||
-            feedbackValidator.containsInappropriateContent(post.getContent())) {
-            Label flagBadge = new Label("FLAG");
-            flagBadge.setStyle(
-        	    "-fx-background-color: #f1c40f; -fx-text-fill: black;" +
-        	    "-fx-font-size: 10px; -fx-padding: 2 8; -fx-background-radius: 999;"
-            );
-            topLine.getChildren().add(flagBadge);
+        if (isStaffUser() || isAdminUser()) {
+            if (feedbackValidator.containsInappropriateContent(post.getTitle()) ||
+                feedbackValidator.containsInappropriateContent(post.getContent())) {
+                Label flagBadge = new Label("FLAG");
+                flagBadge.setStyle(
+                    "-fx-background-color: #f1c40f; -fx-text-fill: black;" +
+                    "-fx-font-size: 10px; -fx-padding: 2 8; -fx-background-radius: 999;"
+                );
+                topLine.getChildren().add(flagBadge);
+            }
         }
         
         if (isStaffUser()) {
@@ -706,16 +717,21 @@ public class ViewDiscussionForum {
                 "-fx-font-size: 13px; -fx-background-radius: 5px;"
             );
             deleteBtn.setOnAction(_ -> handleDeletePost(post));
-
+            
+            actionBar.getChildren().addAll(editBtn, deleteBtn);
+            
+        }
+        if (isStaffUser() || isAdminUser()) {
             Button emailBtn = new Button("Email");
             emailBtn.setStyle(
                 "-fx-background-color: #28a745; -fx-text-fill: white;" +
                 "-fx-font-size: 13px; -fx-background-radius: 5px;"
             );
             emailBtn.setOnAction(_ -> showEmailDialog(post));
-            actionBar.getChildren().addAll(editBtn, deleteBtn, emailBtn);
+            actionBar.getChildren().add(emailBtn);
         }
-    if (isStaffUser()) {
+        
+        if (isStaffUser()) {
             Label gradeStatusLabel;
             if (post.isGraded()) {
                 gradeStatusLabel = new Label("Graded: " + post.getLetterGrade() + " (" + post.getNumberGrade() + "%)");
@@ -1289,5 +1305,8 @@ public class ViewDiscussionForum {
      private static boolean isStaffUser() {
         return "Staff".equals(returnPage);
     }
+     private static boolean isAdminUser() {
+         return "Admin".equals(returnPage);
+     }
 
 }

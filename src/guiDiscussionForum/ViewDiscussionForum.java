@@ -131,6 +131,8 @@ public class ViewDiscussionForum {
         }
         
         combo_ReadStatus.setValue("Read Status");
+        refreshStudentFilter();
+        vbox_PostDetail.getChildren().clear(); 
       
 
         label_UserDetails.setText("User: " + theUser.getUserName());
@@ -228,32 +230,7 @@ public class ViewDiscussionForum {
     	combo_ReadStatus.setPrefHeight(16);
     	combo_ReadStatus.setOnAction(_ -> refreshPostList());
     	
-    	List<Post> posts = model.getAllPosts(null);
-    	List<Integer> allUsersIDs = theDatabase.getUserList();
-    	Set<Integer> postStudentIDs = new TreeSet<>();
-    	ObservableList<String> items = FXCollections.observableArrayList("All Students");
-
-
-    	if (posts != null) {
-    	    for (Post p : posts) {
-    	    	postStudentIDs.add(p.getAuthor());
-    	    }
-    	}
-    	
-    	if (allUsersIDs != null) {
-    	    for (Integer userID : allUsersIDs) {
-    	    	for(Integer postID : postStudentIDs) {
-    	    		if (userID == postID) {
-    	    			User grabUserName = theDatabase.getUserAsObject(userID);
-    	    			items.add(grabUserName.getUserName());
-    	    		}
-    	    	}
-    	    }
-    	}
-    	
-
-    	combo_StudentFilter.setItems(items);
-    	combo_StudentFilter.setValue("All Students");
+    	refreshStudentFilter();
     	combo_StudentFilter.getStyleClass().add("default-combo-box");
     	combo_StudentFilter.setLayoutX(width/2 + 372);
     	combo_StudentFilter.setLayoutY(18);
@@ -420,6 +397,24 @@ public class ViewDiscussionForum {
      */
     private static void refreshPostList() {
         List<Constraint> args = new ArrayList<>();
+        
+        // Student filter overrides all other filters
+        String selectedStudent = combo_StudentFilter.getValue();
+        if (selectedStudent != null && !selectedStudent.equals("All Students")) {
+            List<Post> allPosts = model.getAllPosts(null);
+            if (allPosts != null) {
+                allPosts = allPosts.stream()
+                    .filter(p -> {
+                        User u = theDatabase.getUserAsObject(p.getAuthor());
+                        return u != null && u.getUserName().equals(selectedStudent);
+                    })
+                    .collect(java.util.stream.Collectors.toList());
+            }
+            populatePostList(allPosts);
+            return;
+        }
+        
+        
         String selectedCategory = combo_Category.getValue();
         String searchFilterMode = combo_SearchCriteria.getValue();
         String textFilterContent = textField_searchCriteria.textProperty().getValue();
@@ -888,6 +883,7 @@ public class ViewDiscussionForum {
                 alertValidation.showAndWait();
             } else {
             	model.addPost(newPost);
+            	refreshStudentFilter();
                 refreshPostList();
             }
         }
@@ -1097,6 +1093,43 @@ public class ViewDiscussionForum {
             refreshPostList();
             loadPostDetail(refreshed);
         }
+    }
+    
+    /**********
+     * <p>Method: refreshStudentFilter()</p>
+     *
+     * <p>Description: Populates the student filter combo box with the usernames of all
+     * students who have made at least one post. Fetches all posts to determine which
+     * user IDs have authored content, then resolves each ID to a username via the
+     * database. The default "All Students" option is always present at the top of the
+     * list. Should be called on page load and after any new post is added to ensure
+     * the combo box stays up to date.</p>
+     */
+    private static void refreshStudentFilter() {
+        List<Post> posts = model.getAllPosts(null);
+        List<Integer> allUsersIDs = theDatabase.getUserList();
+        Set<Integer> postStudentIDs = new TreeSet<>();
+        ObservableList<String> items = FXCollections.observableArrayList("All Students");
+
+        if (posts != null) {
+            for (Post p : posts) {
+                postStudentIDs.add(p.getAuthor());
+            }
+        }
+
+        if (allUsersIDs != null) {
+            for (Integer userID : allUsersIDs) {
+                for (Integer postID : postStudentIDs) {
+                    if (userID == postID) {
+                        User grabUserName = theDatabase.getUserAsObject(userID);
+                        items.add(grabUserName.getUserName());
+                    }
+                }
+            }
+        }
+
+        combo_StudentFilter.setItems(items);
+        combo_StudentFilter.setValue("All Students");
     }
 
     /*-*******************************************************************************************

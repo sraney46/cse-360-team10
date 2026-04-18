@@ -35,7 +35,7 @@ import guiTicketForum.ModelTicketForum;
  *
  */
 @TestInstance(Lifecycle.PER_CLASS)
-public class HW3Task5 {
+public class TicketTests {
 	private static database.Database theDatabase = applicationMain.FoundationsMain.database;
 	private boolean connectedDB = false;
 	private int firstPostID = 1;

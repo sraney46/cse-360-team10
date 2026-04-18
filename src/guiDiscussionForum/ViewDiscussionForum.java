@@ -596,8 +596,7 @@ public class ViewDiscussionForum {
             }
         }
         
-        if (isStaffUser()) {
-            Label gradePill;
+        if (isStaffUser() && ModelDiscussionForum.authorHasStudentRole(post.getAuthor())) {            Label gradePill;
             if (post.isGraded()) {
                 String gradeText = post.getLetterGrade() + " (" + post.getNumberGrade() + "%)";
                 gradePill = new Label(gradeText);
@@ -774,7 +773,14 @@ public class ViewDiscussionForum {
             if (post.isGraded()) {
                 gradeStatusLabel = new Label("Graded: " + post.getLetterGrade() + " (" + post.getNumberGrade() + "%)");
                 gradeStatusLabel.setStyle("-fx-text-fill: #9ad0ff; -fx-font-size: 13px;");
-                actionBar.getChildren().add(gradeStatusLabel);
+
+                Button editGradeBtn = new Button("Edit Grade");
+                editGradeBtn.setStyle(
+                    "-fx-background-color: #2980b9; -fx-text-fill: white;" +
+                    "-fx-font-size: 13px; -fx-background-radius: 5px;"
+                );
+                editGradeBtn.setOnAction(_ -> showStaffEditGradeDialog(post));
+                actionBar.getChildren().addAll(gradeStatusLabel, editGradeBtn);
             } else {
                 gradeStatusLabel = new Label("Not graded yet");
                 gradeStatusLabel.setStyle("-fx-text-fill: #ffcf8c; -fx-font-size: 13px;");
@@ -783,8 +789,9 @@ public class ViewDiscussionForum {
                     "-fx-background-color: #8e44ad; -fx-text-fill: white;" +
                     "-fx-font-size: 13px; -fx-background-radius: 5px;"
                 );
+                if(model.authorHasStudentRole(post.getAuthor())){
                 launchGraderBtn.setOnAction(_ -> showStaffGraderDialog(post));
-                actionBar.getChildren().addAll(gradeStatusLabel, launchGraderBtn);
+                actionBar.getChildren().addAll(gradeStatusLabel, launchGraderBtn);}
             }
                        
             if(!model.isPostHidden(post.getPostID())) {
@@ -1214,6 +1221,62 @@ public class ViewDiscussionForum {
             loadPostDetail(refreshed);
         }
     }
+
+   /**********
+     * <p>Method: showStaffEditGradeDialog(Post post)</p>
+     *
+     * <p>Description: Lets staff set the numeric score (0–100) on a student-authored
+     * post; letter grade is derived from the rubric mapping.</p>
+     *
+     * @param post the post whose grade is edited
+     */
+    private static void showStaffEditGradeDialog(Post post) {
+        if (!isStaffUser() || post == null) {
+            return;
+        }
+        if (!model.authorHasStudentRole(post.getAuthor())) {
+            alertValidation.setContentText("Only student-authored posts can have grades edited.");
+            alertValidation.showAndWait();
+            return;
+        }
+
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Edit Grade");
+        dialog.setHeaderText("Manual grade for " + post.getAuthor());
+        ButtonType saveType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(saveType, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(12));
+        TextField numField = new TextField(Integer.toString(post.getNumberGrade()));
+        grid.add(new Label("Numeric score (0–100):"), 0, 0);
+        grid.add(numField, 1, 0);
+        dialog.getDialogPane().setContent(grid);
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() == saveType) {
+            try {
+                int n = Integer.parseInt(numField.getText().trim());
+                if (n < 0 || n > 100) {
+                    throw new NumberFormatException();
+                }
+                if (!model.savePostGradeManual(post.getPostID(), n)) {
+                    alertValidation.setContentText("Could not save grade.");
+                    alertValidation.showAndWait();
+                    return;
+                }
+                Post refreshed = model.getPostByID(post.getPostID());
+                theSelectedPost = refreshed;
+                refreshPostList();
+                loadPostDetail(refreshed);
+            } catch (NumberFormatException ex) {
+                alertValidation.setContentText("Enter an integer from 0 to 100.");
+                alertValidation.showAndWait();
+            }
+        }
+    }
     
     /**********
      * <p>Method: refreshStudentFilter()</p>
@@ -1340,6 +1403,7 @@ public class ViewDiscussionForum {
         ticketModel.addTicket(flagTicket);
     }
 
+   
     /*-*******************************************************************************************
      Helper UI setup methods
     */

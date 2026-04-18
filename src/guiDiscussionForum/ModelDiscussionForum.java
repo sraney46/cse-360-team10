@@ -248,7 +248,40 @@ public class ModelDiscussionForum {
             return false;
         }
     }
-    /**********
+
+   /**********
+     * <p>Method: authorHasStudentRole(String authorUserName)</p>
+     *
+     * <p>Description: Returns true when the given username exists in userDB and has
+     * the Student role (newRole2 / role 2). Grading and grade badges apply only to
+     * posts whose author satisfies this check.</p>
+     *
+     * @param authorUserName post author username (case-insensitive match)
+     * @return true if the user is a student
+     */
+public static boolean authorHasStudentRole(int authorId) {
+
+    if (authorId <= 0) {
+        return false;
+    }
+
+    String query = "SELECT adminRole, newRole1, newRole2 FROM userDB WHERE id = ?";
+    try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
+        pstmt.setInt(1, authorId);
+        
+        try (ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+              boolean booleanValue = rs.getBoolean("newRole2");
+          return booleanValue; 
+            } else {
+                return false;
+            }
+        }
+    } catch (SQLException e) {
+        System.out.println("*** ERROR *** Failed to read author role: " + e.getMessage());
+        return false;
+    }
+}   /**********
      * <p>Method: savePostGrade(int postID, EvaluationRow row)</p>
      *
      * <p>Description: Persists the computed grade fields to the selected post row.</p>
@@ -258,6 +291,10 @@ public class ModelDiscussionForum {
      * @return true when updated, false otherwise
      */
     public boolean savePostGrade(int postID, EvaluationTool.EvaluationRow row) {
+     Post post = getPostByID(postID);
+        if (post == null || !authorHasStudentRole(post.getAuthor())) {
+            return false;
+        }
         String query = "UPDATE postDB SET graded = TRUE, percentageGrade = ?, numberGrade = ?, letterGrade = ? WHERE postID = ?";
         try (PreparedStatement pstmt =theDatabase.getConnection().prepareStatement(query)) {
             pstmt.setDouble(1, row.percentage);
@@ -267,6 +304,37 @@ public class ModelDiscussionForum {
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.out.println("*** ERROR *** Failed to save post grade: " + e.getMessage());
+            return false;
+        }
+    }
+
+   /**********
+     * <p>Method: savePostGradeManual(int postID, int numberGrade)</p>
+     *
+     * <p>Description: Staff override for an existing graded (or ungraded) student post.
+     * Clamps the numeric grade to 0–100, derives the letter grade, and sets graded true.
+     * No-op when the post author does not have the Student role.</p>
+     *
+     * @param postID post identifier
+     * @param numberGrade rounded score 0–100
+     * @return true when a row was updated
+     */
+    public boolean savePostGradeManual(int postID, int numberGrade) {
+        Post post = getPostByID(postID);
+        if (post == null || !authorHasStudentRole(post.getAuthor())) {
+            return false;
+        }
+        int clamped = Math.max(0, Math.min(100, numberGrade));
+        String letter = EvaluationTool.computeLetterGrade(clamped);
+        String query = "UPDATE postDB SET graded = TRUE, percentageGrade = ?, numberGrade = ?, letterGrade = ? WHERE postID = ?";
+        try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
+            pstmt.setDouble(1, clamped);
+            pstmt.setInt(2, clamped);
+            pstmt.setString(3, letter);
+            pstmt.setInt(4, postID);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("*** ERROR *** Failed to save manual post grade: " + e.getMessage());
             return false;
         }
     }

@@ -514,8 +514,13 @@ public class ViewDiscussionForum {
         }
 
         for (Post post : posts) {
-            HBox row = createPostRow(post);
-            vbox_PostList.getChildren().add(row);
+        	if (!post.getPostHiddenStatus() && isStudentUser()) {
+	            HBox row = createPostRow(post);
+	            vbox_PostList.getChildren().add(row);
+        	} else if (isStaffUser() || isAdminUser()){
+	            HBox row = createPostRow(post);
+	            vbox_PostList.getChildren().add(row);
+        	}
         }
     }
 
@@ -600,6 +605,16 @@ public class ViewDiscussionForum {
                 );
             }
             topLine.getChildren().add(gradePill);
+            
+            Label hiddenPill;
+            if(post.getPostHiddenStatus()) {
+            	hiddenPill = new Label("Hidden");
+                hiddenPill.setStyle(
+                        "-fx-background-color: #007bff; -fx-text-fill: white;" +
+                        "-fx-font-size: 10px; -fx-padding: 2 8; -fx-background-radius: 999;"
+                    ); // FIXME
+	            topLine.getChildren().add(hiddenPill);
+            }
         }
 
         // Title + content preview
@@ -1092,7 +1107,7 @@ public class ViewDiscussionForum {
     private static void handleHidePost(Post post) {
         Optional<ButtonType> result = alertHideConfirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-        	model.hidePost(post.getPostID());
+        	model.hidePost(post);
             theSelectedPost = null;
             vbox_PostDetail.getChildren().clear();
             refreshPostList();
@@ -1103,7 +1118,7 @@ public class ViewDiscussionForum {
     private static void handleUnidePost(Post post) {
         Optional<ButtonType> result = alertHideConfirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-        	model.unhidePost(post.getPostID());
+        	model.unhidePost(post);
             theSelectedPost = null;
             vbox_PostDetail.getChildren().clear();
             refreshPostList();
@@ -1360,8 +1375,13 @@ public class ViewDiscussionForum {
      private static boolean isStaffUser() {
         return "Staff".equals(returnPage);
     }
+     
      private static boolean isAdminUser() {
          return "Admin".equals(returnPage);
+    }
+     
+     private static boolean isStudentUser() {
+    	 return "Student".equals(returnPage);
      }
  
 

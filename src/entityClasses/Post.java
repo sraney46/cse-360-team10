@@ -49,7 +49,7 @@ public class Post {
     private static final String SPECIAL_CHARS = "@#$%^&*[]{}|;<>/";
     
     /** The status of the post. NULL (okay) or hidden.*/
-    private String postStatus;
+    private boolean isPostHidden;
 
 
     /**********************************************************************************************
@@ -81,6 +81,7 @@ public class Post {
         this.content = content;
         this.category = category;
         this.timestamp = System.currentTimeMillis();
+        this.isPostHidden = false;
     }
 
     /**********************************************************************************************
@@ -151,7 +152,7 @@ public class Post {
      * <p>Method: getPostStatus()</p>
      * @return the status of the post
      */
-    public String getPostStatus() { return postStatus; }
+    public boolean getPostHiddenStatus() { return isPostHidden; }
 
     /**********************************************************************************************
      * Setters
@@ -221,7 +222,7 @@ public class Post {
      * <p>Method: setpostStatus(String postStatus)</p>
      * @param postStatus the status of the post
      */
-    public void setPostStatus(String postStatus) { this.postStatus = postStatus; }
+    public void setPostHiddenStatus(boolean isPostHidden) { this.isPostHidden = isPostHidden; }
     
     /**********************************************************************************************
      * Validation

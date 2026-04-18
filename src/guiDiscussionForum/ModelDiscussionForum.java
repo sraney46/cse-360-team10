@@ -326,11 +326,12 @@ public class ModelDiscussionForum {
     }
     
     // FIXME JavaDoc
-    public boolean hidePost(int postID) {
+    public boolean hidePost(Post post) {
         String query = "UPDATE postDB SET isPostHidden = TRUE WHERE postID = ?";
         try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
-            pstmt.setInt(1, postID);
+            pstmt.setInt(1, post.getPostID());
             pstmt.executeUpdate();
+            post.setPostHiddenStatus(true);
             return true;
         } catch (SQLException e) {
             System.out.println("*** ERROR *** Failed to hide post: " + e.getMessage());
@@ -339,11 +340,12 @@ public class ModelDiscussionForum {
     }
     
     // FIXME JavaDoc
-    public boolean unhidePost(int postID) {
+    public boolean unhidePost(Post post) {
         String query = "UPDATE postDB SET isPostHidden = FALSE WHERE postID = ?";
         try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
-            pstmt.setInt(1, postID);
+            pstmt.setInt(1, post.getPostID());
             pstmt.executeUpdate();
+            post.setPostHiddenStatus(false);
             return true;
         } catch (SQLException e) {
             System.out.println("*** ERROR *** Failed to hide post: " + e.getMessage());
@@ -681,6 +683,7 @@ public class ModelDiscussionForum {
         post.setPercentageGrade(rs.getDouble("percentageGrade"));
         post.setNumberGrade(rs.getInt("numberGrade"));
         post.setLetterGrade(rs.getString("letterGrade"));
+        post.setPostHiddenStatus(rs.getBoolean("isPostHidden"));
         return post;
     }
   /**********************************************************************************************

@@ -415,6 +415,20 @@ public class ViewDiscussionForum {
         // Student filter overrides all other filters
         String selectedStudent = combo_StudentFilter.getValue();
         if (selectedStudent != null && !selectedStudent.equals("All Students")) {
+
+            if (selectedStudent.equals("Flagged Posts")) {
+                List<Post> allPosts = model.getAllPosts(null);
+                if (allPosts != null) {
+                    allPosts = allPosts.stream()
+                        .filter(p -> feedbackValidator.containsInappropriateContent(p.getTitle()) ||
+                                     feedbackValidator.containsInappropriateContent(p.getContent()))
+                        .collect(java.util.stream.Collectors.toList());
+                }
+                populatePostList(allPosts);
+                return;
+            }
+
+            // existing student filter logic
             List<Post> allPosts = model.getAllPosts(null);
             if (allPosts != null) {
                 allPosts = allPosts.stream()
@@ -1151,7 +1165,7 @@ public class ViewDiscussionForum {
         List<Post> posts = model.getAllPosts(null);
         List<Integer> allUsersIDs = theDatabase.getUserList();
         Set<Integer> postStudentIDs = new TreeSet<>();
-        ObservableList<String> items = FXCollections.observableArrayList("All Students");
+        ObservableList<String> items = FXCollections.observableArrayList("All Students", "Flagged Posts");
 
         if (posts != null) {
             for (Post p : posts) {

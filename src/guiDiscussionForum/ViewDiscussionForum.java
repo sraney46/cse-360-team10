@@ -102,6 +102,7 @@ public class ViewDiscussionForum {
     protected static Alert alertDeleteConfirm = new Alert(Alert.AlertType.CONFIRMATION);
     protected static Alert alertValidation = new Alert(Alert.AlertType.WARNING);
  	protected static Alert alertPopulateDatabase = new Alert(AlertType.CONFIRMATION);
+    protected static Alert alertHideConfirm = new Alert(Alert.AlertType.CONFIRMATION);
 
 
     /*-*******************************************************************************************
@@ -743,7 +744,7 @@ public class ViewDiscussionForum {
             );
             emailBtn.setOnAction(_ -> showEmailDialog(post));
             actionBar.getChildren().add(emailBtn);
-        }
+         }
         
         if (isStaffUser()) {
             Label gradeStatusLabel;
@@ -761,6 +762,24 @@ public class ViewDiscussionForum {
                 );
                 launchGraderBtn.setOnAction(_ -> showStaffGraderDialog(post));
                 actionBar.getChildren().addAll(gradeStatusLabel, launchGraderBtn);
+            }
+                       
+            if(!model.isPostHidden(post.getPostID())) {
+	            Button hideBtn = new Button("Hide");
+	            hideBtn.setStyle(
+	                    "-fx-background-color: #007bff; -fx-text-fill: white;" +
+	                    "-fx-font-size: 13px; -fx-background-radius: 5px;"
+	                );
+	            hideBtn.setOnAction(_ -> handleHidePost(post));
+	            actionBar.getChildren().add(hideBtn);
+            } else {
+	            Button unhideBtn = new Button("Unhide");
+	            unhideBtn.setStyle(
+	                    "-fx-background-color: #007bff; -fx-text-fill: white;" +
+	                    "-fx-font-size: 13px; -fx-background-radius: 5px;"
+	                );
+	            unhideBtn.setOnAction(_ -> handleUnidePost(post));
+	            actionBar.getChildren().add(unhideBtn);
             }
         }
 
@@ -1069,6 +1088,28 @@ public class ViewDiscussionForum {
         }
     }
     
+    // FIXME JavaDoc    
+    private static void handleHidePost(Post post) {
+        Optional<ButtonType> result = alertHideConfirm.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+        	model.hidePost(post.getPostID());
+            theSelectedPost = null;
+            vbox_PostDetail.getChildren().clear();
+            refreshPostList();
+        }
+    }
+    
+    // FIXME JavaDoc    
+    private static void handleUnidePost(Post post) {
+        Optional<ButtonType> result = alertHideConfirm.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+        	model.unhidePost(post.getPostID());
+            theSelectedPost = null;
+            vbox_PostDetail.getChildren().clear();
+            refreshPostList();
+        }
+    }
+    
     /**********
      * <p>Method: showNewThreadDialog()</p>
      *
@@ -1322,5 +1363,7 @@ public class ViewDiscussionForum {
      private static boolean isAdminUser() {
          return "Admin".equals(returnPage);
      }
+ 
 
+     
 }

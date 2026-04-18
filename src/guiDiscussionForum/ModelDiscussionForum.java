@@ -324,6 +324,32 @@ public class ModelDiscussionForum {
             return false;
         }
     }
+    
+    // FIXME JavaDoc
+    public boolean hidePost(int postID) {
+        String query = "UPDATE postDB SET isPostHidden = TRUE WHERE postID = ?";
+        try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
+            pstmt.setInt(1, postID);
+            pstmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.out.println("*** ERROR *** Failed to hide post: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    // FIXME JavaDoc
+    public boolean unhidePost(int postID) {
+        String query = "UPDATE postDB SET isPostHidden = FALSE WHERE postID = ?";
+        try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
+            pstmt.setInt(1, postID);
+            pstmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.out.println("*** ERROR *** Failed to hide post: " + e.getMessage());
+            return false;
+        }
+    }
 
     /**********************************************************************************************
      * REPLY - CREATE
@@ -609,6 +635,24 @@ public class ModelDiscussionForum {
            System.out.println("*** ERROR *** Failed to mark post as unread: " + e.getMessage());
            return false;
        }
+   }
+   
+   // FIXME JavaDoc
+   public boolean isPostHidden(int postID) {
+  	 String query = "SELECT isPostHidden FROM postDB WHERE postID = ?";
+  	 
+  	 try(PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
+         pstmt.setInt(1, postID);
+         
+  		 try(ResultSet rs = pstmt.executeQuery()) {
+  			 if(rs.next()) {
+  				 return rs.getBoolean("isPostHidden");
+  			 }
+  		 }
+  	 } catch (SQLException e) {
+  		System.out.println("*** ERROR *** Could not fetch status: " + e.getMessage());
+  	 }
+  	 return false;
    }
 
     /**********************************************************************************************

@@ -112,7 +112,7 @@ public class Database {
       connection = DriverManager.getConnection(DB_URL, USER, PASS);
       statement = connection.createStatement();
       // You can use this command to clear the database and restart from fresh.
-//       statement.execute("DROP ALL OBJECTS");
+//     statement.execute("DROP ALL OBJECTS");
 
       createTables(); // Create the necessary tables if they don't exist
     } catch (ClassNotFoundException e) {
@@ -178,7 +178,8 @@ public class Database {
             + "percentageGrade DOUBLE, "
             + "numberGrade INT, "
             + "letterGrade VARCHAR(5), "
-            + "flagged BOOLEAN DEFAULT FALSE)";
+            + "flagged BOOLEAN DEFAULT FALSE, "
+    	    + "isPostHidden BOOL DEFAULT FALSE)";
     statement.execute(postTable);
 
     String replyTable = "CREATE TABLE IF NOT EXISTS replyDB ("
@@ -2149,6 +2150,22 @@ public class Database {
    */
   public int getCurrentId() {
     return currentIdentification;
+  }
+  
+  public String getPostStatus(int postID) {
+	    String query = "SELECT poastStatus FROM postDB WHERE postID = ?";
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	      pstmt.setInt(1, postID);
+	      ResultSet rs = pstmt.executeQuery();
+
+	      if (rs.next()) {
+	        return rs.getString("postStatus");
+	      }
+
+	    } catch (SQLException e) {
+	      e.printStackTrace();
+	    }
+	    return null;
   }
 
   /*******

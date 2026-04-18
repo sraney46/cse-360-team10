@@ -47,6 +47,9 @@ public class Post {
     private static final int MAX_LENGTH = 100;
 
     private static final String SPECIAL_CHARS = "@#$%^&*[]{}|;<>/";
+    
+    /** The status of the post. NULL (okay) or hidden.*/
+    private String postStatus;
 
 
     /**********************************************************************************************
@@ -143,6 +146,12 @@ public class Post {
      * @return the letter grade
      */
     public String getLetterGrade() { return letterGrade; }
+    
+    /**
+     * <p>Method: getPostStatus()</p>
+     * @return the status of the post
+     */
+    public String getPostStatus() { return postStatus; }
 
     /**********************************************************************************************
      * Setters
@@ -208,6 +217,12 @@ public class Post {
      */
     public void setLetterGrade(String letterGrade) { this.letterGrade = letterGrade; }
 
+    /**
+     * <p>Method: setpostStatus(String postStatus)</p>
+     * @param postStatus the status of the post
+     */
+    public void setPostStatus(String postStatus) { this.postStatus = postStatus; }
+    
     /**********************************************************************************************
      * Validation
      **********************************************************************************************/

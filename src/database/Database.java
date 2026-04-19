@@ -230,6 +230,20 @@ public class Database {
         + "letterGrade VARCHAR(5))";
     statement.execute(evaluationToolTable);
 
+    String assessmentParametersTable = "CREATE TABLE IF NOT EXISTS assessment_parameters ("
+    	    + "parameter_id INT AUTO_INCREMENT PRIMARY KEY, "
+    	    + "parameter_name VARCHAR(100) NOT NULL UNIQUE, "
+    	    + "description VARCHAR(255), "
+    	    + "category VARCHAR(50) NOT NULL, "
+    	    + "threshold_value INT, "
+    	    + "point_value DOUBLE, "
+    	    + "is_required BOOLEAN NOT NULL DEFAULT FALSE, "
+    	    + "is_active BOOLEAN NOT NULL DEFAULT TRUE, "
+    	    + "created_by VARCHAR(100) NOT NULL, "
+    	    + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
+    	    + "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+    	    + ")";
+    	statement.execute(assessmentParametersTable);
   }
 
   /*******

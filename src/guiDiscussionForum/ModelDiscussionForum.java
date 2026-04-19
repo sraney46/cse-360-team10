@@ -393,7 +393,14 @@ public static boolean authorHasStudentRole(int authorId) {
         }
     }
     
-    // FIXME JavaDoc
+    /**********
+     * <p>Method: hidePost(Post post)</p>
+     *
+     * <p>Description: Hides a post by setting the isPostHidden flag to TRUE. </p>
+     *
+     * @param post the post to set to hidden.
+     * @return true if the hide was successful, false otherwise
+     */
     public boolean hidePost(Post post) {
         String query = "UPDATE postDB SET isPostHidden = TRUE WHERE postID = ?";
         try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
@@ -407,7 +414,14 @@ public static boolean authorHasStudentRole(int authorId) {
         }
     }
     
-    // FIXME JavaDoc
+    /**********
+     * <p>Method: unhidePost(Post post)</p>
+     *
+     * <p>Description: Unhides a post by setting the isPostHidden flag to FALSE. </p>
+     *
+     * @param post the post to set to not hidden.
+     * @return true if the unhide was successful, false otherwise
+     */
     public boolean unhidePost(Post post) {
         String query = "UPDATE postDB SET isPostHidden = FALSE WHERE postID = ?";
         try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
@@ -707,7 +721,15 @@ public static boolean authorHasStudentRole(int authorId) {
        }
    }
    
-   // FIXME JavaDoc
+   /**********
+    * <p>Method: isPostHidden(int postID)</p>
+    *
+    * <p>Description: Checks whether a post has been marked as hidden and returns 
+    * the current state. </p>
+    *
+    * @param int postID of the post to check
+    * @return true if the post is hidden, false if not
+    */
    public boolean isPostHidden(int postID) {
   	 String query = "SELECT isPostHidden FROM postDB WHERE postID = ?";
   	 

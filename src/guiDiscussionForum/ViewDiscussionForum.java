@@ -449,7 +449,6 @@ public class ViewDiscussionForum {
         String searchFilterMode = combo_SearchCriteria.getValue();
         String textFilterContent = textField_searchCriteria.textProperty().getValue();
         String readStatusFilter = combo_ReadStatus.getValue();
-        String hiddenFilter = combo_hiddenFilter.getValue();
 
         if (selectedCategory != null && combo_Category.getSelectionModel().getSelectedIndex() > 0) {
         	
@@ -619,7 +618,7 @@ public class ViewDiscussionForum {
                 hiddenPill.setStyle(
                         "-fx-background-color: #007bff; -fx-text-fill: white;" +
                         "-fx-font-size: 10px; -fx-padding: 2 8; -fx-background-radius: 999;"
-                    ); // FIXME
+                    );
 	            topLine.getChildren().add(hiddenPill);
             }
         }
@@ -1118,7 +1117,15 @@ public class ViewDiscussionForum {
         }
     }
     
-    // FIXME JavaDoc    
+    /**********
+     * <p>Method: handleHidePost(Post post)</p>
+     *
+     * <p>Description: Shows a confirmation dialog before hiding the selected post.
+     * If confirmed, calls hidePost(), which sets isPostHidden for the post to TRUE.
+     * Clears the right panel and refreshes the post list on confirmation.</p>
+     *
+     * @param post the Post to be hidden
+     */ 
     private static void handleHidePost(Post post) {
         Optional<ButtonType> result = alertHideConfirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -1129,7 +1136,15 @@ public class ViewDiscussionForum {
         }
     }
     
-    // FIXME JavaDoc    
+    /**********
+     * <p>Method: handleUnidePost(Post post)</p>
+     *
+     * <p>Description: Shows a confirmation dialog before unhiding the selected post.
+     * If confirmed, calls unhidePost(), which sets isPostHidden for the post to FALSE.
+     * Clears the right panel and refreshes the post list on confirmation.</p>
+     *
+     * @param post the Post to be unhidden
+     */   
     private static void handleUnidePost(Post post) {
         Optional<ButtonType> result = alertHideConfirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {

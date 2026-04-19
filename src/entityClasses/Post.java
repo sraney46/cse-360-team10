@@ -150,7 +150,7 @@ public class Post {
     
     /**
      * <p>Method: getPostStatus()</p>
-     * @return the status of the post
+     * @return the hidden status of the post
      */
     public boolean getPostHiddenStatus() { return isPostHidden; }
 
@@ -220,7 +220,7 @@ public class Post {
 
     /**
      * <p>Method: setpostStatus(String postStatus)</p>
-     * @param postStatus the status of the post
+     * @param postStatus the hidden status of the post
      */
     public void setPostHiddenStatus(boolean isPostHidden) { this.isPostHidden = isPostHidden; }
     

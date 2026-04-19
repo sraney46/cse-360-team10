@@ -138,7 +138,7 @@ public class Database {
    * </p>
    * 
    * <p>
-   * Description: Used to create new instances of the two database tables used by
+   * Description: Used to create new instances of the 9 database tables used by
    * this class.
    * </p>
    * 
@@ -1613,7 +1613,7 @@ public class Database {
    * </p>
    *
    * <p>
-   * Description: Persists an evaluation after
+   * Description: creates an evaluation after
    * succeeds.
    * </p>
    */

@@ -683,8 +683,9 @@ public class ViewDiscussionForum {
      *
      * <p>Description: Populates the right panel with the full content of the selected
      * post and all of its replies. Renders a Reply button for all users and Edit and
-     * Delete buttons only if the logged-in user is the author of the post. If the post
-     * is null, a deleted message is shown instead. Includes a role filter combo box
+     * Delete buttons only if the logged-in user is the author of the post. Also renders a grade tool button and edit grade button
+     * that only shows up if the current user is a staff role and only on post made by students.
+     * If the post is null, a deleted message is shown instead. Includes a role filter combo box
      * to filter replies by author role.</p>
      *
      * @param post the Post to display in full detail, or null if the post was deleted
@@ -1241,7 +1242,7 @@ public class ViewDiscussionForum {
      * <p>Method: showStaffEditGradeDialog(Post post)</p>
      *
      * <p>Description: Lets staff set the numeric score (0–100) on a student-authored
-     * post; letter grade is derived from the rubric mapping.</p>
+     * post letter grade is derived from the rubric mapping.</p>
      *
      * @param post the post whose grade is edited
      */

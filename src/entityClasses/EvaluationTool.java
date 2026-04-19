@@ -28,9 +28,8 @@ public class EvaluationTool {
     private static final String TABLE = "evaluationTool";
     private Database database;
     public static final double EVALUATION_RUBRIC_WEIGHT_TOTAL = 100.0;
-    private static final double EVALUATION_RUBRIC_WEIGHT_EPSILON = 0.001;
 
-
+  private static final double EVALUATION_RUBRIC_WEIGHT_EPSILON = 0.001; 
 
     public EvaluationTool(Database database) {
         this.database = database;
@@ -154,23 +153,21 @@ public class EvaluationTool {
 
     /**
      * <p>
-     * Method: findByStudentName()
+     * Method: findById()
      * </p>
      *
      * <p>
-     * Description: Searches the DB table for a single row matching
-     * the given student name.
+     * Description: Searches the evaluation table for one row by studentID.
      * </p>
      *
-     * @param studentName the name of the student to search for
-     * @return the matching EvaluationRow if found, or null if no row exists for
-     * the given student name
+     * @param studentID the student id to search for
+     * @return the matching EvaluationRow if found, or null if no row exists
      * @throws SQLException if a database access error occurs
      */
-    public EvaluationRow findByStudentName(String studentName) throws SQLException {
-        String sql = "SELECT * FROM " + TABLE + " WHERE studentName = ?";
+    public EvaluationRow findById(int studentID) throws SQLException {
+        String sql = "SELECT * FROM " + TABLE + " WHERE studentID = ?";
         try (PreparedStatement ps = database.getConnection().prepareStatement(sql)) {
-            ps.setString(1, studentName);
+            ps.setInt(1, studentID);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? readRow(rs) : null;
             }

@@ -252,11 +252,10 @@ public class ModelDiscussionForum {
    /**********
      * <p>Method: authorHasStudentRole(String authorUserName)</p>
      *
-     * <p>Description: Returns true when the given username exists in userDB and has
-     * the Student role (newRole2 / role 2). Grading and grade badges apply only to
-     * posts whose author satisfies this check.</p>
+     * <p>Description: Returns true when the given userID exists in userDB and has
+     * the Student role.</p>
      *
-     * @param authorUserName post author username (case-insensitive match)
+     * @param authorID post author ID
      * @return true if the user is a student
      */
 public static boolean authorHasStudentRole(int authorId) {
@@ -284,7 +283,7 @@ public static boolean authorHasStudentRole(int authorId) {
 }   /**********
      * <p>Method: savePostGrade(int postID, EvaluationRow row)</p>
      *
-     * <p>Description: Persists the computed grade fields to the selected post row.</p>
+     * <p>Description: saves the computed grade fields to the selected post row.</p>
      *
      * @param postID post identifier to update
      * @param row computed grade result
@@ -311,9 +310,9 @@ public static boolean authorHasStudentRole(int authorId) {
    /**********
      * <p>Method: savePostGradeManual(int postID, int numberGrade)</p>
      *
-     * <p>Description: Staff override for an existing graded (or ungraded) student post.
-     * Clamps the numeric grade to 0–100, derives the letter grade, and sets graded true.
-     * No-op when the post author does not have the Student role.</p>
+     * <p>Description: Staff override for an existing graded student post.
+     * sets the numeric grade to 0–100, derives the letter grade, and sets graded true.
+     * when the post author does not have the Student role.</p>
      *
      * @param postID post identifier
      * @param numberGrade rounded score 0–100

@@ -220,7 +220,7 @@ public class ViewRole1Home {
       ControllerRole1Home.performUpdate();
     });
     
-    setupButtonUI(button_DiscussionForum, "Dialog", 16, 170, Pos.CENTER, 200, 55);
+    setupButtonUI(button_DiscussionForum, "Dialog", 16, 170, Pos.CENTER, 610, 20);
 	button_DiscussionForum.setOnAction((_) -> {ControllerRole1Home.discussionForum(); });
 	
 	setupButtonUI(button_TicketForum, "Dialog", 16, 170, Pos.CENTER, 400, 55);

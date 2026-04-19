@@ -138,7 +138,7 @@ public class ViewDiscussionForum {
         }
         
         // Only show if user is not a student
-        if (returnPage.equals("Student")) {
+        if (!returnPage.equals("Staff")) {
         	combo_StudentFilter.setVisible(false);
         	combo_StudentFilter.setManaged(false);
         } else {
@@ -583,7 +583,7 @@ public class ViewDiscussionForum {
 
         topLine.getChildren().addAll(authorLabel, categoryBadge, readPill);
 
-        if (isStaffUser() || isAdminUser()) {
+        if (isStaffUser()) {
             if (feedbackValidator.containsInappropriateContent(post.getTitle()) ||
                 feedbackValidator.containsInappropriateContent(post.getContent())) {
                 Label flagBadge = new Label("FLAG");
@@ -758,7 +758,7 @@ public class ViewDiscussionForum {
             actionBar.getChildren().addAll(editBtn, deleteBtn);
             
         }
-        if (isStaffUser() || isAdminUser()) {
+        if (isStaffUser()) {
             Button emailBtn = new Button("Email");
             emailBtn.setStyle(
                 "-fx-background-color: #28a745; -fx-text-fill: white;" +

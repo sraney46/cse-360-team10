@@ -123,7 +123,7 @@ public class ViewTicketForum {
         label_UserDetails.setText("User: " + theUser.getUserName());
         refreshTicketList();
 
-        theStage.setTitle("Discussion Forum");
+        theStage.setTitle("Ticket Forum");
         theStage.setScene(theTicketForumScene);
         theStage.show();
     }
@@ -159,7 +159,7 @@ public class ViewTicketForum {
         // ── GUI Area 1 ──────────────────────────────────────────────
 
         setupLabelUI(label_PageTitle, "Arial", 28, width, Pos.CENTER, 0, 5);
-        label_PageTitle.setText("Discussion Forum");
+        label_PageTitle.setText("Ticket Forum");
 
         setupLabelUI(label_UserDetails, "Arial", 16, 300, Pos.BASELINE_LEFT, 20, 5);
 

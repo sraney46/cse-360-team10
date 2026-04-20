@@ -1,6 +1,7 @@
 package dao;
 
 import CRUDAssessment.AssessmentParameter;
+import database.Database;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -8,18 +9,18 @@ import java.util.List;
 
 public class AssessmentParameterDAO {
 
-    private final Connection connection;
-
-    public AssessmentParameterDAO(Connection connection) {
-        this.connection = connection;
-    }
+//    private final Connection connection;
+//
+//    public AssessmentParameterDAO(Connection connection) {
+//        this.connection = connection;
+//    }
 
     public boolean createParameter(AssessmentParameter parameter) throws SQLException {
         String sql = "INSERT INTO assessment_parameters " +
                 "(parameter_name, description, category, threshold_value, point_value, is_required, is_active, created_by) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement stmt = Database.getStaticConnection().prepareStatement(sql)) {
             stmt.setString(1, parameter.getParameterName());
             stmt.setString(2, parameter.getDescription());
             stmt.setString(3, parameter.getCategory());
@@ -47,7 +48,7 @@ public class AssessmentParameterDAO {
     public AssessmentParameter getParameterById(int id) throws SQLException {
         String sql = "SELECT * FROM assessment_parameters WHERE parameter_id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement stmt = Database.getStaticConnection().prepareStatement(sql)) {
             stmt.setInt(1, id);
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -64,7 +65,7 @@ public class AssessmentParameterDAO {
         List<AssessmentParameter> parameters = new ArrayList<>();
         String sql = "SELECT * FROM assessment_parameters";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql);
+        try (PreparedStatement stmt = Database.getStaticConnection().prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
@@ -79,7 +80,7 @@ public class AssessmentParameterDAO {
         String sql = "UPDATE assessment_parameters SET parameter_name = ?, description = ?, category = ?, " +
                 "threshold_value = ?, point_value = ?, is_required = ?, is_active = ? WHERE parameter_id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement stmt = Database.getStaticConnection().prepareStatement(sql)) {
             stmt.setString(1, parameter.getParameterName());
             stmt.setString(2, parameter.getDescription());
             stmt.setString(3, parameter.getCategory());
@@ -107,7 +108,7 @@ public class AssessmentParameterDAO {
     public boolean deactivateParameter(int id) throws SQLException {
         String sql = "UPDATE assessment_parameters SET is_active = FALSE WHERE parameter_id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement stmt = Database.getStaticConnection().prepareStatement(sql)) {
             stmt.setInt(1, id);
             return stmt.executeUpdate() > 0;
         }
@@ -145,7 +146,7 @@ public class AssessmentParameterDAO {
         List<AssessmentParameter> parameters = new ArrayList<>();
         String sql = "SELECT * FROM assessment_parameters WHERE is_active = TRUE ORDER BY parameter_id";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql);
+        try (PreparedStatement stmt = Database.getStaticConnection().prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
@@ -158,7 +159,7 @@ public class AssessmentParameterDAO {
     public boolean deleteParameter(int id) throws SQLException {
         String sql = "DELETE FROM assessment_parameters WHERE parameter_id = ?";
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement stmt = Database.getStaticConnection().prepareStatement(sql)) {
             stmt.setInt(1, id);
             return stmt.executeUpdate() > 0;
         }

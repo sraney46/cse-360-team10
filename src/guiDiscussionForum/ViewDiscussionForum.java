@@ -932,7 +932,7 @@ public class ViewDiscussionForum {
         Button updateButton = new Button("Update By Name");
         Button deactivateButton = new Button("Deactivate By Name");
 
-        AssessmentParameterDAO dao = new AssessmentParameterDAO(theDatabase.getConnection());
+        AssessmentParameterDAO dao = new AssessmentParameterDAO();
         AssessmentParameterService service = new AssessmentParameterService(dao);
 
         createButton.setOnAction(_ -> {
@@ -1511,7 +1511,7 @@ public class ViewDiscussionForum {
         instructions.setWrapText(true);
         content.getChildren().add(instructions);
 
-        AssessmentParameterDAO dao = new AssessmentParameterDAO(theDatabase.getConnection());
+        AssessmentParameterDAO dao = new AssessmentParameterDAO();
         AssessmentParameterService service = new AssessmentParameterService(dao);
 
         List<AssessmentParameter> activeParams = null;

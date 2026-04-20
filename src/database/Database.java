@@ -128,7 +128,7 @@ public class Database {
    *
    * @return the active H2 database Connection
    */
-  public static Connection getConnection() {
+  public Connection getConnection() {
       try {
 		return connection;
 	  } catch (Exception e) {
@@ -136,6 +136,19 @@ public class Database {
 		e.printStackTrace();
 	  }
 	  return connection;
+  }
+  
+  /**********
+   * <p>Method: getStaticConnection()</p>
+   *
+   * <p>Description: Returns the shared active database connection through
+   * static access so classes can execute queries without creating a
+   * Database object instance.</p>
+   *
+   * @return the active H2 database Connection
+   */
+  public static Connection getStaticConnection() {
+      return connection;
   }
 
   /*******

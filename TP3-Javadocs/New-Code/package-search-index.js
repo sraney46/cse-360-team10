@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html","k":"18"},{"m":"cse360team10","l":"CRUDAssessment"},{"m":"cse360team10","l":"dao"},{"m":"cse360team10","l":"guiDiscussionForum"},{"m":"cse360team10","l":"guiTicketForum"},{"m":"cse360team10","l":"service"}];updateSearchResults();

@@ -1,0 +1,8 @@
+module:cse360team10
+CRUDAssessment
+dao
+entityClasses
+guiDiscussionForum
+guiTicketForum
+service
+validation

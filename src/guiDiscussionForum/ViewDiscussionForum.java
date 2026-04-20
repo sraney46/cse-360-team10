@@ -598,7 +598,8 @@ public class ViewDiscussionForum {
             }
         }
         
-        if (isStaffUser() && ModelDiscussionForum.authorHasStudentRole(post.getAuthor())) {            Label gradePill;
+        if (isStaffUser()) {            
+        	Label gradePill;
             if (post.isGraded()) {
                 String gradeText = post.getLetterGrade() + " (" + post.getNumberGrade() + "%)";
                 gradePill = new Label(gradeText);
@@ -792,10 +793,9 @@ public class ViewDiscussionForum {
                     "-fx-background-color: #8e44ad; -fx-text-fill: white;" +
                     "-fx-font-size: 13px; -fx-background-radius: 5px;"
                 );
-                if(model.authorHasStudentRole(post.getAuthor())){
                 launchGraderBtn.setOnAction(_ -> showStaffGraderDialog(post));
                 actionBar.getChildren().addAll(gradeStatusLabel, launchGraderBtn);}
-            }
+//                if(model.authorHasStudentRole(post.getAuthor(){}
             
             Button testAssessmentParamsBtn = new Button("Test Assessment Params");
             testAssessmentParamsBtn.setStyle(
@@ -1624,7 +1624,7 @@ public class ViewDiscussionForum {
         if (!isStaffUser() || post == null) {
             return;
         }
-        if (!model.authorHasStudentRole(post.getAuthor())) {
+        if (!isStudentUser()) {
             alertValidation.setContentText("Only student-authored posts can have grades edited.");
             alertValidation.showAndWait();
             return;

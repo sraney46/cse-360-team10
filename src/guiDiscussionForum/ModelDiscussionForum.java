@@ -258,7 +258,7 @@ public class ModelDiscussionForum {
      * @param authorID post author ID
      * @return true if the user is a student
      */
-public static boolean authorHasStudentRole(int authorId) {
+    public boolean authorHasStudentRole(int authorId) {
 
     if (authorId <= 0) {
         return false;

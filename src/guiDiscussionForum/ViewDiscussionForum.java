@@ -598,24 +598,27 @@ public class ViewDiscussionForum {
             }
         }
         
-        if (isStaffUser()) {            
+        
+        
+        if (isStaffUser() && isStudentPost(post)) {            
         	Label gradePill;
-            if (post.isGraded()) {
-                String gradeText = post.getLetterGrade() + " (" + post.getNumberGrade() + "%)";
-                gradePill = new Label(gradeText);
-                gradePill.setStyle(
-                    "-fx-background-color: #3498db; -fx-text-fill: white;" +
-                    "-fx-font-size: 10px; -fx-padding: 2 8; -fx-background-radius: 999;"
-                );
-            } else {
-                gradePill = new Label("Not Graded");
-                gradePill.setStyle(
-                    "-fx-background-color: #e67e22; -fx-text-fill: white;" +
-                    "-fx-font-size: 10px; -fx-padding: 2 8; -fx-background-radius: 999;"
-                );
-            }
-            topLine.getChildren().add(gradePill);
-            
+
+    		 if (post.isGraded()) {
+                 String gradeText = post.getLetterGrade() + " (" + post.getNumberGrade() + "%)";
+                 gradePill = new Label(gradeText);
+                 gradePill.setStyle(
+                     "-fx-background-color: #3498db; -fx-text-fill: white;" +
+                     "-fx-font-size: 10px; -fx-padding: 2 8; -fx-background-radius: 999;"
+                 );
+             } else {
+                 gradePill = new Label("Not Graded");
+                 gradePill.setStyle(
+                     "-fx-background-color: #e67e22; -fx-text-fill: white;" +
+                     "-fx-font-size: 10px; -fx-padding: 2 8; -fx-background-radius: 999;"
+                 );
+             }
+             topLine.getChildren().add(gradePill);
+        	 
             Label hiddenPill;
             if(post.getPostHiddenStatus()) {
             	hiddenPill = new Label("Hidden");
@@ -761,7 +764,7 @@ public class ViewDiscussionForum {
             actionBar.getChildren().addAll(editBtn, deleteBtn);
             
         }
-        if (isStaffUser()) {
+        if (isStaffUser() && isStudentPost(post)) {
             Button emailBtn = new Button("Email");
             emailBtn.setStyle(
                 "-fx-background-color: #28a745; -fx-text-fill: white;" +
@@ -771,8 +774,10 @@ public class ViewDiscussionForum {
             actionBar.getChildren().add(emailBtn);
          }
         
-        if (isStaffUser()) {
+        if (isStaffUser() && isStudentPost(post)) {
+        	
             Label gradeStatusLabel;
+            
             if (post.isGraded()) {
                 gradeStatusLabel = new Label("Graded: " + post.getLetterGrade() + " (" + post.getNumberGrade() + "%)");
                 gradeStatusLabel.setStyle("-fx-text-fill: #9ad0ff; -fx-font-size: 13px;");
@@ -793,8 +798,8 @@ public class ViewDiscussionForum {
                     "-fx-font-size: 13px; -fx-background-radius: 5px;"
                 );
                 launchGraderBtn.setOnAction(_ -> showStaffGraderDialog(post));
-                actionBar.getChildren().addAll(gradeStatusLabel, launchGraderBtn);}
-//                if(model.authorHasStudentRole(post.getAuthor(){}
+                actionBar.getChildren().addAll(gradeStatusLabel, launchGraderBtn);
+            }
             
             Button testAssessmentParamsBtn = new Button("Test Assessment Params");
             testAssessmentParamsBtn.setStyle(
@@ -2000,6 +2005,21 @@ public class ViewDiscussionForum {
 		tf.setAlignment(p);
 		tf.setLayoutX(x);
 		tf.setLayoutY(y);		
+	}
+	
+	private static boolean isStudentPost(Post post) {
+		int id = post.getAuthor();	 
+		String roleString = "";
+		
+		if (theDatabase.getAdminRole(id)) roleString += "Admin ";
+		if (theDatabase.getRole1(id)) roleString += "Staff ";
+		if (theDatabase.getRole2(id)) roleString += "Student ";
+		
+		if (roleString.contains("Student")) {
+			return true;
+		} else {
+			return false;
+		}
 	}
      private static boolean isStaffUser() {
         return "Staff".equals(returnPage);

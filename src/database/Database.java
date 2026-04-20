@@ -535,110 +535,110 @@ public class Database {
 	        String replySQL = "INSERT INTO replyDB (postID, author, content, timestamp) VALUES (?, ?, ?, ?)";
 	        try (PreparedStatement pstmt = connection.prepareStatement(replySQL)) {
 
-	            Object[][] replies = {
-	                // Post 0 — 5 replies
-	                {postIDs.get(0), generateRandomReplyUser(1), "A stack is LIFO and a queue is FIFO. Great question!",                              System.currentTimeMillis() - 199000},
-	                {postIDs.get(0), generateRandomReplyUser(1),       "I had the same question, this clears it up!",                                       System.currentTimeMillis() - 198000},
-	                {postIDs.get(0), generateRandomReplyUser(1),       "Think of a stack like a pile of plates and a queue like a line at a store.",        System.currentTimeMillis() - 197000},
-	                {postIDs.get(0), generateRandomReplyUser(1),      "Great analogy user5! Both are covered in the Week 3 lecture slides.",               System.currentTimeMillis() - 196000},
-	                {postIDs.get(0), generateRandomReplyUser(1),       "Thanks everyone, this makes a lot more sense now.",                                 System.currentTimeMillis() - 195000},
+        	Object[][] replies = {
+        		    // Post 0 — 5 replies
+        		    {postIDs.get(0), generateRandomReplyUser(1), "A stack is LIFO and a queue is FIFO. Great question!", System.currentTimeMillis() - 199000, false},
+        		    {postIDs.get(0), generateRandomReplyUser(1), "I had the same question, this clears it up!", System.currentTimeMillis() - 198000, false},
+        		    {postIDs.get(0), generateRandomReplyUser(1), "Think of a stack like a pile of plates and a queue like a line at a store.", System.currentTimeMillis() - 197000, false},
+        		    {postIDs.get(0), generateRandomReplyUser(1), "Great analogy user5! Both are covered in the Week 3 lecture slides.", System.currentTimeMillis() - 196000, false},
+        		    {postIDs.get(0), generateRandomReplyUser(1), "Thanks everyone, this makes a lot more sense now.", System.currentTimeMillis() - 195000, false},
 
-	                // Post 1 — 4 replies
-	                {postIDs.get(1), generateRandomReplyUser(2), "Interfaces define a contract. A class that implements it must provide all methods.", System.currentTimeMillis() - 189000},
-	                {postIDs.get(1), generateRandomReplyUser(2),       "So interfaces are like a blueprint but without any implementation?",                System.currentTimeMillis() - 188000},
-	                {postIDs.get(1), generateRandomReplyUser(2), "Exactly right user6! Default methods in Java 8+ are the one exception.",            System.currentTimeMillis() - 187000},
-	                {postIDs.get(1), generateRandomReplyUser(2),       "That makes sense, thanks for clarifying!",                                          System.currentTimeMillis() - 186000},
+        		    // Post 1 — 4 replies
+        		    {postIDs.get(1), generateRandomReplyUser(2), "Interfaces define a contract. A class that implements it must provide all methods.", System.currentTimeMillis() - 189000, false},
+        		    {postIDs.get(1), generateRandomReplyUser(2), "So interfaces are like a blueprint but without any implementation?", System.currentTimeMillis() - 188000, false},
+        		    {postIDs.get(1), generateRandomReplyUser(2), "Exactly right user6! Default methods in Java 8+ are the one exception.", System.currentTimeMillis() - 187000, false},
+        		    {postIDs.get(1), generateRandomReplyUser(2), "That makes sense, thanks for clarifying!", System.currentTimeMillis() - 186000, false},
 
-	                // Post 2 — 6 replies
-	                {postIDs.get(2), generateRandomReplyUser(3),      "Please refer to the Canvas assignment page for the full requirements breakdown.",    System.currentTimeMillis() - 179000},
-	                {postIDs.get(2), generateRandomReplyUser(3),       "The PDF on Canvas has a much clearer breakdown than the website.",                  System.currentTimeMillis() - 178000},
-	                {postIDs.get(2), generateRandomReplyUser(3),       "I was confused too, focus on the CRUD and input validation sections.",              System.currentTimeMillis() - 177000},
-	                {postIDs.get(2), generateRandomReplyUser(3), "Good advice. Remember you only need CRUD and validation for this assignment.",       System.currentTimeMillis() - 176000},
-	                {postIDs.get(2), generateRandomReplyUser(3),       "Does the user story document need to be a PDF or can it be a Word doc?",            System.currentTimeMillis() - 175000},
-	                {postIDs.get(2), generateRandomReplyUser(3),      "It must be submitted as a PDF as stated in the deliverables section.",              System.currentTimeMillis() - 174000},
+        		    // Post 2 — 6 replies
+        		    {postIDs.get(2), generateRandomReplyUser(3), "Please refer to the Canvas assignment page for the full requirements breakdown.", System.currentTimeMillis() - 179000, false},
+        		    {postIDs.get(2), generateRandomReplyUser(3), "The PDF on Canvas has a much clearer breakdown than the website.", System.currentTimeMillis() - 178000, false},
+        		    {postIDs.get(2), generateRandomReplyUser(3), "I was confused too, focus on the CRUD and input validation sections.", System.currentTimeMillis() - 177000, false},
+        		    {postIDs.get(2), generateRandomReplyUser(3), "Good advice. Remember you only need CRUD and validation for this assignment.", System.currentTimeMillis() - 176000, false},
+        		    {postIDs.get(2), generateRandomReplyUser(3), "Does the user story document need to be a PDF or can it be a Word doc?", System.currentTimeMillis() - 175000, false},
+        		    {postIDs.get(2), generateRandomReplyUser(3), "It must be submitted as a PDF as stated in the deliverables section.", System.currentTimeMillis() - 174000, false},
 
-	                // Post 3 — 3 replies
-	                {postIDs.get(3), generateRandomReplyUser(4), "Midterm covers weeks 1 through 6. Focus on OOP principles and UML diagrams.",       System.currentTimeMillis() - 169000},
-	                {postIDs.get(3), generateRandomReplyUser(4),       "Will there be questions on sequence diagrams specifically?",                        System.currentTimeMillis() - 168000},
-	                {postIDs.get(3), generateRandomReplyUser(4), "Yes, expect at least one sequence diagram question on the exam.",                   System.currentTimeMillis() - 167000},
+        		    // Post 3 — 3 replies
+        		    {postIDs.get(3), generateRandomReplyUser(4), "Midterm covers weeks 1 through 6. Focus on OOP principles and UML diagrams.", System.currentTimeMillis() - 169000, false},
+        		    {postIDs.get(3), generateRandomReplyUser(4), "Will there be questions on sequence diagrams specifically?", System.currentTimeMillis() - 168000, false},
+        		    {postIDs.get(3), generateRandomReplyUser(4), "Yes, expect at least one sequence diagram question on the exam.", System.currentTimeMillis() - 167000, false},
 
-	                // Post 4 — 4 replies
-	                {postIDs.get(4), generateRandomReplyUser(5),       "Make sure the JDBC driver JAR is added to your build path in Eclipse.",             System.currentTimeMillis() - 159000},
-	                {postIDs.get(4), generateRandomReplyUser(5),       "Right-click the project, Build Path, Add External JARs, then select h2.jar.",       System.currentTimeMillis() - 158000},
-	                {postIDs.get(4), generateRandomReplyUser(5), "Good answers. Also ensure your DB URL matches the path in FoundationsMain.",        System.currentTimeMillis() - 157000},
-	                {postIDs.get(4), generateRandomReplyUser(5),       "Got it working, the build path was the issue. Thanks everyone!",                    System.currentTimeMillis() - 156000},
+        		    // Post 4 — 4 replies
+        		    {postIDs.get(4), generateRandomReplyUser(5), "Make sure the JDBC driver JAR is added to your build path in Eclipse.", System.currentTimeMillis() - 159000, false},
+        		    {postIDs.get(4), generateRandomReplyUser(5), "Right-click the project, Build Path, Add External JARs, then select h2.jar.", System.currentTimeMillis() - 158000, false},
+        		    {postIDs.get(4), generateRandomReplyUser(5), "Good answers. Also ensure your DB URL matches the path in FoundationsMain.", System.currentTimeMillis() - 157000, false},
+        		    {postIDs.get(4), generateRandomReplyUser(5), "Got it working, the build path was the issue. Thanks everyone!", System.currentTimeMillis() - 156000, false},
 
-	                // Post 5 — 2 replies
-	                {postIDs.get(5), generateRandomReplyUser(6),       "Check that you are not calling a method on a null object before it is initialized.", System.currentTimeMillis() - 149000},
-	                {postIDs.get(5), generateRandomReplyUser(6), "Add a null check before calling theDatabase.getConnection() in your PostList.",     System.currentTimeMillis() - 148000},
+        		    // Post 5 — 2 replies
+        		    {postIDs.get(5), generateRandomReplyUser(6), "Check that you are not calling a method on a null object before it is initialized.", System.currentTimeMillis() - 149000, false},
+        		    {postIDs.get(5), generateRandomReplyUser(6), "Add a null check before calling theDatabase.getConnection() in your PostList.", System.currentTimeMillis() - 148000, false},
 
-	                // Post 6 — 2 replies
-	                {postIDs.get(6), generateRandomReplyUser(7),      "Phase 2 is due two weeks from Friday. Check the course schedule on Canvas.",        System.currentTimeMillis() - 139000},
-	                {postIDs.get(6), generateRandomReplyUser(7),       "Thanks, I had the wrong date written down!",                                        System.currentTimeMillis() - 138000},
+        		    // Post 6 — 2 replies
+        		    {postIDs.get(6), generateRandomReplyUser(7), "Phase 2 is due two weeks from Friday. Check the course schedule on Canvas.", System.currentTimeMillis() - 139000, false},
+        		    {postIDs.get(6), generateRandomReplyUser(7), "Thanks, I had the wrong date written down!", System.currentTimeMillis() - 138000, false},
 
-	                // Post 7 — 3 replies
-	                {postIDs.get(7), generateRandomReplyUser(8),       "I use Zoom for screencasts, just share your screen and record with audio.",         System.currentTimeMillis() - 129000},
-	                {postIDs.get(7), generateRandomReplyUser(8),       "QuickTime Player on Mac also works great and requires no setup.",                   System.currentTimeMillis() - 128000},
-	                {postIDs.get(7), generateRandomReplyUser(8), "Either tool is fine. Make sure your audio is clear and text is readable.",          System.currentTimeMillis() - 127000},
+        		    // Post 7 — 3 replies
+        		    {postIDs.get(7), generateRandomReplyUser(8), "I use Zoom for screencasts, just share your screen and record with audio.", System.currentTimeMillis() - 129000, false},
+        		    {postIDs.get(7), generateRandomReplyUser(8), "QuickTime Player on Mac also works great and requires no setup.", System.currentTimeMillis() - 128000, false},
+        		    {postIDs.get(7), generateRandomReplyUser(8), "Either tool is fine. Make sure your audio is clear and text is readable.", System.currentTimeMillis() - 127000, false},
 
-	                // Post 8 — 10 replies
-	                {postIDs.get(8), generateRandomReplyUser(9), "Neither is always better. Prefer composition for flexibility and loose coupling.",   System.currentTimeMillis() - 119000},
-	                {postIDs.get(8), generateRandomReplyUser(9),       "I read that composition is preferred in most modern OOP design patterns.",          System.currentTimeMillis() - 118000},
-	                {postIDs.get(8), generateRandomReplyUser(9),       "Inheritance makes sense when there is a true is-a relationship between classes.",   System.currentTimeMillis() - 117000},
-	                {postIDs.get(8), generateRandomReplyUser(9),       "Composition gives you more flexibility at runtime which is usually what you want.", System.currentTimeMillis() - 116000},
-	                {postIDs.get(8), generateRandomReplyUser(9),       "Does this mean we should avoid inheritance entirely in our team project?",          System.currentTimeMillis() - 115000},
-	                {postIDs.get(8), generateRandomReplyUser(9), "Not at all. Use inheritance where there is a natural hierarchy like User roles.",   System.currentTimeMillis() - 114000},
-	                {postIDs.get(8), generateRandomReplyUser(9),       "So BankAccount extending Account would be a good use of inheritance?",              System.currentTimeMillis() - 113000},
-	                {postIDs.get(8), generateRandomReplyUser(9), "Yes, that is a classic textbook example of appropriate inheritance use.",           System.currentTimeMillis() - 112000},
-	                {postIDs.get(8), generateRandomReplyUser(9),       "This thread is really helpful, should be pinned at the top!",                      System.currentTimeMillis() - 111000},
-	                {postIDs.get(8), generateRandomReplyUser(9),      "Agreed, great discussion everyone. This is exactly what Ed Discussion is for.",    System.currentTimeMillis() - 110000},
+        		    // Post 8 — 10 replies
+        		    {postIDs.get(8), generateRandomReplyUser(9), "Neither is always better. Prefer composition for flexibility and loose coupling.", System.currentTimeMillis() - 119000, false},
+        		    {postIDs.get(8), generateRandomReplyUser(9), "I read that composition is preferred in most modern OOP design patterns.", System.currentTimeMillis() - 118000, false},
+        		    {postIDs.get(8), generateRandomReplyUser(9), "Inheritance makes sense when there is a true is-a relationship between classes.", System.currentTimeMillis() - 117000, false},
+        		    {postIDs.get(8), generateRandomReplyUser(9), "Composition gives you more flexibility at runtime which is usually what you want.", System.currentTimeMillis() - 116000, false},
+        		    {postIDs.get(8), generateRandomReplyUser(9), "Does this mean we should avoid inheritance entirely in our team project?", System.currentTimeMillis() - 115000, false},
+        		    {postIDs.get(8), generateRandomReplyUser(9), "Not at all. Use inheritance where there is a natural hierarchy like User roles.", System.currentTimeMillis() - 114000, false},
+        		    {postIDs.get(8), generateRandomReplyUser(9), "So BankAccount extending Account would be a good use of inheritance?", System.currentTimeMillis() - 113000, false},
+        		    {postIDs.get(8), generateRandomReplyUser(9), "Yes, that is a classic textbook example of appropriate inheritance use.", System.currentTimeMillis() - 112000, false},
+        		    {postIDs.get(8), generateRandomReplyUser(9), "This thread is really helpful, should be pinned at the top!", System.currentTimeMillis() - 111000, false},
+        		    {postIDs.get(8), generateRandomReplyUser(9), "Agreed, great discussion everyone. This is exactly what Ed Discussion is for.", System.currentTimeMillis() - 110000, false},
 
-	                // Post 9 — 2 replies
-	                {postIDs.get(9), generateRandomReplyUser(20),      "All submissions go through Canvas only. Do not email the instructor or TAs.",       System.currentTimeMillis() - 109000},
-	                {postIDs.get(9), generateRandomReplyUser(20),       "Thanks, I was not sure since the ZIP file gets pretty large.",                      System.currentTimeMillis() - 108000},
+        		    // Post 9 — 2 replies
+        		    {postIDs.get(9), generateRandomReplyUser(20), "All submissions go through Canvas only. Do not email the instructor or TAs.", System.currentTimeMillis() - 109000, false},
+        		    {postIDs.get(9), generateRandomReplyUser(20), "Thanks, I was not sure since the ZIP file gets pretty large.", System.currentTimeMillis() - 108000, false},
 
-	                // Post 10 — 3 replies
-	                {postIDs.get(10), generateRandomReplyUser(21), "Abstract classes can have implementation while interfaces traditionally cannot.",    System.currentTimeMillis() - 99000},
-	                {postIDs.get(10), generateRandomReplyUser(21),  "So use abstract class when sharing code and interface when defining a contract?",   System.currentTimeMillis() - 98000},
-	                {postIDs.get(10), generateRandomReplyUser(21), "Exactly right. That is the key distinction to remember for the exam.",              System.currentTimeMillis() - 97000},
+        		    // Post 10 — 3 replies
+        		    {postIDs.get(10), generateRandomReplyUser(21), "Abstract classes can have implementation while interfaces traditionally cannot.", System.currentTimeMillis() - 99000, false},
+        		    {postIDs.get(10), generateRandomReplyUser(21), "So use abstract class when sharing code and interface when defining a contract?", System.currentTimeMillis() - 98000, false},
+        		    {postIDs.get(10), generateRandomReplyUser(21), "Exactly right. That is the key distinction to remember for the exam.", System.currentTimeMillis() - 97000, false},
 
-	                // Post 11 — 2 replies
-	                {postIDs.get(11), generateRandomReplyUser(22),       "Always pull before you start working and communicate with your team on who edits what.", System.currentTimeMillis() - 89000},
-	                {postIDs.get(11), generateRandomReplyUser(22), "Feature branches are a good strategy to avoid conflicts on shared files.",          System.currentTimeMillis() - 88000},
+        		    // Post 11 — 2 replies
+        		    {postIDs.get(11), generateRandomReplyUser(22), "Always pull before you start working and communicate with your team on who edits what.", System.currentTimeMillis() - 89000, false},
+        		    {postIDs.get(11), generateRandomReplyUser(22), "Feature branches are a good strategy to avoid conflicts on shared files.", System.currentTimeMillis() - 88000, false},
 
-	                // Post 12 — 2 replies
-	                {postIDs.get(12), generateRandomReplyUser(23),      "The assignment requires at least one sequence diagram covering a main use case.",   System.currentTimeMillis() - 79000},
-	                {postIDs.get(12), generateRandomReplyUser(23),       "Good to know, I was planning to do one for the login flow.",                        System.currentTimeMillis() - 78000},
+        		    // Post 12 — 2 replies
+        		    {postIDs.get(12), generateRandomReplyUser(23), "The assignment requires at least one sequence diagram covering a main use case.", System.currentTimeMillis() - 79000, false},
+        		    {postIDs.get(12), generateRandomReplyUser(23), "Good to know, I was planning to do one for the login flow.", System.currentTimeMillis() - 78000, false},
 
-	                // Post 13 — 2 replies
-	                {postIDs.get(13), generateRandomReplyUser(24), "You can write a main method with hardcoded test data and print results to console.", System.currentTimeMillis() - 69000},
-	                {postIDs.get(13), generateRandomReplyUser(24),       "That is basically what TP1 does for the user tests, good reference point.",         System.currentTimeMillis() - 68000},
+        		    // Post 13 — 2 replies
+        		    {postIDs.get(13), generateRandomReplyUser(24), "You can write a main method with hardcoded test data and print results to console.", System.currentTimeMillis() - 69000, false},
+        		    {postIDs.get(13), generateRandomReplyUser(24), "That is basically what TP1 does for the user tests, good reference point.", System.currentTimeMillis() - 68000, false},
 
-	                // Post 14 — 2 replies
-	                {postIDs.get(14), generateRandomReplyUser(25), "Yes, all code and documentation must follow the FoundationsF25 style guide.",       System.currentTimeMillis() - 59000},
-	                {postIDs.get(14), generateRandomReplyUser(25),       "Does that include the Javadoc comment format above every method?",                  System.currentTimeMillis() - 58000},
+        		    // Post 14 — 2 replies
+        		    {postIDs.get(14), generateRandomReplyUser(25), "Yes, all code and documentation must follow the FoundationsF25 style guide.", System.currentTimeMillis() - 59000, false},
+        		    {postIDs.get(14), generateRandomReplyUser(25), "Does that include the Javadoc comment format above every method?", System.currentTimeMillis() - 58000, false},
 
-	                // Post 15 — 3 replies
-	                {postIDs.get(15), generateRandomReplyUser(26),       "Make sure the H2 JAR is on the build path and the driver string is correct.",       System.currentTimeMillis() - 49000},
-	                {postIDs.get(15), generateRandomReplyUser(26),       "The driver class name is org.h2.Driver, double check yours matches exactly.",       System.currentTimeMillis() - 48000},
-	                {postIDs.get(15), generateRandomReplyUser(26), "Also verify the DB_URL in your Database class matches the one in FoundationsMain.", System.currentTimeMillis() - 47000},
+        		    // Post 15 — 3 replies
+        		    {postIDs.get(15), generateRandomReplyUser(26), "Make sure the H2 JAR is on the build path and the driver string is correct.", System.currentTimeMillis() - 49000, false},
+        		    {postIDs.get(15), generateRandomReplyUser(26), "The driver class name is org.h2.Driver, double check yours matches exactly.", System.currentTimeMillis() - 48000, false},
+        		    {postIDs.get(15), generateRandomReplyUser(26), "Also verify the DB_URL in your Database class matches the one in FoundationsMain.", System.currentTimeMillis() - 47000, false},
 
-	                // Post 16 — 2 replies
-	                {postIDs.get(16), generateRandomReplyUser(27), "Epics are high level goals and user stories are the specific tasks within them.",   System.currentTimeMillis() - 39000},
-	                {postIDs.get(16), generateRandomReplyUser(27),       "So an epic might be manage users and a story is add a new user to the system?",    System.currentTimeMillis() - 38000},
+        		    // Post 16 — 2 replies
+        		    {postIDs.get(16), generateRandomReplyUser(27), "Epics are high level goals and user stories are the specific tasks within them.", System.currentTimeMillis() - 39000, false},
+        		    {postIDs.get(16), generateRandomReplyUser(27), "So an epic might be manage users and a story is add a new user to the system?", System.currentTimeMillis() - 38000, false},
 
-	                // Post 17 — 2 replies
-	                {postIDs.get(17), generateRandomReplyUser(28), "Composition is preferred here. PostList should contain a list, not extend one.",   System.currentTimeMillis() - 29000},
-	                {postIDs.get(17), generateRandomReplyUser(28),       "That makes sense, extending ArrayList would expose too many unrelated methods.",    System.currentTimeMillis() - 28000},
+        		    // Post 17 — 2 replies
+        		    {postIDs.get(17), generateRandomReplyUser(28), "Composition is preferred here. PostList should contain a list, not extend one.", System.currentTimeMillis() - 29000, false},
+        		    {postIDs.get(17), generateRandomReplyUser(28), "That makes sense, extending ArrayList would expose too many unrelated methods.", System.currentTimeMillis() - 28000, false},
 
-	                // Post 18 — 2 replies
-	                {postIDs.get(18), generateRandomReplyUser(29),      "HW2 requires 7 screencasts total. See the deliverables section for details.",      System.currentTimeMillis() - 19000},
-	                {postIDs.get(18), generateRandomReplyUser(29),       "Seven is a lot but at least most of them only need to be 2 to 5 minutes long.",    System.currentTimeMillis() - 18000},
+        		    // Post 18 — 2 replies
+        		    {postIDs.get(18), generateRandomReplyUser(29), "HW2 requires 7 screencasts total. See the deliverables section for details.", System.currentTimeMillis() - 19000, false},
+        		    {postIDs.get(18), generateRandomReplyUser(29), "Seven is a lot but at least most of them only need to be 2 to 5 minutes long.", System.currentTimeMillis() - 18000, false},
 
-	                // Post 19 — 2 replies
-	                {postIDs.get(19), generateRandomReplyUser(30), "TableView works but a custom VBox gives you more control over the row styling.",   System.currentTimeMillis() - 9000},
-	                {postIDs.get(19), generateRandomReplyUser(30),       "I tried TableView first but switched to VBox after seeing the TP1 examples.",      System.currentTimeMillis() - 8000},
-	            };
+        		    // Post 19 — 2 replies
+        		    {postIDs.get(19), generateRandomReplyUser(30), "TableView works but a custom VBox gives you more control over the row styling.", System.currentTimeMillis() - 9000, false},
+        		    {postIDs.get(19), generateRandomReplyUser(30), "I tried TableView first but switched to VBox after seeing the TP1 examples.", System.currentTimeMillis() - 8000, false}
+        		};
      
 	            for (Object[] reply : replies) {
 	                pstmt.setInt(1,    (Integer) reply[0]);

@@ -27,7 +27,7 @@ public class AssessmentParameterDAOTest {
         database = new Database();
         database.connectToDatabase();
         connection = database.getConnection();
-//        dao = new AssessmentParameterDAO(connection);
+        dao = new AssessmentParameterDAO();
 
         clearAssessmentParametersTable();
     }

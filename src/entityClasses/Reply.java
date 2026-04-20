@@ -31,6 +31,9 @@ public class Reply {
     
     /** Maximum allowed character length for reply body content */
     private static final int MAX_LENGTH = 300;
+    
+    /** The status of the reply. true (hidden) or false (unhidden).*/
+    private boolean isReplyHidden;
 
     /**********************************************************************************************
      * Constructors
@@ -60,6 +63,7 @@ public class Reply {
         this.author = author;
         this.content = content;
         this.timestamp = System.currentTimeMillis();
+        this.isReplyHidden = false;
     }
 
     /**********************************************************************************************
@@ -95,6 +99,13 @@ public class Reply {
      * @return the Unix timestamp of when the reply was created
      */
     public long getTimestamp() { return timestamp; }
+    
+    /**
+     * <p>Method: getReplyHiddenStatus()</p>
+     * @return the hidden status of the post
+     */
+    public boolean getReplyHiddenStatus() { return isReplyHidden; }
+
 
     /**********************************************************************************************
      * Setters
@@ -130,6 +141,13 @@ public class Reply {
      */
     public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
 
+    /**
+     * <p>Method: setReplyHiddenStatus(boolean isReplyHidden)</p>
+     * @param isReplyHidden the hidden status of the reply
+     */
+    public void setReplyHiddenStatus(boolean isReplyHidden) { this.isReplyHidden = isReplyHidden; }
+    
+    
     /**********************************************************************************************
      * Validation
      **********************************************************************************************/

@@ -742,8 +742,7 @@ public class ViewDiscussionForum {
         replyBtn.setOnAction(_ -> showReplyDialog(post));
         actionBar.getChildren().add(replyBtn);
 
-        if (post.getAuthor() == theUser.getUserId()
-        		|| theUser.getRoles().contains("Admin")
+        if (post.getAuthor() == theUser.getUserId()        		
         		|| theUser.getRoles().contains("Staff")) {
             Button editBtn = new Button("Edit");
             editBtn.setStyle(
@@ -876,7 +875,13 @@ public class ViewDiscussionForum {
                 repliesContainer.getChildren().add(noReplies);
             } else {
                 for (Reply reply : replies) {
-                    repliesContainer.getChildren().add(createReplyCard(reply));
+                	if (isStudentUser()) {
+                		if(!model.isReplyHidden(reply.getPostID(), reply.getReplyID())) {
+                			repliesContainer.getChildren().add(createReplyCard(reply));
+                		}
+                	} else {
+                		repliesContainer.getChildren().add(createReplyCard(reply));
+                	}
                 }
             }
         };
@@ -1114,8 +1119,65 @@ public class ViewDiscussionForum {
             "-fx-background-color: " + badgeColor + "; -fx-text-fill: white;" +
             "-fx-font-size: 10px; -fx-padding: 2 8; -fx-background-radius: 999;"
         );
+        
+        HBox actionBar = new HBox(10);
+        actionBar.setPadding(new Insets(12, 0, 12, 0));
+        actionBar.setAlignment(Pos.CENTER_RIGHT);
+        
+        Region spacer = new Region();
+        HBox.setHgrow(spacer,  Priority.ALWAYS);
+        
 
-        topLine.getChildren().addAll(authorLabel, roleBadge);
+        Button editReplyBtn = new Button("Edit");
+        editReplyBtn.setStyle(
+            "-fx-background-color: #2d2d2d; -fx-text-fill: white;" +
+            "-fx-font-size: 13px; -fx-background-radius: 5px;"
+        );
+        editReplyBtn.setOnAction(_ -> showEditReplyDialog(reply));
+        
+        Button deleteReplyBtn = new Button("Delete");
+        deleteReplyBtn.setStyle(
+            "-fx-background-color: #dc3545; -fx-text-fill: white;" +
+            "-fx-font-size: 13px; -fx-background-radius: 5px;"
+        );
+        deleteReplyBtn.setOnAction(_ -> handleDeleteReply(reply)); 
+        
+        
+        if(isStaffUser()) {
+            if(!model.isReplyHidden(reply.getPostID(), reply.getReplyID())) {
+	            Button hideReplyBtn = new Button("Hide");
+	            hideReplyBtn.setStyle(
+	                    "-fx-background-color: #007bff; -fx-text-fill: white;" +
+	                    "-fx-font-size: 13px; -fx-background-radius: 5px;"
+	                );
+	            hideReplyBtn.setOnAction(_ -> handleHideReply(reply));
+	            actionBar.getChildren().add(hideReplyBtn);
+            } else {
+	            Button unhideReplyBtn = new Button("Unhide");
+	            unhideReplyBtn.setStyle(
+	                    "-fx-background-color: #007bff; -fx-text-fill: white;" +
+	                    "-fx-font-size: 13px; -fx-background-radius: 5px;"
+	                );
+	            unhideReplyBtn.setOnAction(_ -> handleUnideReply(reply));
+	            actionBar.getChildren().add(unhideReplyBtn);
+            }                     
+        }
+        
+        Label hiddenBadge = new Label("Hidden");
+        
+        hiddenBadge.setStyle(
+            "-fx-background-color: #007bff; -fx-text-fill: white;" +
+            "-fx-font-size: 10px; -fx-padding: 2 8; -fx-background-radius: 999;"
+        );
+        
+        if (isStaffUser() && model.isReplyHidden(reply.getPostID(), reply.getReplyID())) {
+            topLine.getChildren().addAll(authorLabel, roleBadge, hiddenBadge, spacer, editReplyBtn, deleteReplyBtn, actionBar);
+        } else if (isStaffUser() || reply.getAuthor() == theUser.getUserId()){
+            topLine.getChildren().addAll(authorLabel, roleBadge, spacer, editReplyBtn, deleteReplyBtn, actionBar);
+
+        } else {
+            topLine.getChildren().addAll(authorLabel, roleBadge, spacer, actionBar);
+        }
 
         Label contentLabel = new Label(reply.getContent());
         contentLabel.setWrapText(true);
@@ -1298,6 +1360,51 @@ public class ViewDiscussionForum {
             }
         }
     }
+   
+   /**********
+    * <p>Method: showEditReplyDialog(Reply reply)</p>
+    *
+    * <p>Description: Opens a dialog pre-filled with the selected reply's current
+    * content. On submit, validates the updated values using
+    * Post.checkValidation() and updates the post in the database via the model if valid.
+    * Refreshes the post list and reloads the post detail panel on success.</p>
+    *
+    * @param post the Post to be edited
+    */
+   private static void showEditReplyDialog(Reply reply) {
+       Dialog<ButtonType> dialog = new Dialog<>();
+       dialog.setTitle("Edit Reply");
+       dialog.setHeaderText("Edit your reply");
+
+       ButtonType saveType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+       dialog.getDialogPane().getButtonTypes().addAll(saveType, ButtonType.CANCEL);
+       
+       ComboBox<String> categoryCombo = new ComboBox<>();
+
+       TextArea contentArea = new TextArea(reply.getContent());
+       contentArea.setWrapText(true);
+       contentArea.setPrefHeight(150);
+
+
+       VBox content = new VBox(10,
+           new Label("Content:"),  contentArea
+       );
+       content.setPadding(new Insets(10));
+       dialog.getDialogPane().setContent(content);
+
+       Optional<ButtonType> result = dialog.showAndWait();
+       if (result.isPresent() && result.get() == saveType) {
+           reply.setContent(contentArea.getText());
+           String error = reply.checkValidation();
+           if (!error.isEmpty()) {
+               alertValidation.setContentText(error);
+               alertValidation.showAndWait();
+           } else {
+           	model.updateReply(reply);
+               refreshPostList();
+           }
+       }
+   }
     
    /* private static void showStaffGraderDialog(Post post) {
         if (!isStaffUser() || post == null) {
@@ -1481,6 +1588,65 @@ public class ViewDiscussionForum {
             }
         });
     }
+    
+    /**********
+     * <p>Method: handleHideReply(Reply reply)</p>
+     *
+     * <p>Description: Shows a confirmation dialog before hiding the selected reply.
+     * If confirmed, calls hideReply(), which sets isReplyHidden for the post to TRUE.
+     * Clears the right panel and refreshes the post list on confirmation.</p>
+     *
+     * @param reply the reply to be hidden
+     */ 
+    private static void handleHideReply(Reply reply) {
+        Optional<ButtonType> result = alertHideConfirm.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+        	model.hideReply(reply);
+            theSelectedPost = null;
+            vbox_PostDetail.getChildren().clear();
+            refreshPostList();
+        }
+    }
+    
+    /**********
+     * <p>Method: handleUnideReply(Reply reply)</p>
+     *
+     * <p>Description: Shows a confirmation dialog before unhiding the selected reply.
+     * If confirmed, calls unhideReply(), which sets isReplyHidden for the post to FALSE.
+     * Clears the right panel and refreshes the post list on confirmation.</p>
+     *
+     * @param post the reply to be unhidden
+     */   
+    private static void handleUnideReply(Reply reply) {
+        Optional<ButtonType> result = alertHideConfirm.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+        	model.unhideReply(reply);
+            theSelectedPost = null;
+            vbox_PostDetail.getChildren().clear();
+            refreshPostList();
+        }
+    }
+    
+    /**********
+     * <p>Method: handleDeleteReply(Reply reply)</p>
+     *
+     * <p>Description: Shows a confirmation dialog before soft deleting the selected reply.
+     * If confirmed, calls handleDeleteReply() which overwrites the reply content with a
+     * deleted placeholder instead of removing the row, allowing replies to remain visible.
+     * Clears the right panel and refreshes the post list on confirmation.</p>
+     *
+     * @param post the Post to be soft deleted
+     */
+    private static void handleDeleteReply(Reply reply) {
+        Optional<ButtonType> result = alertDeleteConfirm.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+        	model.hardDeleteReply(reply.getReplyID());
+            theSelectedPost = null;
+            vbox_PostDetail.getChildren().clear();
+            refreshPostList();
+        }
+    }
+    
   /**********
      * <p>Method: showStaffGraderDialog(Post post)</p>
      *

@@ -48,7 +48,7 @@ public class Post {
 
     private static final String SPECIAL_CHARS = "@#$%^&*[]{}|;<>/";
     
-    /** The status of the post. NULL (okay) or hidden.*/
+    /** The status of the post. true (hidden) or false (unhidden).*/
     private boolean isPostHidden;
 
 

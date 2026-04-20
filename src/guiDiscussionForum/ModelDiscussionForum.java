@@ -474,12 +474,12 @@ public class ModelDiscussionForum {
         }
 
         // Let database handle ID auto increment
-        String query = "INSERT INTO replyDB (postID, author, content, timestamp) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO replyDB (postID, author, content, timestamp) VALUES (?, ?, ?, ?)";
         try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setInt(1, id);
             pstmt.setInt(2, reply.getAuthor());
-            pstmt.setString(4, reply.getContent());
-            pstmt.setLong(5, reply.getTimestamp());
+            pstmt.setString(3, reply.getContent());
+            pstmt.setLong(4, reply.getTimestamp());
             pstmt.executeUpdate();
             
             // Stamp the generated ID back onto the reply object
@@ -620,14 +620,13 @@ public class ModelDiscussionForum {
         return false;
     }
 
-    String query = "UPDATE replyDB SET content = ?, author = ?, " +
+    String query = "UPDATE replyDB SET content = ?" +
                    "WHERE postID = ? AND replyID = ?";
 
     try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
         pstmt.setString(1, reply.getContent());
-        pstmt.setInt(2, reply.getAuthor());
-        pstmt.setInt(4, reply.getPostID());
-        pstmt.setInt(5, reply.getReplyID());
+        pstmt.setInt(2, reply.getPostID());
+        pstmt.setInt(3, reply.getReplyID());
 
         int rowsAffected = pstmt.executeUpdate();
         
@@ -644,6 +643,72 @@ public class ModelDiscussionForum {
     }
     
    }
+    
+    /**********
+     * <p>Method: hardDeleteReply(int replyID)</p>
+     *
+     * <p>Description: Permanently removes a post from the postDB table by its postID.
+     * This method is intended for use in testing only. The GUI should use softDeletePost()
+     * which marks the post as deleted instead of removing it, allowing replies to
+     * remain visible. The "Are you sure?" confirmation is handled by the caller
+     * before this method is called.</p>
+     *
+     * @param postID the ID of the post to permanently delete
+     * @return true if the deletion was successful, false otherwise
+     */
+    public boolean hardDeleteReply(int replyID) {
+        String query = "DELETE FROM replyDB WHERE replyID = ?";
+        try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
+            pstmt.setInt(1, replyID);
+            pstmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.out.println("*** ERROR *** Failed to delete reply: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    /**********
+     * <p>Method: hideReply(Reply reply)</p>
+     *
+     * <p>Description: Hides a reply by setting the isReplyHidden flag to TRUE. </p>
+     *
+     * @param reply the reply to set to hidden.
+     * @return true if the hide was successful, false otherwise
+     */
+    public boolean hideReply(Reply reply) {
+        String query = "UPDATE replyDB SET isReplyHidden = TRUE WHERE replyID = ?";
+        try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
+            pstmt.setInt(1, reply.getReplyID());
+            pstmt.executeUpdate();
+            reply.setReplyHiddenStatus(true);
+            return true;
+        } catch (SQLException e) {
+            System.out.println("*** ERROR *** Failed to hide reply: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    /**********
+     * <p>Method: unhideReply(Reply reply)</p>
+     *
+     * <p>Description: Unhides a reply by setting the isReplyHidden flag to FALSE. </p>
+     *
+     * @param reply the reply to set to not hidden.
+     * @return true if the unhide was successful, false otherwise
+     */
+    public boolean unhideReply(Reply reply) {
+        String query = "UPDATE replyDB SET isReplyHidden = FALSE WHERE replyID = ?";
+        try (PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
+            pstmt.setInt(1, reply.getReplyID());
+            pstmt.executeUpdate();
+            reply.setReplyHiddenStatus(false);
+            return true;
+        } catch (SQLException e) {
+            System.out.println("*** ERROR *** Failed to hide reply: " + e.getMessage());
+            return false;
+        }
+    }
     
     
 
@@ -738,6 +803,33 @@ public class ModelDiscussionForum {
   		 try(ResultSet rs = pstmt.executeQuery()) {
   			 if(rs.next()) {
   				 return rs.getBoolean("isPostHidden");
+  			 }
+  		 }
+  	 } catch (SQLException e) {
+  		System.out.println("*** ERROR *** Could not fetch status: " + e.getMessage());
+  	 }
+  	 return false;
+   }
+   
+   /**********
+    * <p>Method: isReplyHidden(int postID, int replyID)</p>
+    *
+    * <p>Description: Checks whether a post has been marked as hidden and returns 
+    * the current state. </p>
+    *
+    * @param int postID of the post to check
+    * @return true if the post is hidden, false if not
+    */
+   public boolean isReplyHidden(int postID, int replyID) {
+  	 String query = "SELECT isReplyHidden FROM replyDB WHERE replyID = ? AND postID = ?";
+        
+  	 try(PreparedStatement pstmt = theDatabase.getConnection().prepareStatement(query)) {
+         pstmt.setInt(1, replyID);
+         pstmt.setInt(2, postID);
+         
+  		 try(ResultSet rs = pstmt.executeQuery()) {
+  			 if(rs.next()) {
+  				 return rs.getBoolean("isReplyHidden");
   			 }
   		 }
   	 } catch (SQLException e) {

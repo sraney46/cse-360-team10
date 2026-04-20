@@ -206,7 +206,8 @@ public class Database {
         + "postID INT, "
         + "author INT, "
         + "content LONGTEXT, "
-        + "timestamp BIGINT)";
+        + "timestamp BIGINT, "
+        + "isReplyHidden BOOL DEFAULT FALSE)";
     statement.execute(replyTable);
     
     String readStatusTable = "CREATE TABLE IF NOT EXISTS postReadStatus ("

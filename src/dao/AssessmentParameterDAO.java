@@ -140,4 +140,27 @@ public class AssessmentParameterDAO {
 
         return parameter;
     }
+    
+    public List<AssessmentParameter> getActiveParameters() throws SQLException {
+        List<AssessmentParameter> parameters = new ArrayList<>();
+        String sql = "SELECT * FROM assessment_parameters WHERE is_active = TRUE ORDER BY parameter_id";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                parameters.add(mapRowToParameter(rs));
+            }
+        }
+
+        return parameters;
+    }
+    public boolean deleteParameter(int id) throws SQLException {
+        String sql = "DELETE FROM assessment_parameters WHERE parameter_id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
+        }
+    }
 }

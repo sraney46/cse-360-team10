@@ -1,11 +1,11 @@
 package service;
 
+import java.sql.SQLException;
+import java.util.List;
+
 import dao.AssessmentParameterDAO;
 import CRUDAssessment.AssessmentParameter;
 import validation.AssessmentParameterValidator;
-
-import java.sql.SQLException;
-import java.util.List;
 
 public class AssessmentParameterService {
 
@@ -32,6 +32,10 @@ public class AssessmentParameterService {
         return dao.getAllParameters();
     }
 
+    public List<AssessmentParameter> listActiveParameters() throws SQLException {
+        return dao.getActiveParameters();
+    }
+
     public boolean editParameter(AssessmentParameter parameter) throws SQLException {
         if (!validator.validateParameter(parameter)) {
             return false;
@@ -42,4 +46,5 @@ public class AssessmentParameterService {
     public boolean deactivateParameter(int id) throws SQLException {
         return dao.deactivateParameter(id);
     }
+    
 }

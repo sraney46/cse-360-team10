@@ -57,7 +57,7 @@ public class Database {
   static final String PASS = "";
 
   // Shared variables used within this class
-  private Connection connection = null; // Singleton to access the database
+  private static Connection connection = null; // Singleton to access the database
   private Statement statement = null; // The H2 Statement is used to construct queries
 
   // These are the easily accessible attributes of the currently logged-in user
@@ -128,8 +128,14 @@ public class Database {
    *
    * @return the active H2 database Connection
    */
-  public Connection getConnection() {
-      return connection;
+  public static Connection getConnection() {
+      try {
+		return connection;
+	  } catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	  }
+	  return connection;
   }
 
   /*******

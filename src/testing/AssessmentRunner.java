@@ -8,6 +8,7 @@ import CRUDAssessment.AssessmentParameter;
 import service.AssessmentParameterService;
 
 public class AssessmentRunner {
+	
 	public static void main(String[] args) {
         try {
             Database db = new Database();
@@ -106,6 +107,9 @@ public class AssessmentRunner {
                         + p.getCreatedBy()
                 );
             }
+            
+            Database.getConnection().createStatement()
+            .executeUpdate("DELETE FROM assessment_parameters");
 
             db.closeConnection();
 

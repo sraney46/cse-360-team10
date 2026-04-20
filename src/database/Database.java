@@ -480,84 +480,42 @@ public class Database {
    */
   public void populateDatabaseWithTestPosts() {
 	    try {
-	        // Clear existing post and reply data
-//	        statement.execute("DELETE FROM replyDB");
-//	        statement.execute("DELETE FROM postDB");
-//	        System.out.println("Post and reply tables cleared.");
 
 	        // Insert test posts
 	        String postSQL = "INSERT INTO postDB (author, title, content, category, timestamp) VALUES (?, ?, ?, ?, ?)";
 	        try (PreparedStatement pstmt = connection.prepareStatement(postSQL)) {
 	        	
-	        	Object[][] posts = {
+        	
+        	Object[][] posts = {
 
-	        		    // 1
-	        		    {1, "STACK/QUEUE", "What is the difference between a stack and a queue?", "General", System.currentTimeMillis() - 200000, false, 0.0, 0, "N/A", false},
+        		    // ORIGINAL POSTS (1–25)
+        		    {1, "STACK/QUEUE", "What is the difference between a stack and a queue?", "General", System.currentTimeMillis() - 200000, false, 0.0, 0, "N/A", false},
+        		    {2, "INTERFACES", "Can someone explain how interfaces work in Java?", "Lectures", System.currentTimeMillis() - 190000, false, 0.0, 0, "N/A", false},
+        		    {3, "HW2 CLARIFY", "I am confused about HW2 requirements, can someone clarify?", "Homework", System.currentTimeMillis() - 180000, false, 0.0, 0, "N/A", false},
+        		    {4, "MIDTERM TOPICS", "What topics will be covered on the midterm?", "Exams", System.currentTimeMillis() - 170000, false, 0.0, 0, "N/A", false},
+        		    {5, "H2 SETUP", "Does anyone know how to set up the H2 database in Eclipse?", "General", System.currentTimeMillis() - 160000, false, 0.0, 0, "N/A", false},
+        		    {6, "NULL POINTER", "I keep getting a NullPointerException in my PostList class, any ideas?", "Homework", System.currentTimeMillis() - 150000, false, 0.0, 0, "N/A", false},
+        		    {7, "PROJECT DEADLINE", "What is the deadline for the team project phase 2?", "Assignments", System.currentTimeMillis() - 140000, false, 0.0, 0, "N/A", false},
+        		    {8, "SCREENCAST TIPS", "Can someone share tips for recording screencasts on Mac?", "General", System.currentTimeMillis() - 130000, false, 0.0, 0, "N/A", false},
+        		    {9, "INHERITANCE", "Is inheritance always better than composition in OOP?", "Lectures", System.currentTimeMillis() - 120000, false, 0.0, 0, "N/A", false},
+        		    {10, "HW2 SUBMISSION", "Where do we submit the HW2 zip file, Canvas or email?", "Homework", System.currentTimeMillis() - 110000, false, 0.0, 0, "N/A", false},
+        		    {11, "ABSTRACT VS INTERFACE", "Can someone explain the difference between abstract classes and interfaces?", "Lectures", System.currentTimeMillis() - 100000, false, 0.0, 0, "N/A", false},
+        		    {12, "GIT MERGE", "How do we handle merge conflicts in Git?", "General", System.currentTimeMillis() - 90000, false, 0.0, 0, "N/A", false},
+        		    {13, "SEQUENCE DIAGRAM", "Is the sequence diagram required for every use case?", "Assignments", System.currentTimeMillis() - 80000, false, 0.0, 0, "N/A", false},
+        		    {14, "CRUD TEST", "Best way to test CRUD without GUI?", "Homework", System.currentTimeMillis() - 70000, false, 0.0, 0, "N/A", false},
+        		    {15, "PROJECT STYLE", "Does project need FoundationsF25 style?", "Assignments", System.currentTimeMillis() - 60000, false, 0.0, 0, "N/A", false},
+        		    {16, "H2 DRIVER ERROR", "ClassNotFoundException for H2 driver?", "General", System.currentTimeMillis() - 50000, false, 0.0, 0, "N/A", false},
+        		    {17, "EPICS VS STORIES", "Difference between epics and user stories?", "Lectures", System.currentTimeMillis() - 40000, false, 0.0, 0, "N/A", false},
+        		    {18, "ARRAYLIST/COMPOSITION", "Should PostList extend ArrayList?", "Homework", System.currentTimeMillis() - 30000, false, 0.0, 0, "N/A", false},
+        		    {19, "HW2 SCREENCASTS", "How many screencasts for HW2?", "Assignments", System.currentTimeMillis() - 20000, false, 0.0, 0, "N/A", false},
+        		    {20, "JAVA FX", "Can we use TableView instead of VBox?", "General", System.currentTimeMillis() - 10000, false, 0.0, 0, "N/A", false},
+        		    {21, "STACK QUESTION FOLLOWUP", "Is push/pop O(1) in a stack?", "Lectures", System.currentTimeMillis() - 9000, false, 0.0, 0, "N/A", false},
+        		    {22, "INTERFACE DEFAULT METHODS", "What are default methods in interfaces?", "Lectures", System.currentTimeMillis() - 8000, false, 0.0, 0, "N/A", false},
+        		    {23, "GIT BEST PRACTICES", "Should we use feature branches?", "General", System.currentTimeMillis() - 7000, false, 0.0, 0, "N/A", false},
+        		    {24, "JDBC SETUP", "How to properly configure JDBC connection?", "Homework", System.currentTimeMillis() - 6000, false, 0.0, 0, "N/A", false},
+        		    {25, "FINAL QUESTION", "Any tips for final exam preparation?", "Exams", System.currentTimeMillis() - 5000, false, 0.0, 0, "N/A", false},
 
-	        		    // 2
-	        		    {2, "INTERFACES", "Can someone explain how interfaces work in Java?", "Lectures", System.currentTimeMillis() - 190000, false, 0.0, 0, "N/A", false},
-
-	        		    // 3
-	        		    {3, "HW2 CLARIFY", "I am confused about HW2 requirements, can someone clarify?", "Homework", System.currentTimeMillis() - 180000, false, 0.0, 0, "N/A", false},
-
-	        		    // 4
-	        		    {4, "MIDTERM TOPICS", "What topics will be covered on the midterm?", "Exams", System.currentTimeMillis() - 170000, false, 0.0, 0, "N/A", false},
-
-	        		    // 5 (ADMIN)
-	        		    {5, "H2 SETUP", "Does anyone know how to set up the H2 database in Eclipse?", "General", System.currentTimeMillis() - 160000, false, 0.0, 0, "N/A", false},
-
-	        		    // 6
-	        		    {6, "NULL POINTER", "I keep getting a NullPointerException in my PostList class, any ideas?", "Homework", System.currentTimeMillis() - 150000, false, 0.0, 0, "N/A", false},
-
-	        		    // 7
-	        		    {7, "PROJECT DEADLINE", "What is the deadline for the team project phase 2?", "Assignments", System.currentTimeMillis() - 140000, false, 0.0, 0, "N/A", false},
-
-	        		    // 8
-	        		    {8, "SCREENCAST TIPS", "Can someone share tips for recording screencasts on Mac?", "General", System.currentTimeMillis() - 130000, false, 0.0, 0, "N/A", false},
-
-	        		    // 9
-	        		    {9, "INHERITANCE", "Is inheritance always better than composition in OOP?", "Lectures", System.currentTimeMillis() - 120000, false, 0.0, 0, "N/A", false},
-
-	        		    // 10 (ADMIN)
-	        		    {10, "HW2 SUBMISSION", "Where do we submit the HW2 zip file, Canvas or email?", "Homework", System.currentTimeMillis() - 110000, false, 0.0, 0, "N/A", false},
-
-	        		    // 11
-	        		    {11, "ABSTRACT VS INTERFACE", "Can someone explain the difference between abstract classes and interfaces?", "Lectures", System.currentTimeMillis() - 100000, false, 0.0, 0, "N/A", false},
-
-	        		    // 12
-	        		    {12, "GIT MERGE", "How do we handle merge conflicts in Git?", "General", System.currentTimeMillis() - 90000, false, 0.0, 0, "N/A", false},
-
-	        		    // 13
-	        		    {13, "SEQUENCE DIAGRAM", "Is the sequence diagram required for every use case?", "Assignments", System.currentTimeMillis() - 80000, false, 0.0, 0, "N/A", false},
-
-	        		    // 14
-	        		    {14, "CRUD TEST", "Best way to test CRUD without GUI?", "Homework", System.currentTimeMillis() - 70000, false, 0.0, 0, "N/A", false},
-
-	        		    // 15 (ADMIN)
-	        		    {15, "PROJECT STYLE", "Does project need FoundationsF25 style?", "Assignments", System.currentTimeMillis() - 60000, false, 0.0, 0, "N/A", false},
-
-	        		    // 16
-	        		    {16, "H2 DRIVER ERROR", "ClassNotFoundException for H2 driver?", "General", System.currentTimeMillis() - 50000, false, 0.0, 0, "N/A", false},
-
-	        		    // 17
-	        		    {17, "EPICS VS STORIES", "Difference between epics and user stories?", "Lectures", System.currentTimeMillis() - 40000, false, 0.0, 0, "N/A", false},
-
-	        		    // 18
-	        		    {18, "ARRAYLIST/COMPOSITION", "Should PostList extend ArrayList?", "Homework", System.currentTimeMillis() - 30000, false, 0.0, 0, "N/A", false},
-
-	        		    // 19
-	        		    {19, "HW2 SCREENCASTS", "How many screencasts for HW2?", "Assignments", System.currentTimeMillis() - 20000, false, 0.0, 0, "N/A", false},
-
-	        		    // 20 (ADMIN)
-	        		    {20, "JAVA FX", "Can we use TableView instead of VBox?", "General", System.currentTimeMillis() - 10000, false, 0.0, 0, "N/A", false},
-
-	        		    // 21–25 ensure remaining users exist at least once
-	        		    {21, "STACK QUESTION FOLLOWUP", "Is push/pop O(1) in a stack?", "Lectures", System.currentTimeMillis() - 9000, false, 0.0, 0, "N/A", false},
-	        		    {22, "INTERFACE DEFAULT METHODS", "What are default methods in interfaces?", "Lectures", System.currentTimeMillis() - 8000, false, 0.0, 0, "N/A", false},
-	        		    {23, "GIT BEST PRACTICES", "Should we use feature branches?", "General", System.currentTimeMillis() - 7000, false, 0.0, 0, "N/A", false},
-	        		    {24, "JDBC SETUP", "How to properly configure JDBC connection?", "Homework", System.currentTimeMillis() - 6000, false, 0.0, 0, "N/A", false},
-	        		    {25, "FINAL QUESTION", "Any tips for final exam preparation?", "Exams", System.currentTimeMillis() - 5000, false, 0.0, 0, "N/A", false},
-	        		};
+        		};
 
 	            for (Object[] post : posts) {
 	                pstmt.setInt(1, (Integer) post[0]);

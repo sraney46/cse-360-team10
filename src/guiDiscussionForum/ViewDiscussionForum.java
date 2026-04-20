@@ -1360,7 +1360,7 @@ public class ViewDiscussionForum {
                 alertValidation.showAndWait();
             } else {
                 model.addReply(newReply, post.getPostID());
-                model.markPostAsUnread(post.getPostID(), theUser.getUserName()); // add this
+                model.markPostAsUnread(post.getPostID(), theUser.getUserName()); 
                 loadPostDetail(post);
             }
         }
@@ -1405,8 +1405,9 @@ public class ViewDiscussionForum {
                alertValidation.setContentText(error);
                alertValidation.showAndWait();
            } else {
-           	model.updateReply(reply);
+        	   model.updateReply(reply);
                refreshPostList();
+               loadPostDetail(model.getPostByID(reply.getPostID()));
            }
        }
    }
@@ -1610,6 +1611,7 @@ public class ViewDiscussionForum {
             theSelectedPost = null;
             vbox_PostDetail.getChildren().clear();
             refreshPostList();
+            loadPostDetail(model.getPostByID(reply.getPostID()));
         }
     }
     
@@ -1629,6 +1631,7 @@ public class ViewDiscussionForum {
             theSelectedPost = null;
             vbox_PostDetail.getChildren().clear();
             refreshPostList();
+            loadPostDetail(model.getPostByID(reply.getPostID()));
         }
     }
     
@@ -1649,6 +1652,7 @@ public class ViewDiscussionForum {
             theSelectedPost = null;
             vbox_PostDetail.getChildren().clear();
             refreshPostList();
+            loadPostDetail(model.getPostByID(reply.getPostID()));
         }
     }
     

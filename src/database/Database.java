@@ -57,7 +57,7 @@ public class Database {
   static final String PASS = "";
 
   // Shared variables used within this class
-  private Connection connection = null; // Singleton to access the database
+  private static Connection connection = null; // Singleton to access the database
   private Statement statement = null; // The H2 Statement is used to construct queries
 
   // These are the easily accessible attributes of the currently logged-in user
@@ -128,8 +128,14 @@ public class Database {
    *
    * @return the active H2 database Connection
    */
-  public Connection getConnection() {
-      return connection;
+  public static Connection getConnection() {
+      try {
+		return connection;
+	  } catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	  }
+	  return connection;
   }
 
   /*******
@@ -230,6 +236,20 @@ public class Database {
         + "letterGrade VARCHAR(5))";
     statement.execute(evaluationToolTable);
 
+    String assessmentParametersTable = "CREATE TABLE IF NOT EXISTS assessment_parameters ("
+    	    + "parameter_id INT AUTO_INCREMENT PRIMARY KEY, "
+    	    + "parameter_name VARCHAR(100) NOT NULL UNIQUE, "
+    	    + "description VARCHAR(255), "
+    	    + "category VARCHAR(50) NOT NULL, "
+    	    + "threshold_value INT, "
+    	    + "point_value DOUBLE, "
+    	    + "is_required BOOLEAN NOT NULL DEFAULT FALSE, "
+    	    + "is_active BOOLEAN NOT NULL DEFAULT TRUE, "
+    	    + "created_by VARCHAR(100) NOT NULL, "
+    	    + "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
+    	    + "updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+    	    + ")";
+    	statement.execute(assessmentParametersTable);
   }
 
   /*******

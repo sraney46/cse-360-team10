@@ -22,7 +22,10 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import database.Database;
 import javafx.collections.ObservableList;
-
+import dao.AssessmentParameterDAO;
+import CRUDAssessment.AssessmentParameter;
+import service.AssessmentParameterService;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -793,6 +796,14 @@ public class ViewDiscussionForum {
                 launchGraderBtn.setOnAction(_ -> showStaffGraderDialog(post));
                 actionBar.getChildren().addAll(gradeStatusLabel, launchGraderBtn);}
             }
+            
+            Button testAssessmentParamsBtn = new Button("Test Assessment Params");
+            testAssessmentParamsBtn.setStyle(
+                "-fx-background-color: #16a085; -fx-text-fill: white;"
+                + "-fx-font-size: 13px; -fx-background-radius: 5px;"
+            );
+            testAssessmentParamsBtn.setOnAction(_ -> showAssessmentParameterTestDialog());
+            actionBar.getChildren().add(testAssessmentParamsBtn);
                        
             if(!model.isPostHidden(post.getPostID())) {
 	            Button hideBtn = new Button("Hide");
@@ -877,7 +888,197 @@ public class ViewDiscussionForum {
         roleFilterCombo.setOnAction(_ -> loadReplies.run());
     }
 
-    /**********
+    private static void showAssessmentParameterTestDialog() {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Assessment Parameter Test Tool");
+        dialog.setHeaderText("Temporary staff CRUD tool for assessment parameters");
+
+        ButtonType closeType = new ButtonType("Close", ButtonBar.ButtonData.CANCEL_CLOSE);
+        dialog.getDialogPane().getButtonTypes().add(closeType);
+
+        TextField nameField = new TextField();
+        nameField.setPromptText("Parameter Name");
+
+        TextField descriptionField = new TextField();
+        descriptionField.setPromptText("Description");
+
+        TextField categoryField = new TextField();
+        categoryField.setPromptText("Category");
+
+        TextField thresholdField = new TextField();
+        thresholdField.setPromptText("Threshold Value");
+
+        TextField pointValueField = new TextField();
+        pointValueField.setPromptText("Point Value");
+
+        TextField createdByField = new TextField();
+        createdByField.setPromptText("Created By");
+        createdByField.setText(theUser.getUserName());
+
+        TextField targetNameField = new TextField();
+        targetNameField.setPromptText("Target Parameter Name for Update/Deactivate");
+
+        CheckBox requiredBox = new CheckBox("Required");
+        CheckBox activeBox = new CheckBox("Active");
+        activeBox.setSelected(true);
+
+        TextArea outputArea = new TextArea();
+        outputArea.setEditable(false);
+        outputArea.setWrapText(true);
+        outputArea.setPrefHeight(220);
+
+        Button createButton = new Button("Create");
+        Button viewAllButton = new Button("View All");
+        Button updateButton = new Button("Update By Name");
+        Button deactivateButton = new Button("Deactivate By Name");
+
+        AssessmentParameterDAO dao = new AssessmentParameterDAO(theDatabase.getConnection());
+        AssessmentParameterService service = new AssessmentParameterService(dao);
+
+        createButton.setOnAction(_ -> {
+            try {
+                Integer threshold = thresholdField.getText().isBlank()
+                        ? null
+                        : Integer.parseInt(thresholdField.getText());
+
+                Double pointValue = pointValueField.getText().isBlank()
+                        ? null
+                        : Double.parseDouble(pointValueField.getText());
+
+                AssessmentParameter parameter = new AssessmentParameter(
+                        nameField.getText(),
+                        descriptionField.getText(),
+                        categoryField.getText(),
+                        threshold,
+                        pointValue,
+                        requiredBox.isSelected(),
+                        activeBox.isSelected(),
+                        createdByField.getText()
+                );
+
+                boolean created = service.addParameter(parameter);
+                outputArea.appendText("Create result: " + created + "\n");
+            } catch (Exception ex) {
+                outputArea.appendText("Create error: " + ex.getMessage() + "\n");
+            }
+        });
+
+        viewAllButton.setOnAction(_ -> {
+            try {
+                outputArea.appendText("\n=== VIEW ALL PARAMETERS ===\n");
+                List<AssessmentParameter> parameters = service.listParameters();
+
+                if (parameters.isEmpty()) {
+                    outputArea.appendText("No parameters found.\n");
+                } else {
+                    for (AssessmentParameter p : parameters) {
+                        outputArea.appendText(
+                                p.getParameterId() + " | "
+                                + p.getParameterName() + " | "
+                                + p.getDescription() + " | "
+                                + p.getCategory() + " | "
+                                + p.getThresholdValue() + " | "
+                                + p.getPointValue() + " | "
+                                + p.isRequired() + " | "
+                                + p.isActive() + " | "
+                                + p.getCreatedBy() + "\n"
+                        );
+                    }
+                }
+            } catch (Exception ex) {
+                outputArea.appendText("View error: " + ex.getMessage() + "\n");
+            }
+        });
+
+        updateButton.setOnAction(_ -> {
+            try {
+                String targetName = targetNameField.getText().trim();
+
+                if (targetName.isEmpty()) {
+                    outputArea.appendText("Update error: target parameter name is required.\n");
+                    return;
+                }
+
+                List<AssessmentParameter> parameters = service.listParameters();
+                AssessmentParameter target = null;
+
+                for (AssessmentParameter p : parameters) {
+                    if (p.getParameterName().equalsIgnoreCase(targetName)) {
+                        target = p;
+                        break;
+                    }
+                }
+
+                if (target == null) {
+                    outputArea.appendText("No parameter found with name: " + targetName + "\n");
+                    return;
+                }
+
+                target.setDescription("Updated from test dialog");
+                target.setPointValue(15.0);
+
+                boolean updated = service.editParameter(target);
+                outputArea.appendText("Update result for \"" + targetName + "\": " + updated + "\n");
+            } catch (Exception ex) {
+                outputArea.appendText("Update error: " + ex.getMessage() + "\n");
+            }
+        });
+
+        deactivateButton.setOnAction(_ -> {
+            try {
+                String targetName = targetNameField.getText().trim();
+
+                if (targetName.isEmpty()) {
+                    outputArea.appendText("Deactivate error: target parameter name is required.\n");
+                    return;
+                }
+
+                List<AssessmentParameter> parameters = service.listParameters();
+                AssessmentParameter target = null;
+
+                for (AssessmentParameter p : parameters) {
+                    if (p.getParameterName().equalsIgnoreCase(targetName)) {
+                        target = p;
+                        break;
+                    }
+                }
+
+                if (target == null) {
+                    outputArea.appendText("No parameter found with name: " + targetName + "\n");
+                    return;
+                }
+
+                boolean deactivated = service.deactivateParameter(target.getParameterId());
+                outputArea.appendText("Deactivate result for \"" + targetName + "\": " + deactivated + "\n");
+            } catch (Exception ex) {
+                outputArea.appendText("Deactivate error: " + ex.getMessage() + "\n");
+            }
+        });
+
+        HBox buttonRow = new HBox(10, createButton, viewAllButton, updateButton, deactivateButton);
+        buttonRow.setAlignment(Pos.CENTER_LEFT);
+
+        VBox content = new VBox(10,
+                new Label("Parameter Name"), nameField,
+                new Label("Description"), descriptionField,
+                new Label("Category"), categoryField,
+                new Label("Threshold Value"), thresholdField,
+                new Label("Point Value"), pointValueField,
+                new Label("Created By"), createdByField,
+                requiredBox,
+                activeBox,
+                new Label("Target Parameter Name"), targetNameField,
+                buttonRow,
+                new Label("Output"),
+                outputArea
+        );
+
+        content.setPadding(new Insets(12));
+        dialog.getDialogPane().setContent(content);
+
+        dialog.showAndWait();
+    }
+	/**********
      * <p>Method: createReplyCard(Reply reply)</p>
      *
      * <p>Description: Builds a styled card representing a single reply, including
@@ -1060,7 +1261,7 @@ public class ViewDiscussionForum {
      *
      * @param post the Post being replied to
      */
-    private static void showReplyDialog(Post post) {
+   private static void showReplyDialog(Post post) {
 
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Reply");
@@ -1094,6 +1295,105 @@ public class ViewDiscussionForum {
                 model.addReply(newReply, post.getPostID());
                 model.markPostAsUnread(post.getPostID(), theUser.getUserName()); // add this
                 loadPostDetail(post);
+            }
+        }
+    }
+    
+   /* private static void showStaffGraderDialog(Post post) {
+        if (!isStaffUser() || post == null) {
+            return;
+        }
+
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Grader Tool");
+        dialog.setHeaderText("Evaluate post by " + post.getAuthor());
+
+        ButtonType autoGradeType = new ButtonType("Start Auto Grader", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(autoGradeType, ButtonType.CANCEL);
+
+        VBox content = new VBox(10);
+        content.setPadding(new Insets(12));
+
+        Label instructions = new Label("Mark each parameter as met, then run auto grader.");
+        instructions.setWrapText(true);
+        content.getChildren().add(instructions);
+
+        String[] definedParams;
+        Double[] paramWeights;
+        CheckBox[] checks;
+
+        try {
+            AssessmentParameterDAO dao = new AssessmentParameterDAO(theDatabase.getConnection());
+            AssessmentParameterService service = new AssessmentParameterService(dao);
+            List<AssessmentParameter> activeParams = service.listActiveParameters();
+
+            if (activeParams != null && !activeParams.isEmpty()) {
+                definedParams = new String[activeParams.size()];
+                paramWeights = new Double[activeParams.size()];
+                checks = new CheckBox[activeParams.size()];
+
+                for (int i = 0; i < activeParams.size(); i++) {
+                    AssessmentParameter p = activeParams.get(i);
+                    definedParams[i] = p.getParameterName();
+                    paramWeights[i] = p.getPointValue();
+                    checks[i] = new CheckBox(
+                            p.getParameterName() + " (" + p.getPointValue().intValue() + "%)"
+                    );
+                    content.getChildren().add(checks[i]);
+                }
+            } else {
+                definedParams = GRADER_PARAMS;
+                paramWeights = GRADER_WEIGHTS;
+                checks = new CheckBox[GRADER_PARAMS.length];
+
+                for (int i = 0; i < GRADER_PARAMS.length; i++) {
+                    checks[i] = new CheckBox(
+                            GRADER_PARAMS[i] + " (" + GRADER_WEIGHTS[i].intValue() + "%)"
+                    );
+                    content.getChildren().add(checks[i]);
+                }
+            }
+        } catch (Exception ex) {
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+            errorAlert.setTitle("Grader Error");
+            errorAlert.setHeaderText("Unable to load assessment parameters");
+            errorAlert.setContentText(ex.getMessage());
+            errorAlert.showAndWait();
+            return;
+        }
+
+        dialog.getDialogPane().setContent(content);
+        Optional<ButtonType> result = dialog.showAndWait();
+
+        if (result.isPresent() && result.get() == autoGradeType) {
+            try {
+                double[] scores = new double[checks.length];
+                for (int i = 0; i < checks.length; i++) {
+                    scores[i] = checks[i].isSelected() ? paramWeights[i] : 0.0;
+                }
+
+                EvaluationTool tool = new EvaluationTool(theDatabase);
+                EvaluationTool.EvaluationRow row = EvaluationTool.compute(
+                        post.getAuthor(),
+                        definedParams,
+                        paramWeights,
+                        scores
+                );
+
+                model.savePostGrade(post.getPostID(), row);
+                tool.save(row);
+
+                Post refreshed = model.getPostByID(post.getPostID());
+                theSelectedPost = refreshed;
+                refreshPostList();
+                loadPostDetail(refreshed);
+
+            } catch (Exception ex) {
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                errorAlert.setTitle("Grading Error");
+                errorAlert.setHeaderText("Could not compute or save grade");
+                errorAlert.setContentText(ex.getMessage());
+                errorAlert.showAndWait();
             }
         }
     }
@@ -1194,47 +1494,121 @@ public class ViewDiscussionForum {
         if (!isStaffUser() || post == null) {
             return;
         }
-        
+
+        System.out.println("showStaffGraderDialog() fired for post " + post.getPostID());
+
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Grader Tool");
         dialog.setHeaderText("Evaluate post by " + post.getAuthor());
+
         ButtonType autoGradeType = new ButtonType("Start Auto Grader", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(autoGradeType, ButtonType.CANCEL);
-        
+
         VBox content = new VBox(10);
         content.setPadding(new Insets(12));
+
         Label instructions = new Label("Mark each parameter as met, then run auto grader.");
         instructions.setWrapText(true);
         content.getChildren().add(instructions);
-        
-        CheckBox[] checks = new CheckBox[GRADER_PARAMS.length];
-        for (int i = 0; i < GRADER_PARAMS.length; i++) {
-            checks[i] = new CheckBox(GRADER_PARAMS[i] + " (" + GRADER_WEIGHTS[i].intValue() + "%)");
-            content.getChildren().add(checks[i]);
+
+        AssessmentParameterDAO dao = new AssessmentParameterDAO(theDatabase.getConnection());
+        AssessmentParameterService service = new AssessmentParameterService(dao);
+
+        List<AssessmentParameter> activeParams = null;
+        try {
+            activeParams = service.listActiveParameters();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        
-        dialog.getDialogPane().setContent(content);
-        Optional<ButtonType> result = dialog.showAndWait();
-        if (result.isPresent() && result.get() == autoGradeType) {
-            double[] scores = new double[GRADER_PARAMS.length];
-            for (int i = 0; i < checks.length; i++) {
-                scores[i] = checks[i].isSelected() ? GRADER_WEIGHTS[i] : 0.0;
+
+        String[] definedParams;
+        Double[] paramWeights;
+        CheckBox[] checks;
+
+        if (activeParams != null && !activeParams.isEmpty()) {
+            definedParams = new String[activeParams.size()];
+            paramWeights = new Double[activeParams.size()];
+            checks = new CheckBox[activeParams.size()];
+
+            for (int i = 0; i < activeParams.size(); i++) {
+                AssessmentParameter p = activeParams.get(i);
+                definedParams[i] = p.getParameterName();
+                paramWeights[i] = p.getPointValue();
+                checks[i] = new CheckBox(p.getParameterName() + " (" + p.getPointValue().intValue() + "%)");
+                content.getChildren().add(checks[i]);
             }
-            
-             EvaluationTool tool = new EvaluationTool(theDatabase);
+        } else {
+            definedParams = GRADER_PARAMS;
+            paramWeights = GRADER_WEIGHTS;
+            checks = new CheckBox[GRADER_PARAMS.length];
+
+            for (int i = 0; i < GRADER_PARAMS.length; i++) {
+                checks[i] = new CheckBox(GRADER_PARAMS[i] + " (" + GRADER_WEIGHTS[i].intValue() + "%)");
+                content.getChildren().add(checks[i]);
+            }
+        }
+
+        System.out.println("Active parameter count: " + (activeParams == null ? 0 : activeParams.size()));
+        if (activeParams != null) {
+            for (AssessmentParameter p : activeParams) {
+                System.out.println(p.getParameterName() + " | " + p.getPointValue() + " | active=" + p.isActive());
+            }
+        }
+
+        dialog.getDialogPane().setContent(content);
+
+        Optional<ButtonType> result = dialog.showAndWait();
+
+        if (!(result.isPresent() && result.get() == autoGradeType)) {
+            return;
+        }
+
+        try {
+            double[] scores = new double[checks.length];
+            for (int i = 0; i < checks.length; i++) {
+                scores[i] = checks[i].isSelected() ? paramWeights[i] : 0.0;
+            }
+
+            System.out.println("=== DEBUG GRADER INPUT ===");
+            System.out.println("Post ID: " + post.getPostID());
+            System.out.println("Post Author ID: " + post.getAuthor());
+
+            for (int i = 0; i < checks.length; i++) {
+                System.out.println(
+                    "Param: " + definedParams[i]
+                    + " | Weight: " + paramWeights[i]
+                    + " | Checked: " + checks[i].isSelected()
+                    + " | Score used: " + scores[i]
+                );
+            }
+
+            EvaluationTool tool = new EvaluationTool(theDatabase);
             EvaluationTool.EvaluationRow row = EvaluationTool.compute(
                     post.getAuthor(),
-                    GRADER_PARAMS,
-                    GRADER_WEIGHTS,
-                    scores);
-            
+                    definedParams,
+                    paramWeights,
+                    scores
+            );
+
+            System.out.println("=== DEBUG GRADER OUTPUT ===");
+            System.out.println("Percentage: " + row.percentage);
+            System.out.println("Number Grade: " + row.numberGrade);
+            System.out.println("Letter Grade: " + row.letterGrade);
+
             model.savePostGrade(post.getPostID(), row);
             tool.save(row);
-            
+
             Post refreshed = model.getPostByID(post.getPostID());
             theSelectedPost = refreshed;
             refreshPostList();
             loadPostDetail(refreshed);
+
+        } catch (Exception ex) {
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+            errorAlert.setTitle("Grading Error");
+            errorAlert.setHeaderText("Could not compute or save grade");
+            errorAlert.setContentText(ex.getMessage());
+            errorAlert.showAndWait();
         }
     }
 
@@ -1293,6 +1667,7 @@ public class ViewDiscussionForum {
             }
         }
     }
+    
     
     /**********
      * <p>Method: refreshStudentFilter()</p>
@@ -1472,6 +1847,5 @@ public class ViewDiscussionForum {
     	 return "Student".equals(returnPage);
      }
  
-
-     
+      
 }

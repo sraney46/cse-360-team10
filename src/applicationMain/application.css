@@ -415,4 +415,70 @@
 }
 
 
+.wide-combo-box {
+    -fx-background-color: #000;         
+    -fx-border-color: transparent;     
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-padding: 0 5 0 5;               
+}
+
+
+.wide-combo-box .text {
+    -fx-fill: #fff;                     
+    -fx-font-family: 'Montserrat Regular';
+    -fx-font-size: 12px;
+    -fx-alignment: center-left;
+}
+
+
+.wide-combo-box .arrow-button {
+    -fx-background-color: #000;         
+    -fx-padding: 0;
+    -fx-padding: 0 10 0 0;    
+}
+
+
+.wide-combo-box .arrow {
+    -fx-fill: #fff;     
+      
+}
+
+
+.wide-combo-box .list-view {
+    -fx-background-color: #000;        
+    -fx-border-color: #444;             
+    -fx-padding: 0;          
+    -fx-min-width: 125px;
+    -fx-max-width: 125px;
+    -fx-max-height: 120px;             
+}
+
+
+.wide-combo-box .list-cell {
+    -fx-background-color: #000;         
+    -fx-text-fill: #fff;                
+    -fx-font-family: 'Montserrat Regular';
+    -fx-font-size: 12px;
+}
+
+
+.wide-combo-box .list-cell:hover {
+    -fx-background-color: #1a1a1a;
+}
+
+.wide-combo-box .list-cell:selected {
+    -fx-text-fill: #fff;
+}
+
+
+.wide-combo-box .combo-box-popup > .list-view .scroll-bar:vertical,
+.wide-combo-box .combo-box-popup > .list-view .scroll-bar:horizontal {
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    visibility: hidden;
+}
+
+
 

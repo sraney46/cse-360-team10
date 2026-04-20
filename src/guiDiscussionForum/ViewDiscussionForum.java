@@ -250,7 +250,7 @@ public class ViewDiscussionForum {
     	combo_ReadStatus.setOnAction(_ -> refreshPostList());
     	
     	refreshStudentFilter();
-    	combo_StudentFilter.getStyleClass().add("default-combo-box");
+    	combo_StudentFilter.getStyleClass().add("wide-combo-box");
     	combo_StudentFilter.setLayoutX(width/2 + 372);
     	combo_StudentFilter.setLayoutY(18);
     	combo_StudentFilter.setPrefWidth(130);
@@ -419,7 +419,7 @@ public class ViewDiscussionForum {
         
         // Student filter overrides all other filters
         String selectedStudent = combo_StudentFilter.getValue();
-        if (selectedStudent != null && !selectedStudent.equals("All Students")) {
+        if (selectedStudent != null && !selectedStudent.equals("All Posts")) {
 
             if (selectedStudent.equals("Flagged Posts")) {
                 List<Post> allPosts = model.getAllPosts(null);
@@ -433,7 +433,18 @@ public class ViewDiscussionForum {
                 return;
             }
 
-            // existing student filter logic
+            if (selectedStudent.equals("All Students")) {
+                List<Post> allPosts = model.getAllPosts(null);
+                if (allPosts != null) {
+                    allPosts = allPosts.stream()
+                        .filter(p -> isStudentPost(p))
+                        .collect(java.util.stream.Collectors.toList());
+                }
+                populatePostList(allPosts);
+                return;
+            }
+
+            // Specific student selected
             List<Post> allPosts = model.getAllPosts(null);
             if (allPosts != null) {
                 allPosts = allPosts.stream()
@@ -583,8 +594,20 @@ public class ViewDiscussionForum {
             "-fx-text-fill: white;" +
             "-fx-font-size: 10px; -fx-padding: 2 8; -fx-background-radius: 999;"
         );
+        
+        topLine.getChildren().add(authorLabel);
+        
+        // Student pill (only shown if post is from a student)
+        if (isStudentPost(post)) {
+            Label studentPill = new Label("Student");
+            studentPill.setStyle(
+        	    "-fx-background-color: #1f3a5f; -fx-text-fill: white;" +
+        	    "-fx-font-size: 10px; -fx-padding: 2 8; -fx-background-radius: 999;"
+        	);
+            topLine.getChildren().add(studentPill);
+        }
 
-        topLine.getChildren().addAll(authorLabel, categoryBadge, readPill);
+        topLine.getChildren().addAll(categoryBadge, readPill);
 
         if (isStaffUser()) {
             if (feedbackValidator.containsInappropriateContent(post.getTitle()) ||
@@ -1858,7 +1881,7 @@ public class ViewDiscussionForum {
         List<Post> posts = model.getAllPosts(null);
         List<Integer> allUsersIDs = theDatabase.getUserList();
         Set<Integer> postStudentIDs = new TreeSet<>();
-        ObservableList<String> items = FXCollections.observableArrayList("All Students", "Flagged Posts");
+        ObservableList<String> items = FXCollections.observableArrayList("All Posts", "All Students", "Flagged Posts");
 
         if (posts != null) {
             for (Post p : posts) {
@@ -1878,7 +1901,7 @@ public class ViewDiscussionForum {
         }
 
         combo_StudentFilter.setItems(items);
-        combo_StudentFilter.setValue("All Students");
+        combo_StudentFilter.setValue("All Posts");
     }
     
     /**********
